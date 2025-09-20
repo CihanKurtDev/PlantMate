@@ -1,0 +1,14 @@
+@use "./reset";
+@use "./variables" as *;
+
+body {
+  font-family: $font-family-base;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: 1.5;
+  color: $color-text;
+  background-color: $color-background;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
