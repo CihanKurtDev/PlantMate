@@ -1,12 +1,8 @@
 import './App.css'
+import { PlantOverview } from './pages/PlantOverview/PlantOverwiev'
 
 function App() {
-
-  return (
-    <>
-     
-    </>
-  )
+  return <PlantOverview />
 }
 
 export default App
