@@ -1,0 +1,17 @@
+@use '../../styles/variables' as *;
+
+.plant-card {
+    background-color: $color-surface;
+    display: flex;
+    flex-direction: column;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    cursor: pointer;
+    color: $color-text;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    
+    &:hover {
+        background-color: $color-surface-hover;
+        transform: translateY(-2px);
+    }
+}
