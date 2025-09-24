@@ -2,26 +2,22 @@ import './App.css'
 import { PlantOverview } from './pages/PlantOverview/PlantOverwiev'
 import { PlantView } from './pages/PlantView/PlantView'
 import { PlantProvider } from './context/PlantProvider'
-import { usePlantContext } from './context/UsePlantContext'
 import { plants } from './data/plant'
-
-export const Content = () => {
-  const { selectedPlantId } = usePlantContext();
-
-  return selectedPlantId ? (
-    <PlantView plantId={selectedPlantId} />
-  ) : (
-    <PlantOverview />
-  );
-}
+import { createBrowserRouter, RouterProvider } from 'react-router'
+import { NotFound } from './pages/NotFound/NotFound'
 
 
 function App() {
-
+  const router = createBrowserRouter([
+    {path: "/", element: <PlantOverview />},
+    {path: "/plant/:id", element: <PlantView />},
+    {path: "*", element: <NotFound />},
+  ])
+  
   // need router 
   return (
     <PlantProvider plants={plants}>
-      <Content />
+      <RouterProvider router={router} />
     </PlantProvider>
   )
 }

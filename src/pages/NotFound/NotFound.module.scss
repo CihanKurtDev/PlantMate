@@ -1,0 +1,22 @@
+@use '../../styles/variables' as *;
+
+.not-found {
+    text-align: center;
+    margin-top: $spacing-xl;
+
+    h1 {
+        font-size: $font-size-xl;
+        margin-bottom: $shadow-lg;
+    }
+
+    p {
+        font-size: $font-size-lg;
+        margin-bottom: $spacing-xl;
+    }
+
+    a {
+        color: $color-primary;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+}

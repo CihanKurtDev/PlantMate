@@ -1,15 +1,12 @@
-import type React from "react"
 import { usePlantContext } from "../../context/UsePlantContext"
 import styles from './PlantView.module.scss'
 import { ImageWithDescription } from "../../components/ImageWithDescription/ImageWithDescription"
+import { useParams } from "react-router"
 
-interface PlantViewProps {
-    plantId: string,
-}
-
-export const PlantView: React.FC<PlantViewProps> = ({plantId}) => {
+export const PlantView = () => {
     const { plants } = usePlantContext()
-    const displayedPlant = plants.find(plant => plant.id === plantId)
+    const { id } = useParams<{ id: string }>();
+    const displayedPlant = plants.find(plant => plant.id === id)
     
     if(!displayedPlant) return <p>Plant not Found</p>
     
