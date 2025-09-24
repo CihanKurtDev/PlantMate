@@ -1,0 +1,27 @@
+@use '../../styles/variables' as *;
+
+.button {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+    color: $color-text;
+
+    &.primary {
+        background-color: $color-primary;
+    }
+
+    &.transparent {
+        background-color: transparent;
+    }
+
+    &.success {
+        background-color: $color-success;
+    }
+
+    &.danger {
+        background-color: $color-danger;
+    }
+}

@@ -1,0 +1,13 @@
+@use '../../styles/variables' as *;
+.header {
+    border-bottom: 1px solid $color-border;
+    padding: $spacing-xs;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+
+    .logo {
+        font-size: $font-size-lg;
+    }
+}
