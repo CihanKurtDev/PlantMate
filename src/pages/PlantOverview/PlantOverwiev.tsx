@@ -1,11 +1,16 @@
 import { PlantCard } from "../../components/PlantCard/PlantCard";
-import { plants } from "../../data/plant";
+import { usePlantContext } from "../../context/UsePlantContext";
 import styles from "./PlantOverview.module.scss";
 
-export const PlantOverview = () => (
-    <div className={styles["plant-grid"]}>
-        {plants.map(plant => (
-            <PlantCard key={plant.id} plant={plant} />
-        ))}
-    </div>
-);
+
+
+export const PlantOverview = () => {
+    const {plants} = usePlantContext()
+    return (
+        <main className={styles["plant-grid"]}>
+            {plants.map(plant => (
+                <PlantCard key={plant.id} plant={plant}/>
+            ))}
+        </main>
+    )
+};

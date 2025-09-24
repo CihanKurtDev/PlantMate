@@ -11,7 +11,7 @@ export const ImageWithDescription: React.FC<ImageProps> = ({src, alt, descriptio
     return(
         <figure className="figure">
             <div className={styles["image-window"]}>
-                <img src={src} alt={alt} />
+                <img src={src} alt={alt} loading="lazy"/>
             </div>
             <figcaption>{description}</figcaption>
         </figure>
