@@ -1,11 +1,12 @@
 import './App.css'
-import { PlantOverview } from './pages/PlantOverview/PlantOverwiev'
-import { PlantView } from './pages/PlantView/PlantView'
-import { PlantProvider } from './context/PlantProvider'
-import { plants } from './data/plant'
+import { TentOverview } from './pages/TentOverview/TentOverview'
+import { TentView } from './pages/TentView/TentView'
+import { TentProvider } from './context/TentProvider'
+import { tents } from './data/tents'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { NotFound } from './pages/NotFound/NotFound'
 import { Layout } from './components/Layout/Layout'
+import { PlantView } from './pages/PlantView/PlantView'
 
 
 function App() {
@@ -13,7 +14,8 @@ function App() {
     {
       element: <Layout />, 
       children: [
-        {path: "/", element: <PlantOverview />},
+        {path: "/", element: <TentOverview />},
+        {path: "/tent/:id", element: <TentView />},
         {path: "/plant/:id", element: <PlantView />},
         {path: "*", element: <NotFound />},
       ]
@@ -21,9 +23,9 @@ function App() {
   ])
   
   return (
-    <PlantProvider plants={plants}>
+    <TentProvider tents={tents}>
       <RouterProvider router={router} />
-    </PlantProvider>
+    </TentProvider>
   )
 }
 

@@ -1,0 +1,54 @@
+@use '../../styles/variables' as *;
+
+.tent-card {
+    background-color: $color-surface;
+    display: flex;
+    flex-direction: column;
+    border-radius: $radius-sm;
+    overflow: hidden;
+    cursor: pointer;
+    padding: $spacing-xs;
+    color: $color-text;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    font-size: $font-size-xs;
+
+    span { font-size: $font-size-sm; }
+
+    & > * {
+        padding: $spacing-xs 0;
+    }
+    
+    &:hover {
+        background-color: $color-surface-hover;
+        transform: translateY(-2px);
+    }
+
+    .tent-data {
+
+        .name {
+            color: $color-primary;
+            font-weight: $font-weight-bold;
+            font-size: $font-size-base;
+            border-bottom: 1px solid white;
+        }
+
+        .location {
+            border-bottom: 1px solid white;
+        }
+
+        .species-overview {
+            border-bottom: 1px solid white;
+        }
+        .species-list {
+            width: fit-content;
+            padding: 0.5rem 1rem;
+
+            li {
+
+                &:last-child {
+                    border: none;
+                }
+            }
+        }
+    }
+}

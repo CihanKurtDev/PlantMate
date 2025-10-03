@@ -1,17 +1,9 @@
-import { usePlantContext } from "../../context/UsePlantContext"
 import styles from './PlantView.module.scss'
 import { ImageWithDescription } from "../../components/ImageWithDescription/ImageWithDescription"
-import { useParams } from "react-router"
+import type { PlantData } from "../../data/tents"
 
-export const PlantView = () => {
-    const { plants } = usePlantContext()
-    const { id } = useParams<{ id: string }>();
-    const displayedPlant = plants.find(plant => plant.id === id)
-    
-    if(!displayedPlant) return <p>Plant not Found</p>
-    
-    const {title, plantName, environment, photos} = displayedPlant
-    const environmentEntries = Object.entries(environment)
+export const PlantView: React.FC<{plant: PlantData, plantName: string}> = ({plant, plantName}) => {
+    const {title,photos} = plant
 
     return (
         <main>
@@ -19,14 +11,6 @@ export const PlantView = () => {
                 <h1>{title}</h1>
                 <h2>{plantName}</h2>
             </header>
-            <section className={styles["table-section"]}>
-                <table>
-                    {environmentEntries.map(([key]) => <th key={key}>{key}</th>)}
-                    <tbody>
-                        <tr>{environmentEntries.map(([key, value]) => <td key={key}>{value}</td>)}</tr>
-                    </tbody>
-                </table>
-            </section>
             <section className={styles["photo-section"]}>
                 {photos.map(photo => (
                     <div className={styles["image-window"]}>

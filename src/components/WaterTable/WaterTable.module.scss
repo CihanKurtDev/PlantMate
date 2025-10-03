@@ -1,0 +1,17 @@
+@use "../../styles/variables" as *;
+
+.water-table {
+    border-collapse: collapse;
+
+    tbody {
+        display: flex;
+    }
+
+    .table-value {
+        padding-left: $spacing-xs;
+    }
+    
+    .table-key {
+        font-weight: $font-weight-bold;
+    }
+}

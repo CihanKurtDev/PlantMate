@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { PlantContext } from "./PlantContext";
+import { TentContext } from "./TentContext";
 
-export function usePlantContext() {
-    const ctx = useContext(PlantContext);
+export function useTentContext() {
+    const ctx = useContext(TentContext);
     if (!ctx) throw new Error("usePlantContext must be used inside PlantProvider");
     return ctx;
 }

@@ -1,31 +1,30 @@
 import { useNavigate } from "react-router";
-import { usePlantContext } from "../../context/UsePlantContext";
-import { type PlantData } from "../../data/plant"
-import { ImageWithDescription } from "../ImageWithDescription/ImageWithDescription"
+import { type PlantData } from "../../data/tents"
 import styles from './PlantCard.module.scss'
+import { memo } from "react";
+import { WaterTable } from "../WaterTable/WaterTable";
 
 export interface PlantProps {
     plant: PlantData,
 }
 
-export const PlantCard: React.FC<PlantProps> = ({plant}) => {
-    const { setSelectedPlantId } = usePlantContext();
+export const PlantCard: React.FC<PlantProps> = memo(({plant}) => {
     const navigate = useNavigate();
-    
-    const mainPhoto = plant.photos[
-        plant.mainPhotoIndex !== undefined ? plant.mainPhotoIndex : plant.photos.length - 1
-    ];
 
     const handleClick = () => {
-        setSelectedPlantId(plant.id);
+        // setSelectedTentId(tent.id);
         navigate(`/plant/${plant.id}`);
+        console.log("click")
     };
     
-    const {alt, src, description} = mainPhoto
+    const {title, water} = plant
 
     return (
         <article className={styles["plant-card"]} onClick={handleClick}>
-            <ImageWithDescription alt={alt} src={src} description={description} />
+            <div className="tent-data">
+                <p>{title}</p>
+            </div>
+            <WaterTable water={water} />
         </article>
     )
-}
+})

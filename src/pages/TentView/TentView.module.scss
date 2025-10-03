@@ -1,0 +1,47 @@
+@use '../../styles/variables' as *;
+.photo-section {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: $spacing-md;
+
+    @media (max-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.plant-view-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.plant-section {
+    display: flex;
+}
+
+.table-section {
+    display: flex;
+    justify-content: center;
+}
+
+.image-window {
+    width: 300px;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    
+    img {
+        border-radius: $radius-md;
+        object-fit: cover;
+        object-position: center;
+        display: block;
+    }
+}
