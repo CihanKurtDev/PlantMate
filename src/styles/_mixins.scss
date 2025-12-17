@@ -1,4 +1,5 @@
 @use "./variables" as v;
+
 @mixin button($variant) {
     background-color: var(--button-#{$variant}-bg);
     color: var(--button-#{$variant}-text);

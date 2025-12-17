@@ -5,14 +5,15 @@ $breakpoints: (
   xl: 1280px
 );
 
-$colors: (
+//placeholder colors | WIP
+$colors-light: (
   text: (
     primary: #212121,
     secondary: #FAFAFA,
     tertiary: #BDBDBD,
     success: #2D651A,
     alert: #735C00,
-    error: #961817,
+    error: #961817
   ),
   background: (
     primary: #EDEDED,
@@ -21,16 +22,45 @@ $colors: (
     accent-hover: #610f0f,
     error: red,
     success: green,
-    alert: orange,
+    alert: orange
   ),
   border: (
     primary: #9a9898,
-    secondary: #ccc,
+    secondary: #ccc
   ),
   flag: (
     success: #DDECDC,
     alert: #F6E6B0,
-    error: #F8DDD8,
+    error: #F8DDD8
+  )
+);
+
+$colors-dark: (
+  text: (
+    primary: #FAFAFA,
+    secondary: #212121,
+    tertiary: #BDBDBD,
+    success: #2D651A,
+    alert: #735C00,
+    error: #961817
+  ),
+  background: (
+    primary: #212121,
+    secondary: #424242,
+    accent: #f68201,
+    accent-hover: #f68201,
+    error: red,
+    success: green,
+    alert: orange
+  ),
+  border: (
+    primary: #9a9898,
+    secondary: #ccc
+  ),
+  flag: (
+    success: #DDECDC,
+    alert: #F6E6B0,
+    error: #F8DDD8
   )
 );
 
@@ -67,17 +97,3 @@ $radii: (
   xl: 16px,
   circle: 50%
 );
-
-:root {
-  @each $category, $map in $colors { 
-    @each $name, $val in $map {--color-#{$category}-#{$name}: #{$val}; }
-  }
-
-  @each $category, $map in $fonts {
-    @each $name, $val in $map { --font-#{$category}-#{$name}: #{$val}; }
-  }
-
-  @each $name, $radius in $radii { --radius-#{$name}: #{$radius}; }
-
-  @each $name, $spacing in $spacings { --spacing-#{$name}: #{$spacing}; }
-}
