@@ -1,0 +1,99 @@
+$breakpoints: (
+  sm: 480px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px
+);
+
+//placeholder colors | WIP
+$colors-light: (
+  text: (
+    primary: #212121,
+    secondary: #FAFAFA,
+    tertiary: #BDBDBD,
+    success: #2D651A,
+    alert: #735C00,
+    error: #961817
+  ),
+  background: (
+    primary: #EDEDED,
+    secondary: #FFFFFF,
+    accent: #961817,
+    accent-hover: #610f0f,
+    error: red,
+    success: green,
+    alert: orange
+  ),
+  border: (
+    primary: #9a9898,
+    secondary: #ccc
+  ),
+  flag: (
+    success: #DDECDC,
+    alert: #F6E6B0,
+    error: #F8DDD8
+  )
+);
+
+$colors-dark: (
+  text: (
+    primary: #FAFAFA,
+    secondary: #212121,
+    tertiary: #BDBDBD,
+    success: #2D651A,
+    alert: #735C00,
+    error: #961817
+  ),
+  background: (
+    primary: #212121,
+    secondary: #424242,
+    accent: #f68201,
+    accent-hover: #f68201,
+    error: red,
+    success: green,
+    alert: orange
+  ),
+  border: (
+    primary: #9a9898,
+    secondary: #ccc
+  ),
+  flag: (
+    success: #DDECDC,
+    alert: #F6E6B0,
+    error: #F8DDD8
+  )
+);
+
+$fonts: (
+  size: (
+    xs: 0.75rem,   // 12px
+    s: 0.875rem,  // 14px
+    m: 1rem,      // 16px
+    l: 1.5rem,    // 24px
+    xl: 2rem      // 32px
+  ),
+  weight: (
+    regular: 400,
+    medium: 500,
+    bold: 700
+  )
+);
+
+$spacings: (
+  0: 0,
+  xs: 0.25rem,
+  s: 0.5rem,
+  m: 1rem,
+  l: 1.5rem,
+  xl: 2rem,
+  2xl: 3rem
+);
+
+$radii: (
+  none: 0,
+  s: 4px,
+  m: 8px,
+  l: 12px,
+  xl: 16px,
+  circle: 50%
+);

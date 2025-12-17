@@ -1,0 +1,23 @@
+@use "./variables" as v;
+
+@mixin button($variant) {
+    background-color: var(--button-#{$variant}-bg);
+    color: var(--button-#{$variant}-text);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-xs);
+
+    &:hover {
+        background-color: var(--button-#{$variant}-hover);
+    }
+
+    &:disabled {
+        opacity: 0.5; 
+        cursor: not-allowed;
+    }
+}
+
+@mixin from($breakpoint) {
+  @media (min-width: map.get(v.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}
