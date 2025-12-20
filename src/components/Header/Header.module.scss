@@ -1,0 +1,23 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-m);
+    background-color: var(--color-background-primary);
+}
+
+.navList {
+    display: flex;
+    gap: var(--spacing-m);
+    list-style: none;
+}
+
+.link{
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.link:hover {
+    text-decoration: underline;
+}

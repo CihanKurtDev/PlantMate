@@ -10,14 +10,15 @@ $colors-light: (
   text: (
     primary: #212121,
     secondary: #FAFAFA,
-    tertiary: #BDBDBD,
+    tertiary: #3c3a3a,
     success: #2D651A,
     alert: #735C00,
     error: #961817
   ),
   background: (
-    primary: #EDEDED,
-    secondary: #FFFFFF,
+    primary: #ddf5df,
+    secondary: #b9e1bd,
+    tertiary: #5e8e5a,
     accent: #961817,
     accent-hover: #610f0f,
     error: red,
@@ -70,12 +71,69 @@ $fonts: (
     s: 0.875rem,  // 14px
     m: 1rem,      // 16px
     l: 1.5rem,    // 24px
-    xl: 2rem      // 32px
+    xl: 2.5rem,      
+    xxl: 4rem      
   ),
   weight: (
     regular: 400,
     medium: 500,
     bold: 700
+  )
+);
+
+$buttons-light: (
+  primary: (
+    bg: #2D651A,
+    text: #ffffff,
+    hover: #1F4512
+  ),
+  secondary: (
+    bg: #b9e1bd,
+    text: #212121,
+    hover: #a3d0a3
+  ),
+  success: (
+    bg: #27ae60,
+    text: #ffffff,
+    hover: #1e8449
+  ),
+  alert: (
+    bg: #f6e6b0,
+    text: #212121,
+    hover: #e6d291
+  ),
+  error: (
+    bg: #961817,
+    text: #ffffff,
+    hover: #610f0f
+  )
+);
+
+$buttons-dark: (
+  primary: (
+    bg: #2D651A,
+    text: #ffffff,
+    hover: #1F4512
+  ),
+  secondary: (
+    bg: #5e8e5a,
+    text: #ffffff,
+    hover: #4b7248
+  ),
+  success: (
+    bg: #27ae60,
+    text: #ffffff,
+    hover: #1e8449
+  ),
+  alert: (
+    bg: #d4c572,
+    text: #212121,
+    hover: #bdae53
+  ),
+  error: (
+    bg: #961817,
+    text: #ffffff,
+    hover: #610f0f
   )
 );
 
@@ -86,7 +144,8 @@ $spacings: (
   m: 1rem,
   l: 1.5rem,
   xl: 2rem,
-  2xl: 3rem
+  2xl: 3rem,
+  3xl: 5rem
 );
 
 $radii: (

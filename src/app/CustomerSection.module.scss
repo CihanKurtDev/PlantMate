@@ -1,0 +1,10 @@
+.customerSection {
+  background-color: var(--color-background-secondary);
+
+  .customerListWrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xl);
+    max-width: 1280px;
+  }
+}

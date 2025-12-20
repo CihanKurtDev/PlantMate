@@ -2,39 +2,50 @@
 @use "./variables" as v;
   
 :root {
-    --color-background-primary: #ddd9d9;
-    --color-background-secondary: #acabab;
-    --color-surface-brand-primary: #f68201;
-    --color-text: #FAFAFA;
-    --color-text-primary: #212121;
-    --color-bg-primary: #ededed;
+  --color-background-primary: #ddd9d9;
+  --color-background-secondary: #acabab;
+  --color-surface-brand-primary: #f68201;
+  --color-text: #FAFAFA;
+  --color-text-primary: #212121;
+  --color-bg-primary: #ededed;
 }
 
 body {
-    font-family: sans-serif;
-    background: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    line-height: 1.5;
+  font-family: sans-serif;
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.5;
 }
 
 :root {
-    @each $category, $map in v.$colors-light { 
-        @each $name, $val in $map {--color-#{$category}-#{$name}: #{$val}; }
-    }
+  @each $category, $map in v.$colors-light { 
+    @each $name, $val in $map {--color-#{$category}-#{$name}: #{$val}; }
+  }
 
-    @each $category, $map in v.$fonts {
-        @each $name, $val in $map { --font-#{$category}-#{$name}: #{$val}; }
-    }
+  @each $category, $map in v.$fonts {
+    @each $name, $val in $map { --font-#{$category}-#{$name}: #{$val}; }
 
-    @each $name, $radius in v.$radii { --radius-#{$name}: #{$radius}; }
+  }
 
-    @each $name, $spacing in v.$spacings { --spacing-#{$name}: #{$spacing}; }
+  @each $category, $map in v.$buttons-light {
+    @each $name, $val in $map { --button-#{$category}-#{$name}: #{$val}; }
+  }
+
+  @each $name, $radius in v.$radii { --radius-#{$name}: #{$radius}; }
+
+  @each $name, $spacing in v.$spacings { --spacing-#{$name}: #{$spacing}; }
 }
 
 :root[data-theme="dark"] {
   @each $category, $map in v.$colors-dark {
     @each $name, $val in $map {
       --color-#{$category}-#{$name}: #{$val};
+    }
+  }
+
+  @each $category, $map in v.$buttons-dark {
+    @each $name, $val in $map {
+      --button-#{$category}-#{$name}: #{$val};
     }
   }
 }

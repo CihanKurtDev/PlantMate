@@ -1,0 +1,18 @@
+@use '../styles/mixins' as *;
+
+.featureCard {
+  @include card;
+  background-color: var(--color-background-primary);
+
+  .icon {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+  }
+}

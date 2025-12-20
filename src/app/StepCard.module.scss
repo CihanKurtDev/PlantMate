@@ -1,0 +1,16 @@
+@use '../styles/mixins' as *;
+
+.stepCard {
+  @include card;
+  background-color: var(--color-background-secondary);
+
+  .num {
+    font-size: var(--font-size-xl);
+    background-color: var(--color-background-tertiary);
+    width: 56px;
+    height: 56px;
+    display: inline-block;
+    border-radius: 50%;
+    color: var(--color-text-secondary);
+  }
+}

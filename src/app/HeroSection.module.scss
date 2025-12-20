@@ -1,0 +1,27 @@
+.heroSection {
+    background-color: var(--color-background-primary);
+    
+    .heroText {
+        text-align: center;
+
+        h1 {
+            font-size: var(--font-size-xxl);
+        }
+        
+        > * {
+            margin-bottom: var(--spacing-l);
+        }
+    }
+
+    .buttonLink {
+        text-decoration: none;
+        color: var(--color-text-secondary)
+    }
+
+    .heroBtnWrapper {
+        margin-top: var(--spacing-m);
+        display: flex;
+        gap: var(--spacing-s);
+        justify-content: center;
+    }
+}
