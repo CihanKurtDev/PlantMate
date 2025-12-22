@@ -8,60 +8,61 @@ $breakpoints: (
 //placeholder colors | WIP
 $colors-light: (
   text: (
-    primary: #212121,
+    primary: #1a3d1a,
     secondary: #FAFAFA,
-    tertiary: #3c3a3a,
-    success: #2D651A,
-    alert: #735C00,
-    error: #961817
+    tertiary: #5a6d5a,
+    success: #2d7a3e,
+    alert: #c77d00,
+    error: #b83232
   ),
   background: (
-    primary: #ddf5df,
-    secondary: #b9e1bd,
-    tertiary: #5e8e5a,
-    accent: #961817,
-    accent-hover: #610f0f,
-    error: red,
-    success: green,
-    alert: orange
+    primary: #f4f9f4,
+    secondary: #e8f5e9,
+    tertiary: #2D651A,
+    accent: #ff8c42,
+    accent-hover: #e67a35,
+    error: #ffeaea,
+    success: #e8f5e9,
+    alert: #fff4e6
   ),
   border: (
-    primary: #9a9898,
-    secondary: #ccc
+    primary: #c8d9c8,
+    secondary: #e0e9e0
   ),
   flag: (
-    success: #DDECDC,
-    alert: #F6E6B0,
-    error: #F8DDD8
+    success: #d4edda,
+    alert: #fff3cd,
+    error: #f8d7da
   )
 );
 
 $colors-dark: (
   text: (
-    primary: #FAFAFA,
-    secondary: #212121,
-    tertiary: #BDBDBD,
-    success: #2D651A,
-    alert: #735C00,
-    error: #961817
+    primary: #e8f5e9,
+    secondary: #1a2e1a,
+    tertiary: #a8c5a8,
+    success: #4caf50,
+    alert: #ffb74d,
+    error: #ef5350
   ),
   background: (
-    primary: #212121,
-    secondary: #424242,
-    accent: #f68201,
-    accent-hover: #f68201,
-    error: red,
-    success: green,
-    alert: orange
+    primary: #1a2e1a,
+    secondary: #2d4a2d,
+    tertiary: #3d5a3d,
+    accent: #ff9966,
+    accent-hover: #ff7744,
+    error: #4a1a1a,
+    success: #2d4a2d,
+    alert: #4a3d1a
   ),
   border: (
-    primary: #9a9898,
-    secondary: #ccc
+    primary: #4a6d4a,
+    secondary: #3d5a3d
   ),
   flag: (
-    success: #DDECDC,
-    alert: #F6E6B0,
-    error: #F8DDD8
+    success: #2d4a2d,
+    alert: #4a3d1a,
+    error: #4a1a1a
   )
 );
 
@@ -70,9 +71,10 @@ $fonts: (
     xs: 0.75rem,   // 12px
     s: 0.875rem,  // 14px
     m: 1rem,      // 16px
-    l: 1.5rem,    // 24px
-    xl: 2.5rem,      
-    xxl: 4rem      
+    l: 1.25rem,    // 24px
+    xl: 1.75rem,      
+    xxl: 2rem,      
+    xxxl: 4rem      
   ),
   weight: (
     regular: 400,
@@ -88,7 +90,7 @@ $buttons-light: (
     hover: #1F4512
   ),
   secondary: (
-    bg: #b9e1bd,
+    bg: #d9e7db,
     text: #212121,
     hover: #a3d0a3
   ),

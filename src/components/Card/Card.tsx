@@ -8,20 +8,10 @@ interface CardProps {
 };
 
 
-// Todo: make icon component
-const iconStyles = {
-  width: "56px",
-  height: "56px",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "1.75rem",
-  marginBottom: "1rem",
-}
 
 export const Card = ({ className, icon, children }: CardProps) => (
   <div className={className}>
-    {icon && <div style={iconStyles}>{icon}</div>}
+    {icon && <figure>{icon}</figure>}
     {children}
   </div>
 );

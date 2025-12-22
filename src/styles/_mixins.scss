@@ -23,7 +23,7 @@
 }
 
 @mixin card {
-  padding: var(--spacing-m);
+  padding: var(--spacing-l);
   margin-bottom: var(--spacing-s);
   border-radius: var(--radius-xl);
   text-align: center;
@@ -37,5 +37,9 @@
   &:hover {
     cursor: pointer;
     transform: translateY(-2px);
+  }
+
+  figure {
+    font-size: var(--font-size-xl);
   }
 }

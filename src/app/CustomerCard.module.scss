@@ -12,4 +12,8 @@
     flex-direction: column;
     align-items: baseline;
   }
+
+  li {
+    font-size: var(--font-size-l);
+  }
 }

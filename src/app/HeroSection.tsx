@@ -1,7 +1,7 @@
 import Link from "next/link";
 import styles from "./HeroSection.module.scss";
 import { Section } from "@/components/Section/Section";
-import { Button } from "@/components/Button/Button.module";
+import { Button } from "@/components/Button/Button";
 
 export const HeroSection = () => (
   <Section className={styles.heroSection}>
@@ -11,13 +11,13 @@ export const HeroSection = () => (
         Von Hobbygärtner bis Profi – überwache Temperatur, Luftfeuchtigkeit, pH-Wert und mehr. 
         Erhalte intelligente Warnungen und optimiere dein Pflanzenwachstum.
       </p>
-      <div className={styles.heroBtn}>
+      <div className={styles.heroBtnWrapper}>
         <Button>
           <Link href="/register" className={styles.buttonLink}>
             Jetzt starten
           </Link>
         </Button>
-        <Button>
+        <Button variant="secondary">
           <Link href="/login" className={styles.buttonLink}>
             Login
           </Link>

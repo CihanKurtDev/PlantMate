@@ -11,23 +11,29 @@ export interface Customer {
 
 const customers: Customer[] = [
   { 
-    icon: '🌱', 
-    title: 'Mehrere Environments', 
-    desc: 'Verwalte unbegrenzt viele Räume, Growboxen oder Gewächshäuser. Perfekt für professionelle Grower mit mehreren Standorten.',
-    checkListItems: ["Einfache Bedienung", "Hilfreiche Tipps", "Kostenloser Start"] 
+    icon: '✨', 
+    title: 'Einfacher Start', 
+    desc: 'Starte sofort ohne komplizierte Einrichtung und lerne dein Setup schnell kennen.',
+    checkListItems: ["Schneller Einstieg", "Keine Vorkenntnisse nötig", "Kostenlos testen"] 
   },
   { 
-    icon: '🏆', 
-    title: 'Mehrere Environments', 
-    desc: 'Verwalte unbegrenzt viele Räume, Growboxen oder Gewächshäuser. Perfekt für professionelle Grower mit mehreren Standorten.',
-    checkListItems: ["Unbegrenzte Environments", "Erweiterte Analytik"] 
+    icon: '📈', 
+    title: 'Optimiertes Wachstum', 
+    desc: 'Hole das Beste aus deinen Pflanzen heraus und verbessere kontinuierlich deine Ergebnisse.',
+    checkListItems: ["Bessere Erträge", "Gesündere Pflanzen", "Effiziente Pflege"] 
+  },
+  { 
+    icon: '🤝', 
+    title: 'Stressfreies Monitoring', 
+    desc: 'Behalte alles im Blick und spare Zeit, während deine Pflanzen optimal versorgt werden.',
+    checkListItems: ["Alles auf einen Blick", "Praktische Übersicht", "Sicher & zuverlässig"] 
   },
 ];
 
 export const CustomerSection = () => (
   <Section className={styles.customerSection}>
-    <h2>Alles was du brauchst</h2>
-    <p>Professionelles Monitoring für jeden Grower</p>
+    <h2>Deine Vorteile auf einen Blick</h2>
+    <p>Starte unkompliziert, behalte alles im Blick und hole das Beste aus deinen Pflanzen heraus.</p>
     <div className={styles.customerListWrapper}>
       {customers.map((feature, index) => (
         <CustomerCard key={index} {...feature} />

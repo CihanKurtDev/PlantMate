@@ -1,5 +1,5 @@
 .stepSection {
-  background-color: var(--color-background-primary);
+  background-color: var(--color-background-secondary);
 
   .steps {
     display: grid;
@@ -13,10 +13,6 @@
 
     @media (max-width: 640px) {
       grid-template-columns: 1fr;
-    }
-
-    h3 {
-      font-size: var(--font-size-l);
     }
   }
 }

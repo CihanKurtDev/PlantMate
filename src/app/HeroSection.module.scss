@@ -1,5 +1,5 @@
 .heroSection {
-    background-color: var(--color-background-primary);
+    background-color: var(--color-background-secondary);
     
     .heroText {
         text-align: center;
@@ -14,8 +14,8 @@
     }
 
     .buttonLink {
+        color: inherit;
         text-decoration: none;
-        color: var(--color-text-secondary)
     }
 
     .heroBtnWrapper {

@@ -6,10 +6,12 @@
 
   .num {
     font-size: var(--font-size-xl);
-    background-color: var(--color-background-tertiary);
     width: 56px;
     height: 56px;
-    display: inline-block;
+    background-color: var(--color-background-tertiary);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 50%;
     color: var(--color-text-secondary);
   }

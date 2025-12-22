@@ -1,24 +1,5 @@
 @use '../../styles/mixins' as *;
 
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-s) var(--spacing-l);
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-m);
-  cursor: pointer;
-  transition: background-color 0.2s ease, color 0.2s ease;
-  background: none;
-  border: none;
-
-  &:focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
-  }
-}
-
-
 .primary {
   @include button(primary);
 }
