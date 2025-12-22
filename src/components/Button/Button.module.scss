@@ -1,0 +1,27 @@
+@use '../../styles/mixins' as *;
+
+.primary {
+  @include button(primary);
+}
+
+.secondary {
+  @include button(secondary);
+}
+
+.sm {
+  padding: var(--spacing-xs) var(--spacing-m);
+  font-size: var(--font-size-s);
+}
+
+.md {
+  padding: var(--spacing-s) var(--spacing-l);
+}
+
+.lg {
+  padding: var(--spacing-m) var(--spacing-xl);
+  font-size: var(--font-size-l);
+}
+
+.disabled {
+  pointer-events: none;
+}
