@@ -69,31 +69,26 @@ const LoginForm = () => {
                 id="email"
                 type="email"
                 label="Email"
+                error={validationErrors.email}
+                touched={touched.email}
                 value={form.email}
                 onChange={e => handleChange("email", e.target.value)}
                 onBlur={() => handleBlur("email")}
-                className={touched.email && validationErrors.email ? styles.inputError : ""}
                 disabled={status === "loading"}
                 required
             />
-            {touched.email && validationErrors.email && (
-                <span className={styles.fieldError}>{validationErrors.email}</span>
-            )}
 
             <Input
                 id="password"
-                className={touched.password && validationErrors.password ? styles.inputError : ""}
                 type="password"
                 label="Passwort"
+                error={validationErrors.password}
+                touched={touched.password}
                 value={form.password}
                 onChange={e => handleChange("password", e.target.value)}
                 onBlur={() => handleBlur("password")}
                 required
             />
-
-            {touched.password && validationErrors.password && (
-                <span className={styles.fieldError}>{validationErrors.password}</span>
-            )}
 
             <Checkbox
                 label="Angemeldet bleiben"

@@ -7,7 +7,6 @@
 }
 
 .label {
-    // ✅ Nutze das label-base Mixin
     @include m.label-base;
 }
 
