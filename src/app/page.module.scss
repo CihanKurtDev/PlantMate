@@ -1,18 +1,8 @@
-@use '../styles/mixins' as *;
+@use '../styles/layout' as *;
 
 .page {
-  display: flex;
-  min-height: 100vh;
-  justify-content: center;
-  font-family: var(--font-geist-sans);
-  background-color: var(--color-background-primary); 
-  color: var(--color-text-primary);
-
-  
-  .main {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  @extend .pageContainer; 
+}
+.main { 
+  @extend .mainContent; 
 }

@@ -1,0 +1,23 @@
+@use "@/styles/mixins" as m;
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+}
+
+.label {
+    @include m.label-base;
+}
+
+.input {
+    @include m.input-base;
+}
+
+.inputError {
+    @include m.input-error;
+}
+
+.fieldError {
+    @include m.field-error;
+}

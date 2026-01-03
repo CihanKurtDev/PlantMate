@@ -1,0 +1,48 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+    width: 100%;
+    padding: var(--spacing-m);
+    background-color: var(--color-background-secondary);
+}
+
+.errorMessage {
+    padding: var(--spacing-m);
+    background-color: var(--color-background-error);
+    color: var(--color-text-error);
+    border: 1px solid var(--color-text-error);
+    border-radius: var(--radius-m);
+    font-size: var(--font-size-s);
+    text-align: center;
+    margin: 0;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.actions {
+    margin-top: var(--spacing-m);
+    
+    button {
+        width: 100%;
+        padding: var(--spacing-m) var(--spacing-xl);
+        font-size: var(--font-size-m);
+        font-weight: var(--font-weight-medium);
+        cursor: pointer;
+        transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+
+        &:disabled {
+            cursor: not-allowed;
+        }
+    }
+}
