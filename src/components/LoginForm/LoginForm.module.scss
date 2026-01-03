@@ -30,6 +30,18 @@
     }
 }
 
+.inputError {
+    border-color: var(--color-text-error);
+    background-color: rgba(255, 0, 0, 0.05);
+}
+
+
+.fieldError {
+    color: var(--color-text-error);
+    font-size: var(--font-size-s);
+}
+
+
 .field {
     display: flex;
     flex-direction: column;
@@ -80,11 +92,6 @@
         height: 18px;
         cursor: pointer;
         accent-color: var(--color-background-tertiary);
-    }
-
-    &::after {
-        content: "Angemeldet bleiben";
-        color: var(--color-text-primary);
     }
 }
 

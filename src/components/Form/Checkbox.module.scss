@@ -1,0 +1,16 @@
+@use "@/styles/mixins" as m;
+
+.fieldCheckbox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-s);
+}
+
+.checkboxLabel {
+    @include m.checkbox-label;
+}
+
+.checkboxInput {
+    @include m.checkbox-base;
+}

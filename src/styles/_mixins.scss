@@ -1,4 +1,64 @@
-@use "./variables" as v;
+@mixin input-base {
+  padding: var(--spacing-m);
+  font-size: var(--font-size-m);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-primary);
+  border: 2px solid var(--color-border-primary);
+  border-radius: var(--radius-m);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  
+  &:focus {
+    outline: none;
+    border-color: var(--color-background-tertiary);
+    box-shadow: 0 0 0 3px rgba(45, 101, 26, 0.1);
+  }
+  
+  &::placeholder {
+    color: var(--color-text-tertiary);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@mixin input-error {
+  border-color: var(--color-text-error);
+  background-color: rgba(255, 0, 0, 0.05);
+}
+
+@mixin label-base {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: left;
+  display: block;
+}
+
+@mixin field-error {
+  color: var(--color-text-error);
+  font-size: var(--font-size-s);
+  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+@mixin checkbox-base {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--color-background-tertiary);
+}
+
+@mixin checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  cursor: pointer;
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
 
 @mixin button($variant) {
   background-color: var(--button-#{$variant}-bg);
@@ -13,12 +73,6 @@
   &:disabled {
     opacity: 0.5; 
     cursor: not-allowed;
-  }
-}
-
-@mixin from($breakpoint) {
-  @media (min-width: map.get(v.$breakpoints, $breakpoint)) {
-    @content;
   }
 }
 

@@ -2,96 +2,113 @@
 import { LoginFormData, LoginFormErrors, LoginStatus } from "@/types/auth"
 import { useState } from "react"
 import { Button } from "../Button/Button"
-import styles from './LoginForm.module.scss'
+import styles from "./LoginForm.module.scss"
+import { useLoginValidation } from "@/hooks/useLoginValidation"
+import { useRouter } from "next/navigation"
+import { Input } from "../Form/Input"
+import Checkbox from "../Form/Checkbox"
 
 async function fakeLoginRequest(data: LoginFormData) {
-  await new Promise((r) => setTimeout(r, 800));
-  return data.email === "test@test.com" && data.password === "1234"
-    ? { success: true }
-    : { success: false, error: "Ungültige Zugangsdaten" };
+    await new Promise(r => setTimeout(r, 800))
+    return data.email === "test@test.de" && data.password === "1234"
+        ? { success: true }
+        : { success: false, error: "Ungültige Zugangsdaten" }
 }
-
-/*  TODO: 
-    - add real validation 
-    - complete styles
-    - add real Request
-    - add naviagtion on success
-    - think about styling page.module.scss in LoginPage and App nearly same
-    - cleanup / customHook for validation
-*/
 
 const LoginForm = () => {
     const [form, setForm] = useState<LoginFormData>({
         email: "",
         password: "",
-        rememberMe: false
+        rememberMe: false,
+    })
+    const [status, setStatus] = useState<LoginStatus>("idle")
+    const [error, setError] = useState<string | undefined>()
+    const [touched, setTouched] = useState<{ email: boolean; password: boolean }>({
+        email: false,
+        password: false,
     })
 
-    const [errors, setErrors] = useState<LoginFormErrors>({})
-    const [status, setStatus] = useState<LoginStatus>("idle")
+    const { validate } = useLoginValidation()
+    const router = useRouter()
+    const validationErrors = validate(form)
+    const hasInvalidValues = Object.values(validationErrors).some(Boolean)
+    const isDisabled = status === "loading" || hasInvalidValues
 
-    const validate = (): boolean => {
-        const newErrors: LoginFormErrors = {}
-        if(!form.email) newErrors.email = "Email erforderlich"
-        if(!form.password) newErrors.password = "Passwort erforderlich"
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
+    const handleBlur = (field: "email" | "password") => {
+        setTouched(prev => ({ ...prev, [field]: true }))
     }
 
-    const handleSubmit = async(e: React.FormEvent) => {
-        e.preventDefault();
-        if(!validate()) return
-        setStatus("loading");
+    const handleChange = (field: "email" | "password", value: string) => {
+        setForm(prev => ({ ...prev, [field]: value }))
+    }
 
-        // TODO: add real request
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setTouched({ email: true, password: true })
+        setError(undefined)
+        if (hasInvalidValues) return
+        setStatus("loading")
         const res = await fakeLoginRequest(form)
-        if(res.success) {
-            setStatus("success")
-            return
-        } else {
+
+        if (!res.success) {
             setStatus("error")
-            setErrors({ general: res.error ?? "Login fehlgeschlagen" })
+            setError(res.error ?? "Login fehlgeschlagen")
             return
         }
+
+        setStatus("success")
+        router.push("/dashboard")
     }
 
-    return(
+
+    return (
         <form className={styles.form} onSubmit={handleSubmit}>
-            {errors.general && <p className={styles.errorMessage}>{errors.general}</p>}
-            <div className={styles.field}>
-                <label htmlFor="email">Email</label>
-                <input
-                    id="email"
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm({...form, email: e.target.value})}
-                    required
-                />
-            </div>
-            <div className={styles.field}>
-                <label htmlFor="password">Passwort</label>
-                <input
-                    id="password"
-                    type="password"
-                    value={form.password}
-                    onChange={(e) => setForm({...form, password: e.target.value})}
-                    required
-                />
-            </div>
-            <div className={styles.field}>
-                <label className={styles.checkbox}>
-                    <input
-                        type="checkbox"
-                        checked={form.rememberMe}
-                        onChange={(e) => setForm({...form, rememberMe: e.target.checked})}
-                    />
-                </label>
-            </div>
+            {error && <p className={styles.errorMessage}>{error}</p>}
+            <Input
+                id="email"
+                type="email"
+                label="Email"
+                value={form.email}
+                onChange={e => handleChange("email", e.target.value)}
+                onBlur={() => handleBlur("email")}
+                className={touched.email && validationErrors.email ? styles.inputError : ""}
+                disabled={status === "loading"}
+                required
+            />
+            {touched.email && validationErrors.email && (
+                <span className={styles.fieldError}>{validationErrors.email}</span>
+            )}
+
+            <Input
+                id="password"
+                className={touched.password && validationErrors.password ? styles.inputError : ""}
+                type="password"
+                label="Passwort"
+                value={form.password}
+                onChange={e => handleChange("password", e.target.value)}
+                onBlur={() => handleBlur("password")}
+                required
+            />
+
+            {touched.password && validationErrors.password && (
+                <span className={styles.fieldError}>{validationErrors.password}</span>
+            )}
+
+            <Checkbox
+                label="Angemeldet bleiben"
+                checked={form.rememberMe}
+                onChange={checked => setForm(prev => ({ ...prev, rememberMe: checked }))}
+                disabled={status === "loading"}
+            />
+
             <div className={styles.actions}>
-                <Button disabled={status === "loading"}>
+                <Button disabled={isDisabled}>
                     {status === "loading" ? "Logge ein..." : "Login"}
                 </Button>
             </div>
+
+            <p>test@test.de, 1234</p>
         </form>
     )
 }
