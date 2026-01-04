@@ -1,11 +1,11 @@
 "use client"
 import { EnvironmentData } from "@/types/environment";
-import EnvironmentTypeIcon from "./EnvironmentTypeIcon";
 import { Sprout } from "lucide-react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from "./EnvironmentCard.module.scss"
-import ClimateGrid from "./ClimateGrid";
+import ClimateGrid from "@/components/climate/ClimateGrid";
 import { useRouter } from "next/navigation";
+import EnvironmentTypeIcon from "./EnvironmentTypeIcon";
 
 const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
     const { getPlantsByEnvironment } = usePlantMonitor();
@@ -16,7 +16,7 @@ const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
     return (
         <div
             className={styles.card}
-            onClick={() => router.push(`/dashboard/${environment.id}`)}
+            onClick={() => router.push(`/${environment.id}`)}
         >
             <div>
                 <div className={styles.header}>

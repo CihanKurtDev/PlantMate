@@ -1,6 +1,6 @@
 "use client"
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import EnvironmentCard from "./EnvironmentCard";
+import EnvironmentCard from "./components/EnvironmentCard";
 import styles from "./Dashboard.module.scss"
 
 const Dashboard = () => {

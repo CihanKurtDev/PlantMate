@@ -1,4 +1,4 @@
-import LoginForm from '@/components/LoginForm/LoginForm'
+import LoginForm from './components/LoginForm'
 import styles from './page.module.scss'
 const LoginPage = () => (
     <div className={styles.page}>

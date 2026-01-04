@@ -1,7 +1,7 @@
 import { Atom, Droplets, Thermometer, Wind } from "lucide-react";
-import ClimateMetric from "./ClimaMetric";
 import { EnvironmentData } from "@/types/environment";
 import styles from './ClimateGrid.module.scss'
+import ClimateMetric from "./ClimaMetric";
 
 interface ClimateGridProps {
     climate?: EnvironmentData["climate"];
