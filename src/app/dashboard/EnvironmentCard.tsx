@@ -5,16 +5,18 @@ import { Sprout } from "lucide-react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from "./EnvironmentCard.module.scss"
 import ClimateGrid from "./ClimateGrid";
+import { useRouter } from "next/navigation";
 
 const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
-    const { getPlantsByEnvironment, setSelectedEnvironment } = usePlantMonitor();
+    const { getPlantsByEnvironment } = usePlantMonitor();
     const plantCount = getPlantsByEnvironment(environment.id).length;
     const climate = environment.climate;
+    const router = useRouter()
 
     return (
         <div
             className={styles.card}
-            onClick={() => setSelectedEnvironment(environment.id)}
+            onClick={() => router.push(`/dashboard/${environment.id}`)}
         >
             <div>
                 <div className={styles.header}>

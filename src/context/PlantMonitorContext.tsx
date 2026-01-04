@@ -8,15 +8,12 @@ import environments from '@/data/mock/environments'
 interface PlantMonitorContextType {
     environments: EnvironmentData[];
     plants: PlantData[];
-    selectedEnvironment: string | null;
-    setSelectedEnvironment: (id: string | null) => void;
     getPlantsByEnvironment: (envId: string) => PlantData[];
 }
 
 const PlantMonitorContext = createContext<PlantMonitorContextType | undefined>(undefined);
 
 const PlantMonitorProvider = ({ children }: { children: React.ReactNode }) => {
-    const [selectedEnvironment, setSelectedEnvironment] = useState<string | null>(null);
 
     const getPlantsByEnvironment = (envId: string) => {
         return plants.filter(plant => plant.environmentId === envId);
@@ -27,8 +24,6 @@ const PlantMonitorProvider = ({ children }: { children: React.ReactNode }) => {
             value={{
                 environments,
                 plants,
-                selectedEnvironment,
-                setSelectedEnvironment,
                 getPlantsByEnvironment,
             }}
         >

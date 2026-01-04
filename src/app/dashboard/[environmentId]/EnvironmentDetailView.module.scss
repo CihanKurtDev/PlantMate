@@ -3,27 +3,9 @@
     background-color: var(--color-background-primary);
 }
 
-.backButton {
-    margin-bottom: var(--spacing-l);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    color: var(--color-text-secondary);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: var(--font-size-m);
-    transition: color .2s;
-
-    &:hover {
-        color: var(--color-text-primary);
-    }
-
-    svg {
-        width: 1.25rem;
-        height: 1.25rem;
-        transform: rotate(180deg);
-    }
+.arrow{
+    transform: rotate(180deg);
+    margin-right: var(--spacing-l);
 }
 
 .environmentHeader {

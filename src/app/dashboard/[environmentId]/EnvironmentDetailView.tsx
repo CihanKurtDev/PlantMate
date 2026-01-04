@@ -1,28 +1,31 @@
+"use client";
 import { ArrowRight, Sprout } from "lucide-react";
-import EnvironmentTypeIcon from "./EnvironmentTypeIcon";
-import PlantCard from "./PlantCard";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from './EnvironmentDetailView.module.scss' 
 import { Button } from "@/components/Button/Button";
-import ClimateGrid from "./ClimateGrid";
+import ClimateGrid from "../ClimateGrid";
+import PlantCard from "../PlantCard";
+import EnvironmentTypeIcon from "../EnvironmentTypeIcon";
+import { useRouter } from "next/navigation";
 
 const EnvironmentDetailView = ({ environmentId }: { environmentId: string })  => {
-    const { environments, getPlantsByEnvironment, setSelectedEnvironment } = usePlantMonitor();
+    const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
     const plants = getPlantsByEnvironment(environmentId);
+    const router = useRouter()
 
     if (!environment) return null;
 
     return (
         <div className={styles.container}>
+            <Button
+                size="fill"
+                onClick={() => router.push("/dashboard")}
+            >
+                <ArrowRight className={styles.arrow}/>
+                Zurück zur Übersicht
+            </Button>
             <div className={styles.content}>
-                <Button
-                    onClick={() => setSelectedEnvironment(null)}
-                >
-                    <ArrowRight />
-                    Zurück zur Übersicht
-                </Button>
-
                 <div  className={styles.environmentHeader}>
                     <div className={styles.environmentInfo}>
                         <EnvironmentTypeIcon type={environment.type} />
