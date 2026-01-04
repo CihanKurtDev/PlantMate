@@ -21,6 +21,11 @@
     padding: var(--spacing-m);
 }
 
+.dashboardMainContent {
+    @extend .mainContent;
+    align-items: unset;
+}
+
 .authMainContent {
     width: 100%;
     max-width: 500px;

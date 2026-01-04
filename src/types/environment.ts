@@ -2,7 +2,7 @@ import type { MeasuredValue } from "./plant";
 
 type PercentUnit = '%';
 type KPaUnit = 'kPa';
-type EnvironmentType = 'ROOM' | 'TENT' | 'GREENHOUSE';
+export type EnvironmentType = 'ROOM' | 'TENT' | 'GREENHOUSE';
 type TempUnit = '°C' | 'F';
 
 export interface EnvironmentData {

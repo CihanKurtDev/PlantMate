@@ -1,0 +1,8 @@
+@use '../../styles/layout' as *;
+
+.page {
+  @extend .pageContainer; 
+}
+.main { 
+  @extend .mainContent; 
+}
