@@ -3,10 +3,10 @@ import { ArrowRight, Sprout } from "lucide-react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from './EnvironmentDetailView.module.scss' 
 import { Button } from "@/components/Button/Button";
-import PlantCard from "../dashboard/components/PlantCard";
 import EnvironmentTypeIcon from "@/app/dashboard/components/EnvironmentTypeIcon";
 import { useRouter } from "next/navigation";
 import ClimateGrid from "@/components/climate/ClimateGrid";
+import PlantCard from "@/app/dashboard/components/PlantCard";
 
 const EnvironmentDetailView = ({ environmentId }: { environmentId: string })  => {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();

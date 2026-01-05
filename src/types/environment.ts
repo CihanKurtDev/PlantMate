@@ -1,15 +1,15 @@
 import type { MeasuredValue } from "./plant";
 
-type PercentUnit = '%';
-type KPaUnit = 'kPa';
+export type PercentUnit = '%';
+export type KPaUnit = 'kPa';
 export type EnvironmentType = 'ROOM' | 'TENT' | 'GREENHOUSE';
-type TempUnit = '°C' | 'F';
+export type TempUnit = '°C' | 'F';
 
 export interface EnvironmentData {
   id: string;
   name: string;
   type: EnvironmentType;
-  location?: string;        // optional: z. B. "Keller", "Wohnzimmer"
+  location?: string;
 
   climate?: {
     temp?: MeasuredValue<TempUnit>;

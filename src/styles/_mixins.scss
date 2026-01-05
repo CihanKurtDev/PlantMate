@@ -38,8 +38,11 @@
 
 @mixin field-error {
   color: var(--color-text-error);
-  font-size: var(--font-size-s);
-  margin-top: var(--spacing-xs);
+  display: block;
+}
+
+@mixin field-warning {
+  color: var(--color-text-alert);
   display: block;
 }
 

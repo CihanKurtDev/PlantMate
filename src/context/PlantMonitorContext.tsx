@@ -1,43 +1,53 @@
 "use client"
-import { EnvironmentData } from "@/types/environment";
-import { PlantData } from "@/types/plant";
-import { createContext, useContext, useState } from "react";
-import plants from '@/data/mock/plants'
-import environments from '@/data/mock/environments'
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
+import type { EnvironmentData } from "@/types/environment";
+import type { PlantData } from "@/types/plant";
 
 interface PlantMonitorContextType {
     environments: EnvironmentData[];
     plants: PlantData[];
+    addEnvironment: (env: EnvironmentData) => void;
     getPlantsByEnvironment: (envId: string) => PlantData[];
 }
 
 const PlantMonitorContext = createContext<PlantMonitorContextType | undefined>(undefined);
 
-const PlantMonitorProvider = ({ children }: { children: React.ReactNode }) => {
+export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
+    const [environments, setEnvironments] = useState<EnvironmentData[]>([]);
+    const [plants, setPlants] = useState<PlantData[]>([]);
+
+    useEffect(() => {
+        const storedEnvs = localStorage.getItem("environments");
+        if (storedEnvs) {
+            try {
+                setEnvironments(JSON.parse(storedEnvs));
+            } catch (e) {
+                console.error("Fehler beim Laden der Environments aus localStorage", e);
+            }
+        }
+    }, []);
+
+    const addEnvironment = (env: EnvironmentData) => {
+        setEnvironments(prev => {
+            const updated = [...prev, env];
+            localStorage.setItem("environments", JSON.stringify(updated));
+            return updated;
+        });
+    };
 
     const getPlantsByEnvironment = (envId: string) => {
         return plants.filter(plant => plant.environmentId === envId);
     };
 
     return (
-        <PlantMonitorContext.Provider
-            value={{
-                environments,
-                plants,
-                getPlantsByEnvironment,
-            }}
-        >
+        <PlantMonitorContext.Provider value={{ environments, plants, addEnvironment, getPlantsByEnvironment }}>
             {children}
         </PlantMonitorContext.Provider>
     );
-}
+};
 
 export const usePlantMonitor = () => {
     const context = useContext(PlantMonitorContext);
-    if (!context) {
-        throw new Error('usePlantMonitor must be used within PlantMonitorProvider');
-    }
+    if (!context) throw new Error("usePlantMonitor must be used within PlantMonitorProvider");
     return context;
-}
-
-export default PlantMonitorProvider
+};

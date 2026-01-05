@@ -8,6 +8,36 @@
   @include button(secondary);
 }
 
+.floating {
+  @include button(primary);
+
+  position: fixed;
+  bottom: var(--spacing-l);
+  right: var(--spacing-l);
+  border-radius: 50%;
+  padding: var(--spacing-s);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+
+
+  @media (max-width: 768px) {
+    width: 64px;
+    height: 64px;
+  }
+
+  svg {
+    width: 24px !important;
+    height: 24px !important;
+  }
+}
+
+.round {
+  padding: var(--spacing-s);
+}
+
 .sm {
   padding: var(--spacing-xs) var(--spacing-m);
   font-size: var(--font-size-s);
