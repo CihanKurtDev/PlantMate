@@ -1,0 +1,37 @@
+.iconWrapper {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-m);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.tent {
+        background-color: var(--color-flag-alert);
+    }
+
+    &.room {
+        background-color: var(--color-background-accent);
+    }
+
+    &.greenhouse {
+        background-color: var(--color-flag-success);
+    }
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+
+    &.tent {
+        color: var(--color-text-alert);
+    }
+
+    &.room {
+        color: var(--color-text-secondary);
+    }
+
+    &.greenhouse {
+        color: var(--color-text-success);
+    }
+}

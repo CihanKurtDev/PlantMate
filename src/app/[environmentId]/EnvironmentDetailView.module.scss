@@ -1,0 +1,71 @@
+.container {
+    min-height: 100vh;
+    background-color: var(--color-background-primary);
+}
+
+.arrow{
+    transform: rotate(180deg);
+    margin-right: var(--spacing-l);
+}
+
+.environmentHeader {
+    border-radius: var(--radius-l);
+    border: 1px solid var(--color-border-secondary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+    padding: var(--spacing-xl);
+    margin-bottom: var(--spacing-l);
+}
+
+.environmentInfo {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-m);
+    margin-bottom: var(--spacing-l);
+}
+
+.environmentTitle {
+    h1 {
+        font-size: var(--font-size-xxl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+        margin: 0 0 var(--spacing-xs) 0;
+    }
+
+    p {
+        color: var(--color-text-tertiary);
+        margin: 0;
+    }
+}
+
+.plantsSection h2 {
+    font-size: var(--font-size-l);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-m) 0;
+}
+
+.plantsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--spacing-m);
+}
+
+.emptyState {
+    background-color: var(--color-background-secondary);
+    border-radius: var(--radius-m);
+    border: 2px dashed var(--color-border-primary);
+    padding: var(--spacing-3xl);
+    text-align: center;
+
+    svg {
+        width: 3rem;
+        height: 3rem;
+        color: var(--color-text-tertiary);
+        margin: 0 auto var(--spacing-s);
+    }
+
+    p {
+        color: var(--color-text-tertiary);
+        margin: 0;
+    }
+}

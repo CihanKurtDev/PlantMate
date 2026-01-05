@@ -1,0 +1,33 @@
+.metric {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+    font-size: var(--font-size-s);
+    border: 1px solid rgb(231, 229, 228);
+    border-radius: var(--radius-m);
+    text-align: center;
+    
+    .iconWrapper {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    svg {
+        width: var(--font-size-m);
+        height: var(--font-size-m);
+        color: inherit;
+    }
+}
+
+.content {
+    flex: 1 1 0%;
+}
+
+.label {
+    font-size: var(--font-size-xs);
+    color: inherit;
+}

@@ -1,12 +1,12 @@
 "use client"
 import { LoginFormData, LoginFormErrors, LoginStatus } from "@/types/auth"
 import { useState } from "react"
-import { Button } from "../Button/Button"
 import styles from "./LoginForm.module.scss"
 import { useLoginValidation } from "@/hooks/useLoginValidation"
 import { useRouter } from "next/navigation"
-import { Input } from "../Form/Input"
-import Checkbox from "../Form/Checkbox"
+import { Input } from "@/components/Form/Input"
+import Checkbox from "@/components/Form/Checkbox"
+import { Button } from "@/components/Button/Button"
 
 async function fakeLoginRequest(data: LoginFormData) {
     await new Promise(r => setTimeout(r, 800))

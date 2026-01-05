@@ -1,0 +1,73 @@
+@use "../../../styles/mixins" as m;
+
+.card {
+    @include m.card;
+}
+
+.content {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-s);
+    margin-bottom: 0;
+}
+
+.iconWrapper {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-circle);
+    background-color: var(--color-flag-success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        color: var(--color-text-success);
+    }
+}
+
+.info {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.species {
+    font-size: var(--font-size-s);
+    color: var(--color-text-tertiary);
+    font-style: italic;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.waterValues {
+    display: flex;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-xs);
+}
+
+.badge {
+    font-size: var(--font-size-s);
+    padding: var(--spacing-xs) var(--spacing-s);
+    border-radius: var(--radius-s);
+
+    &.ph {
+        color: var(--color-text-primary);
+    }
+
+    &.ec {
+        color: var(--color-text-alert);
+    }
+}
