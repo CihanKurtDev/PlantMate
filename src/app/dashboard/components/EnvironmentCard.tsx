@@ -16,7 +16,7 @@ const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
     return (
         <div
             className={styles.card}
-            onClick={() => router.push(`/${environment.id}`)}
+            onClick={() => router.push(`environments/${environment.id}`)}
         >
             <div>
                 <div className={styles.header}>

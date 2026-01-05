@@ -1,8 +1,10 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './Button.module.scss';
 
-type ButtonVariant = 'primary' | 'secondary' | 'success' | 'alert' | "error";
-type ButtonSize = 'sm' | 'md' | 'lg'| 'fill';
+// TODO: refactore this whole size variant stuff its stupid the way it is right now
+
+type ButtonVariant = 'primary' | 'secondary' | 'success' | 'alert' | "error" | "floating";
+type ButtonSize = 'sm' | 'md' | 'lg'| 'fill' | "round";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
