@@ -7,6 +7,7 @@ interface PlantMonitorContextType {
     environments: EnvironmentData[];
     plants: PlantData[];
     addEnvironment: (env: EnvironmentData) => void;
+    addPlant: (plant: PlantData) => void;
     getPlantsByEnvironment: (envId: string) => PlantData[];
 }
 
@@ -25,6 +26,15 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Fehler beim Laden der Environments aus localStorage", e);
             }
         }
+
+        const storedPlants = localStorage.getItem("plants");
+        if (storedPlants) {
+            try {
+                setPlants(JSON.parse(storedPlants));
+            } catch (e) {
+                console.error("Fehler beim Laden der Plants aus localStorage", e);
+            }
+        }
     }, []);
 
     const addEnvironment = (env: EnvironmentData) => {
@@ -35,12 +45,20 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
+    const addPlant = (plant: PlantData) => {
+        setPlants(prev => {
+            const updated = [...prev, plant];
+            localStorage.setItem("plants", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
     const getPlantsByEnvironment = (envId: string) => {
         return plants.filter(plant => plant.environmentId === envId);
     };
 
     return (
-        <PlantMonitorContext.Provider value={{ environments, plants, addEnvironment, getPlantsByEnvironment }}>
+        <PlantMonitorContext.Provider value={{ environments, plants, addEnvironment, getPlantsByEnvironment, addPlant }}>
             {children}
         </PlantMonitorContext.Provider>
     );
