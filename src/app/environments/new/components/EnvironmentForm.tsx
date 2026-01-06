@@ -13,9 +13,10 @@ import { Select } from "@/components/Form/Select";
 
 interface EnvironmentFormProps {
     initialData?: EnvironmentData;
+    onSaved?: (id: string, nextStep: "plant" | "dashboard") => void;
 }
 
-export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
+export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) => {
     const { addEnvironment } = usePlantMonitor();
     const { validate, validateWarnings } = useEnvironmentValidation();
     const router = useRouter();
@@ -45,7 +46,7 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
         setTouched(prev => ({ ...prev, [field]: true }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
         setTouched({
             name: true,
@@ -75,6 +76,10 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
 
         addEnvironment(formData);
 
+        if (onSaved) {
+            onSaved(formData.id, nextStep);
+        }
+
         setName("");
         setType("ROOM");
         setLocation("");
@@ -93,7 +98,6 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
             vpd: false,
         });
 
-        router.push("/dashboard");
     };
 
     const handleNumberChange = (setter: React.Dispatch<React.SetStateAction<number | undefined>>, field: keyof typeof touched) =>
@@ -122,7 +126,7 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
     const getTempRange = () => tempUnit === "°C" ? { min: 0, max: 40 } : { min: 32, max: 104 };
 
     return (
-        <Form onSubmit={handleSubmit}>
+        <Form onSubmit={ () => handleSubmit}>
             <Input
                 label="Name"
                 value={name}
@@ -229,10 +233,14 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
                 warning={validationWarnings.climate?.vpd}
                 touched={touched.vpd}
             />
-
-            <Button type="submit" variant="primary">
-                Speichern
-            </Button>
+            <div className={styles.buttonRow}>
+                <Button type="button" variant="primary" onClick={(e) => handleSubmit(e, "plant")}>
+                    Weiter zu Pflanzen
+                </Button>
+                <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, "dashboard")}>
+                    Zum Dashboard
+                </Button>
+            </div>
         </Form>
     );
 };
