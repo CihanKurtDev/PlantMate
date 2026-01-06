@@ -1,5 +1,5 @@
-type ECUnit = 'mS/cm';
-type PHUnit = 'pH';
+export type ECUnit = 'mS/cm';
+export type PHUnit = 'pH';
 
 export interface MeasuredValue<Unit extends string> {
   value: number;
