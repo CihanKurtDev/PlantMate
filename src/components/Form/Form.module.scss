@@ -1,0 +1,30 @@
+@use '../../styles/mixins' as m;
+.form {
+    background-color: var(--color-background-secondary);
+    padding: var(--spacing-l);
+    border-radius: var(--radius-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.label {
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-primary);
+}
+
+.sectionTitle {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-l);
+    margin-top: var(--spacing-l);
+    margin-bottom: var(--spacing-m);
+}

@@ -8,6 +8,8 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 import styles from "./EnvironmentForm.module.scss";
 import { useRouter } from "next/navigation";
+import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
+import { Select } from "@/components/Form/Select";
 
 interface EnvironmentFormProps {
     initialData?: EnvironmentData;
@@ -120,7 +122,7 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
     const getTempRange = () => tempUnit === "°C" ? { min: 0, max: 40 } : { min: 32, max: 104 };
 
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit}>
             <Input
                 label="Name"
                 value={name}
@@ -131,20 +133,20 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
                 required
             />
 
-            <div className={styles.field}>
-                <label className={styles.label}>Typ</label>
-                <select
+            <FormField>
+                <Select
+                    label="Typ"
                     value={type}
                     onChange={(e) => setType(e.target.value as EnvironmentType)}
                     onBlur={() => handleBlur("type")}
-                    className={styles.select}
+                    touched={touched.type}
+                    error={validationErrors.type}
                 >
                     <option value="ROOM">Room</option>
                     <option value="TENT">Tent</option>
                     <option value="GREENHOUSE">Greenhouse</option>
-                </select>
-                {touched.type && validationErrors.type && <span className={styles.fieldError}>{validationErrors.type}</span>}
-            </div>
+                </Select>
+            </FormField>
 
             <Input
                 label="Location"
@@ -156,7 +158,7 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
                 placeholder="z.B. Keller, Wohnzimmer"
             />
 
-            <h3 className={styles.sectionTitle}>Klimadaten</h3>
+            <FormSectionTitle>Klimadaten</FormSectionTitle>
 
             <div className={styles.row}>
                 <Input
@@ -172,14 +174,15 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
                     warning={validationWarnings.climate?.temp}
                     touched={touched.temp}
                 />
-                <select
+                <Select
                     value={tempUnit}
                     onChange={(e) => setTempUnit(e.target.value as TempUnit)}
+                    touched={true}
                     className={styles.unitSelect}
                 >
                     <option value="°C">°C</option>
                     <option value="F">F</option>
-                </select>
+                </Select>
             </div>
 
             <Input
@@ -230,6 +233,6 @@ export const EnvironmentForm = ({ initialData }: EnvironmentFormProps) => {
             <Button type="submit" variant="primary">
                 Speichern
             </Button>
-        </form>
+        </Form>
     );
 };

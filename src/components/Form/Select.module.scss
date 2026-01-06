@@ -1,0 +1,18 @@
+@use '../../styles/mixins' as m;
+
+.label {
+    @include m.label-base;
+    margin-bottom: var(--spacing-xs);
+}
+
+.select {
+    @include m.select;
+}
+
+.error {
+    @include m.field-error;
+}
+
+.warning {
+    @include m.field-warning;
+}

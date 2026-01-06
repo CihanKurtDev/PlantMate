@@ -99,3 +99,12 @@
     font-size: var(--font-size-xl);
   }
 }
+
+@mixin select {
+  padding: var(--spacing-m);
+  border-radius: var(--radius-m);
+  border: 2px solid var(--color-border-primary);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  width: 100%;
+}

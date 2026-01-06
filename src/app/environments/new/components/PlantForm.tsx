@@ -5,9 +5,10 @@ import type { ECUnit, PHUnit, PlantData } from "@/types/plant";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import styles from "./EnvironmentForm.module.scss";
 import { useRouter } from "next/navigation";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
+import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
+import { Select } from "@/components/Form/Select";
 
 interface PlantFormProps {
     initialData?: PlantData;
@@ -101,7 +102,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
     const validationWarnings = validateWarnings(formData);
 
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <Form onSubmit={handleSubmit}>
             <Input
                 label="Name"
                 value={title}
@@ -122,13 +123,14 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 placeholder="z.B. Solanum lycopersicum"
             />
 
-            <div className={styles.field}>
-                <label className={styles.label}>Environment</label>
-                <select
+            <FormField>
+                <Select
+                    label="Environment"
                     value={environmentId}
                     onChange={(e) => setEnvironmentId(e.target.value)}
                     onBlur={() => handleBlur("environmentId")}
-                    className={styles.select}
+                    touched={touched.environmentId}
+                    error={validationErrors.environmentId}
                 >
                     <option value="">Bitte wählen...</option>
                     {environments.map(env => (
@@ -136,13 +138,10 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                             {env.name}
                         </option>
                     ))}
-                </select>
-                {touched.environmentId && validationErrors.environmentId && (
-                    <span className={styles.fieldError}>{validationErrors.environmentId}</span>
-                )}
-            </div>
+                </Select>
+            </FormField>
 
-            <h3 className={styles.sectionTitle}>Wasserwerte</h3>
+            <FormSectionTitle>Wasserwerte</FormSectionTitle>
 
             <Input
                 label="pH-Wert"
@@ -151,7 +150,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 onBlur={() => handleBlur("ph")}
                 suffix="pH"
                 type="number"
-                step={0.01}
+                step={0.1}
                 min={0}
                 max={14}
                 error={validationErrors.water?.ph}
@@ -166,7 +165,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 onBlur={() => handleBlur("ec")}
                 suffix="mS/cm"
                 type="number"
-                step={0.01}
+                step={0.1}
                 min={0}
                 max={10}
                 error={validationErrors.water?.ec}
@@ -177,6 +176,6 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
             <Button type="submit" variant="primary">
                 Speichern
             </Button>
-        </form>
+        </Form>
     );
 };
