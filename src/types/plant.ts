@@ -6,14 +6,62 @@ export interface MeasuredValue<Unit extends string> {
   unit: Unit;
 }
 
+interface WaterData { 
+  ph?: MeasuredValue<PHUnit>; 
+  ec?: MeasuredValue<ECUnit> 
+}
+
 export interface PlantData {
   id: string;
   title: string;
   species: string;
   environmentId: string;
+  water?: WaterData;
+}
 
-  water?: { 
-    ph?: MeasuredValue<PHUnit>; 
-    ec?: MeasuredValue<ECUnit> 
+export interface PlantData_Historical {
+  id: string;
+  plantId: string;
+  timestamp: number;
+  water?: WaterData
+  height?: MeasuredValue<'cm'>;
+  notes?: string;
+}
+
+export type PlantEventType = 
+  'WATERING' 
+  | 'REPOTTING' 
+  | 'PEST_CONTROL'
+  | 'FERTILIZING'
+  | 'PRUNING';
+
+export interface PlantEvent {
+  id: string;
+  plantId: string;
+  timestamp: number;
+  type: PlantEventType;
+  notes?: string;
+
+  watering?: {
+    amount: MeasuredValue<'ml' | 'L'>;
+    nutrients?: {
+      ec?: MeasuredValue<ECUnit>;
+      ph?: MeasuredValue<PHUnit>;
+    };
+  }
+  repotting?: {
+    oldPotSize?: MeasuredValue<'L'>;
+    newPotSize: MeasuredValue<'L'>;
+    substrate?: string;
+  };
+  
+  pestControl?: {
+    pest: string;
+    treatment: string;
+  };
+  
+  fertilizing?: {
+    fertilizer: string;
+    amount?: MeasuredValue<'ml' | 'g'>;
   };
 }
