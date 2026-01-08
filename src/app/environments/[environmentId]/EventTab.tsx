@@ -63,18 +63,16 @@ export default function EventsTab({ events }: EventsTabProps) {
                             {formatTime(event.timestamp)}
                         </span>
                 </div>
-                {event.notes && (
-                    <p className={styles.eventNotes}>{event.notes}</p>
-                )}
+                <p className={styles.eventNotes}>{event.notes ? event.notes : ""}</p>
             </article>
         </li>
     )
 
     const EventGroup = ({ date, events }: { date: string; events: EnvironmentEvent[] }) => (
         <div key={date}>
-            <div className={styles.dateHeader}>
+            <header className={styles.dateHeader}>
                 <h4>{formatDate(new Date(date).getTime())}</h4>
-            </div>
+            </header>
             <ol  className={styles.timelineList}>
                 {events.map(event => (
                     <EventItem key={event.id} event={event} />
@@ -85,9 +83,11 @@ export default function EventsTab({ events }: EventsTabProps) {
 
     return (
         <TabContent id="events" title="Ereignisse">
-            {groups.map(([date, events]) => (
-                <EventGroup key={date} date={date} events={events} /> 
-            ))}
+            <div className={styles.eventsGrid}>
+                {groups.map(([date, events]) => (
+                    <EventGroup key={date} date={date} events={events} /> 
+                ))}
+            </div>
         </TabContent>
     );
 }

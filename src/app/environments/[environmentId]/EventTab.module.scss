@@ -58,6 +58,7 @@
 .eventNotes {
     font-size: var(--font-size-s);
     margin-top: var(--spacing-xs);
+    height: 25px;
 }
 
 .badge {
@@ -99,4 +100,21 @@
     background: #e8f5e9;
     color: #1b5e20;
     border-color: #a5d6a7;
+}
+
+.eventsGrid {
+    @media (min-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+  
+    @media (min-width: 1200px) {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    @media (min-width: 1600px) {
+        grid-template-columns: repeat(4, 1fr);    gap: 2rem;
+    }
 }
