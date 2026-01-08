@@ -1,0 +1,19 @@
+.emptyState {
+    background-color: var(--color-background-secondary);
+    border-radius: var(--radius-m);
+    border: 2px dashed var(--color-border-primary);
+    padding: var(--spacing-2xl);
+    text-align: center;
+
+    svg {
+        width: 3rem;
+        height: 3rem;
+        color: var(--color-text-tertiary);
+        margin: 0 auto var(--spacing-s);
+    }
+
+    p {
+        color: var(--color-text-tertiary);
+        margin: 0;
+    }
+}

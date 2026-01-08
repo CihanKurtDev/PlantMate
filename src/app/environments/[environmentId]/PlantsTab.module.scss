@@ -1,0 +1,14 @@
+.card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-m);
+    border: 1px solid var(--color-border-secondary);
+    border-radius: var(--radius-m);
+    background: var(--color-background-primary);
+    cursor: pointer;
+}
+
+.icon { 
+    margin-left: var(--spacing-m); 
+}

@@ -17,18 +17,3 @@
     @include m.select;
     width: 80px;
 }
-
-.buttonRow {
-    display: flex;
-    gap: var(--spacing-s);
-
-    button {
-        width: 100%;
-    }
-}
-
-@media (max-width: 768px) {
-    .buttonRow {
-        flex-direction: column;
-    }
-}

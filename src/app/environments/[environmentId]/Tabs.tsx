@@ -22,7 +22,7 @@ export default function Tabs({ activeTab, setActiveTab, plantsCount }: TabProps)
             {tabs.map(t => (
                 <Button
                     key={t.id}
-                    variant={activeTab === t.id ? 'success' : 'secondary'}
+                    variant={activeTab === t.id ? 'primary' : 'secondary'}
                     size="md"
                     onClick={() => setActiveTab(t.id)}
                 >
