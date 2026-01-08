@@ -7,11 +7,11 @@ export default function EnvironmentHeader({ environment }: { environment: Enviro
   return (
         <header className={styles.environmentHeader}>
             <div className={styles.environmentInfo}>
-                <EnvironmentTypeIcon type={environment.type} />
                 <div className={styles.environmentTitle}>
+                    <EnvironmentTypeIcon type={environment.type} />
                     <h1>{environment.name}</h1>
-                    {environment.location && <p>{environment.location}</p>}
                 </div>
+                {environment.location && <p><strong>Ort: </strong>{environment.location}</p>}
             </div>
             {environment.climate && <ClimateGrid climate={environment.climate} />}
         </header>

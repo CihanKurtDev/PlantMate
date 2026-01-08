@@ -22,7 +22,7 @@ const LABELS: Record<string, string> = {
 };
 
 const ClimateGrid = ({ climate }: ClimateGridProps) => {
-    if (!climate) return null;
+    if (!climate || Object.keys(climate).length === 0) return null;
 
     return (
         <div className={styles.climateGrid}>
