@@ -1,18 +1,25 @@
 "use client";
-import { ArrowRight, Sprout } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from './EnvironmentDetailView.module.scss' 
 import { Button } from "@/components/Button/Button";
-import EnvironmentTypeIcon from "@/app/dashboard/components/EnvironmentTypeIcon";
 import { useRouter } from "next/navigation";
-import ClimateGrid from "@/components/climate/ClimateGrid";
-import PlantCard from "@/app/dashboard/components/PlantCard";
+import ClimateTab from "./components/ClimateTab";
+import EventsTab from "./components/EventTab";
+import { useState } from "react";
+import { mockEvents } from "@/data/mock/events";
+import EnvironmentHeader from "./components/EnvironmentHeader";
+import Tabs from "./components/Tabs";
+import PlantsTab from "./components/PlantsTab";
+
+export type TabVariant = 'plants' | 'climate' | 'events'
 
 const EnvironmentDetailView = ({ environmentId }: { environmentId: string })  => {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
     const plants = getPlantsByEnvironment(environmentId);
     const router = useRouter()
+    const [activeTab, setActiveTab] = useState<TabVariant>('plants');
 
     if (!environment) return null;
 
@@ -26,35 +33,15 @@ const EnvironmentDetailView = ({ environmentId }: { environmentId: string })  =>
                 Zurück zur Übersicht
             </Button>
             <div className={styles.content}>
-                <div  className={styles.environmentHeader}>
-                    <div className={styles.environmentInfo}>
-                        <EnvironmentTypeIcon type={environment.type} />
-                        <div className={styles.environmentTitle}>
-                            <h1>{environment.name}</h1>
-                            {environment.location && (
-                                <p>{environment.location}</p>
-                            )}
-                        </div>
-                    </div>
-                    {environment.climate && <ClimateGrid climate={environment.climate} />}
-                </div>
-
-                <div className={styles.plantsSection}>
-                    <h2>
-                        Pflanzen ({plants.length})
-                    </h2>
-                    <div className={styles.plantsGrid}>
-                        {plants.map(plant => (
-                            <PlantCard key={plant.id} plant={plant} />
-                        ))}
-                    </div>
-                    {plants.length === 0 && (
-                        <div className={styles.emptyState}>
-                            <Sprout/>
-                            <p>Keine Pflanzen in dieser Umgebung</p>
-                        </div>
-                    )}
-                </div>
+                <EnvironmentHeader environment={environment} />
+                <nav aria-label="Ansicht wechseln">
+                    <Tabs activeTab={activeTab} setActiveTab={setActiveTab} plantsCount={plants.length} />
+                </nav>
+                {activeTab === 'plants' && <PlantsTab plants={plants} />}
+                {activeTab === 'climate' && (
+                    <ClimateTab climate={environment.climate} history={environment} />
+                )}
+                {activeTab === 'events' && <EventsTab events={mockEvents} />}
             </div>
         </div>
     );

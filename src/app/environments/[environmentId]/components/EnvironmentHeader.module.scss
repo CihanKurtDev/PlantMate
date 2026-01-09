@@ -1,0 +1,40 @@
+.environmentHeader {
+    border-radius: var(--radius-l);
+    border: 1px solid var(--color-border-secondary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+    padding: var(--spacing-xl);
+    
+    @media (min-width: 1600px) {
+        display: flex;
+        gap: var(--spacing-xl);
+        justify-content: space-between;
+    }
+}
+
+.environmentInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+    margin-bottom: var(--spacing-l);
+    
+    @media (min-width: 1600px) {
+        margin-bottom: 0;
+    }
+}
+
+.environmentTitle {
+    display: flex;
+    gap: var(--spacing-s);
+    align-items: center;
+
+    h1 {
+        font-size: var(--font-size-xxl);
+        font-weight: var(--font-weight-bold);
+        color: var(--color-text-primary);
+    }
+
+    p {
+        color: var(--color-text-tertiary);
+        margin: 0;
+    }
+}
