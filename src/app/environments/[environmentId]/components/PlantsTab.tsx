@@ -2,6 +2,7 @@ import { PlantData } from '@/types/plant';
 import styles from './PlantsTab.module.scss';
 import TabContent from './TabContent';
 import EmptyState from './EmptyState';
+import PlantCard from './PlantCard';
 
 export default function PlantsTab({ plants }: {plants: PlantData[]}) {
     return (
@@ -10,14 +11,8 @@ export default function PlantsTab({ plants }: {plants: PlantData[]}) {
                 <EmptyState message='Keine Pflanzen vorhanden' />
             ) : (
                 <div className={styles.plantsGrid}>
-                    {plants.map(p => (
-                        <article key={p.id} className={styles.card}>
-                            <div>
-                                <strong>{p.title}</strong>
-                                <div className={styles.species}>{p.species}</div>
-                            </div>
-                            <div className={styles.chevron} aria-hidden>›</div>
-                        </article>
+                    {plants.map(plant => (
+                        <PlantCard key={plant.id} plant={plant} />
                     ))}
                 </div>
             )}

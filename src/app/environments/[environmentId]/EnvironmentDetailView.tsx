@@ -4,13 +4,13 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from './EnvironmentDetailView.module.scss' 
 import { Button } from "@/components/Button/Button";
 import { useRouter } from "next/navigation";
-import Tabs from "./Tabs";
-import PlantsTab from "./PlantsTab";
-import ClimateTab from "./ClimateTab";
-import EventsTab from "./EventTab";
+import ClimateTab from "./components/ClimateTab";
+import EventsTab from "./components/EventTab";
 import { useState } from "react";
 import { mockEvents } from "@/data/mock/events";
-import EnvironmentHeader from "./EnvironmentHeader";
+import EnvironmentHeader from "./components/EnvironmentHeader";
+import Tabs from "./components/Tabs";
+import PlantsTab from "./components/PlantsTab";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 

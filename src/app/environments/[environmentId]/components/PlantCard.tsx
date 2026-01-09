@@ -1,5 +1,5 @@
 import { PlantData } from "@/types/plant";
-import { Sprout } from "lucide-react";
+import { ArrowRight, Sprout } from "lucide-react";
 import styles from './PlantCard.module.scss'
 
 const PlantCard = ({ plant }: { plant: PlantData }) => {
@@ -26,6 +26,9 @@ const PlantCard = ({ plant }: { plant: PlantData }) => {
                             )}
                         </div>
                     )}
+                </div>
+                <div className={styles.arrowRight}>
+                    <ArrowRight/>
                 </div>
             </div>
         </div>

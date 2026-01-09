@@ -1,7 +1,26 @@
-@use "../../../styles/mixins" as m;
+@use "../../../../styles/mixins" as m;
 
 .card {
     @include m.card;
+    box-shadow: none;
+    border: 1px solid var(--color-border-primary);
+    cursor: pointer;
+
+    &:hover {
+        transform: none;
+        background-color: var(--color-background-tertiary);
+        color: var(--color-text-primary);
+
+        .title, .species {
+            color: white;
+        }
+
+        .arrowRight {
+            svg {
+                color: white;
+            }
+        }
+    }
 }
 
 .content {
@@ -9,6 +28,7 @@
     align-items: flex-start;
     gap: var(--spacing-s);
     margin-bottom: 0;
+    align-items: center;
 }
 
 .iconWrapper {
@@ -20,6 +40,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: absolute;
 
     svg {
         width: 1.5rem;
@@ -34,16 +55,16 @@
 }
 
 .title {
+    font-size: var(--font-size-l);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
-    margin: 0 0 var(--spacing-xs);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
 .species {
-    font-size: var(--font-size-s);
+    font-size: var(--font-size-m);
     color: var(--color-text-tertiary);
     font-style: italic;
     margin: 0;

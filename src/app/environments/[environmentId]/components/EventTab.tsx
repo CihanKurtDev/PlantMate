@@ -1,9 +1,9 @@
 import { Activity, Droplet, Thermometer, Wind } from 'lucide-react';
-import { groupEventsByDate, formatTime, formatDate } from '../../../helpers/date';
+import { groupEventsByDate, formatTime, formatDate } from '../../../../helpers/date';
 import styles from './EventTab.module.scss';
 import { EnvironmentEvent } from '@/types/environment';
-import TabContent from './TabContent';
 import EmptyState from './EmptyState';
+import TabContent from './TabContent';
 
 //TODO: Die Komponente refactoren wahrcheinlich TabContent was dynamsich befüllt werden kann
 // mit children und restlichen aufbau teilen die sich

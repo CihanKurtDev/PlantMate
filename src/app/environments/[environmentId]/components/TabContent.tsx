@@ -19,9 +19,7 @@ export default function TabContent({ id, title, subtitle, children }: TabContent
                     {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
                 </div>
             </header>
-            <div className={styles.content}>
-                {children}
-            </div>
+            {children}
         </section>
     );
 }

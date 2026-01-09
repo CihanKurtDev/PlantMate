@@ -1,8 +1,8 @@
 import { Sprout, Activity, Droplets } from 'lucide-react';
-import styles from './EnvironmentDetailView.module.scss';
+import styles from '../EnvironmentDetailView.module.scss';
 import { Button } from '@/components/Button/Button';
 import { JSX } from 'react';
-import { TabVariant } from './EnvironmentDetailView';
+import { TabVariant } from '../EnvironmentDetailView';
 
 interface TabProps {
     activeTab: string,
