@@ -9,6 +9,7 @@ import { usePlantValidation } from "@/hooks/usePlantValidation";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import { usePlantForm } from "@/hooks/usePlantForm";
+import { useState } from "react";
 
 interface PlantFormProps {
     initialData?: PlantData; 
@@ -20,6 +21,7 @@ export const PlantForm = ({ initialData  }: PlantFormProps) => {
     const { formState, setField, setTouchedField, resetForm } = usePlantForm(initialData);
     const router = useRouter();
     const isEditing = !!initialData;
+    const [amount, setAmount] = useState<number>(1);
 
     const handleBlur = (field: keyof typeof formState.touched) => {
         setTouchedField(field, true);
@@ -44,7 +46,13 @@ export const PlantForm = ({ initialData  }: PlantFormProps) => {
         const validationErrors = validate(formData);
         if (Object.keys(validationErrors).length > 0) return;
 
-        addPlant(formData);
+        for(let i = 0; i<= amount; i++) {
+            const newPlant: PlantData = {
+                ...formData,
+                id: crypto.randomUUID(),
+            };
+            addPlant(newPlant);
+        }
         resetForm()
     }
 
@@ -144,6 +152,16 @@ export const PlantForm = ({ initialData  }: PlantFormProps) => {
                 error={validationErrors.water?.ec}
                 warning={validationWarnings.water?.ec}
                 touched={formState.touched.ec}
+            />
+
+            <Input
+                label="Menge"
+                value={amount ?? 0}
+                onChange={(e) => setAmount(parseInt(e.target.value))}
+                type="number"
+                step={1}
+                min={1}
+                max={10}
             />
 
             <div>
