@@ -12,7 +12,7 @@ interface WaterData {
 }
 
 export interface PlantData {
-  id: string;
+  id: string | undefined;
   title: string;
   species: string;
   environmentId: string;

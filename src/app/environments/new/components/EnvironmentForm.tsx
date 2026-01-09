@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react";
-import type { EnvironmentData, EnvironmentType, TempUnit, PercentUnit, KPaUnit } from "@/types/environment";
+import type { EnvironmentData, EnvironmentType, TempUnit, PercentUnit, KPaUnit, PPMUnit } from "@/types/environment";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
@@ -46,6 +46,25 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
         setTouched(prev => ({ ...prev, [field]: true }));
     };
 
+    const getFormData = (): EnvironmentData => {
+        const climate: Partial<EnvironmentData["climate"]> = {};
+
+        if (temp !== undefined) climate.temp = { value: temp, unit: tempUnit };
+        if (humidity !== undefined) climate.humidity = { value: humidity, unit: "%" as PercentUnit };
+        if (co2 !== undefined) climate.co2 = { value: co2, unit: "ppm" as PPMUnit };
+        if (vpd !== undefined) climate.vpd = { value: vpd, unit: "kPa" as KPaUnit };
+
+        return {
+            id: initialData?.id || crypto.randomUUID(),
+            name,
+            type,
+            location,
+            climate
+        };
+    };
+    
+    const formData: EnvironmentData = getFormData()
+    
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
         setTouched({
@@ -57,20 +76,8 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
             co2: true,
             vpd: true,
         });
-
-        const formData: EnvironmentData = {
-            id: initialData?.id || crypto.randomUUID(),
-            name,
-            type,
-            location,
-            climate: {
-                temp: temp !== undefined ? { value: temp, unit: tempUnit } : undefined,
-                humidity: humidity !== undefined ? { value: humidity, unit: "%" as PercentUnit } : undefined,
-                co2: co2 !== undefined ? { value: co2, unit: "%" as PercentUnit } : undefined,
-                vpd: vpd !== undefined ? { value: vpd, unit: "kPa" as KPaUnit } : undefined,
-            },
-        };
-
+        
+        
         const validationErrors = validate(formData);
         if (Object.keys(validationErrors).length > 0) return;
 
@@ -106,19 +113,6 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
             setter(val === "" ? undefined : parseFloat(val));
             setTouched(prev => ({ ...prev, [field]: true }));
         };
-
-    const formData: EnvironmentData = {
-        id: initialData?.id || crypto.randomUUID(),
-        name,
-        type,
-        location,
-        climate: {
-            temp: temp !== undefined ? { value: temp, unit: tempUnit } : undefined,
-            humidity: humidity !== undefined ? { value: humidity, unit: "%" as PercentUnit } : undefined,
-            co2: co2 !== undefined ? { value: co2, unit: "%" as PercentUnit } : undefined,
-            vpd: vpd !== undefined ? { value: vpd, unit: "kPa" as KPaUnit } : undefined,
-        },
-    };
 
     const validationErrors = validate(formData);
     const validationWarnings = validateWarnings(formData);
