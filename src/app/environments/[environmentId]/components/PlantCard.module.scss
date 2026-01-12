@@ -1,18 +1,17 @@
 @use "../../../../styles/mixins" as m;
 
 .card {
-    @include m.card;
-    box-shadow: none;
     border: 1px solid var(--color-border-primary);
+    padding: var(--spacing-l);
+    border-radius: var(--radius-m);
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 
     &:hover {
-        transform: none;
         background-color: var(--color-background-tertiary);
-        color: var(--color-text-primary);
 
         .title, .species {
-            color: white;
+            color: var(--color-text-secondary);
         }
 
         .arrowRight {
@@ -25,10 +24,10 @@
 
 .content {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--spacing-s);
     margin-bottom: 0;
-    align-items: center;
+    justify-content: space-between;
 }
 
 .iconWrapper {
@@ -40,18 +39,12 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    position: absolute;
 
     svg {
         width: 1.5rem;
         height: 1.5rem;
         color: var(--color-text-success);
     }
-}
-
-.info {
-    flex: 1;
-    min-width: 0;
 }
 
 .title {
@@ -81,7 +74,6 @@
 
 .badge {
     font-size: var(--font-size-s);
-    padding: var(--spacing-xs) var(--spacing-s);
     border-radius: var(--radius-s);
 
     &.ph {

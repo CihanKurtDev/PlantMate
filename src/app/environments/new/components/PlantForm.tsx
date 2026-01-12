@@ -1,6 +1,5 @@
 "use client"
 
-import React, { useState } from "react";
 import type { ECUnit, PHUnit, PlantData } from "@/types/plant";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
@@ -9,92 +8,74 @@ import { useRouter } from "next/navigation";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
+import { usePlantForm } from "@/hooks/usePlantForm";
+import { useState } from "react";
 
 interface PlantFormProps {
-    initialData?: PlantData;
+    initialData?: PlantData; 
 }
 
-export const PlantForm = ({ initialData }: PlantFormProps) => {
+export const PlantForm = ({ initialData  }: PlantFormProps) => {
     const { addPlant, environments } = usePlantMonitor();
     const { validate, validateWarnings } = usePlantValidation();
+    const { formState, setField, setTouchedField, resetForm } = usePlantForm(initialData);
     const router = useRouter();
+    const isEditing = !!initialData;
+    const [amount, setAmount] = useState<number>(1);
 
-    const [title, setTitle] = useState(initialData?.title || "");
-    const [species, setSpecies] = useState(initialData?.species || "");
-    const [environmentId, setEnvironmentId] = useState(initialData?.environmentId || "");
-
-    const [ph, setPh] = useState<number | undefined>(initialData?.water?.ph?.value);
-    const [ec, setEc] = useState<number | undefined>(initialData?.water?.ec?.value);
-
-    const [touched, setTouched] = useState({
-        title: false,
-        species: false,
-        environmentId: false,
-        ph: false,
-        ec: false,
-    });
-
-    const handleBlur = (field: keyof typeof touched) => {
-        setTouched(prev => ({ ...prev, [field]: true }));
+    const handleBlur = (field: keyof typeof formState.touched) => {
+        setTouchedField(field, true);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmitWithoutNav = (e: React.FormEvent) => {
         e.preventDefault();
-        setTouched({
-            title: true,
-            species: true,
-            environmentId: true,
-            ph: true,
-            ec: true,
-        });
-
+        
+        Object.keys(formState.touched).forEach(key => setTouchedField(key as keyof typeof formState.touched, true));
+       
         const formData: PlantData = {
-            id: initialData?.id || crypto.randomUUID(),
-            title,
-            species,
-            environmentId,
+            id: formState.plantId ?? crypto.randomUUID(),
+            title: formState.title,
+            species: formState.species,
+            environmentId: formState.environmentId,
             water: {
-                ph: ph !== undefined ? { value: ph, unit: "pH" as PHUnit } : undefined,
-                ec: ec !== undefined ? { value: ec, unit: "mS/cm" as ECUnit } : undefined,
+                ph: formState.ph !== undefined ? { value: formState.ph, unit: "pH" as PHUnit } : undefined,
+                ec: formState.ec !== undefined ? { value: formState.ec, unit: "mS/cm" as ECUnit } : undefined,
             },
         };
 
         const validationErrors = validate(formData);
         if (Object.keys(validationErrors).length > 0) return;
 
-        addPlant(formData);
+        for(let i = 0; i<= amount; i++) {
+            const newPlant: PlantData = {
+                ...formData,
+                id: crypto.randomUUID(),
+            };
+            addPlant(newPlant);
+        }
+        resetForm()
+    }
 
-        setTitle("");
-        setSpecies("");
-        setEnvironmentId("");
-        setPh(undefined);
-        setEc(undefined);
-        setTouched({
-            title: false,
-            species: false,
-            environmentId: false,
-            ph: false,
-            ec: false,
-        });
-
+    const handleSubmit = (e: React.FormEvent) => {
+        handleSubmitWithoutNav(e)
         router.push("/dashboard");
     };
 
-    const handleNumberChange = (setter: React.Dispatch<React.SetStateAction<number | undefined>>, field: keyof typeof touched) =>
+    const handleNumberChange = (field: "ph" | "ec") =>
         (e: React.ChangeEvent<HTMLInputElement>) => {
             const val = e.target.value;
-            setter(val === "" ? undefined : parseFloat(val));
-            setTouched(prev => ({ ...prev, [field]: true }));
+            setField(field, val === "" ? undefined : parseFloat(val))
+            setTouchedField(field, true);
         };
 
     const formData: PlantData = {
-        id: initialData?.id || crypto.randomUUID(),
-        title,
-        species,
-        environmentId,
+        id: formState.plantId,
+        title: formState.title,
+        species: formState.species,
+        environmentId: formState.environmentId,
         water: {
-            ph: ph !== undefined ? { value: ph, unit: "pH" as PHUnit } : undefined,
-            ec: ec !== undefined ? { value: ec, unit: "mS/cm" as ECUnit } : undefined,
+            ph: formState.ph !== undefined ? { value: formState.ph, unit: "pH" as PHUnit } : undefined,
+            ec: formState.ec !== undefined ? { value: formState.ec, unit: "mS/cm" as ECUnit } : undefined,
         },
     };
 
@@ -105,31 +86,31 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
         <Form onSubmit={handleSubmit}>
             <Input
                 label="Name"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={formState.title}
+                onChange={(e) => setField("title", e.target.value)}
                 onBlur={() => handleBlur("title")}
                 error={validationErrors.title}
-                touched={touched.title}
+                touched={formState.touched.title}
                 required
             />
 
             <Input
                 label="Art/Sorte"
-                value={species}
-                onChange={(e) => setSpecies(e.target.value)}
+                value={formState.species}
+                onChange={(e) => setField("species", e.target.value)}
                 onBlur={() => handleBlur("species")}
                 error={validationErrors.species}
-                touched={touched.species}
+                touched={formState.touched.species}
                 placeholder="z.B. Solanum lycopersicum"
             />
 
             <FormField>
                 <Select
                     label="Environment"
-                    value={environmentId}
-                    onChange={(e) => setEnvironmentId(e.target.value)}
+                    value={formState.environmentId}
+                    onChange={(e) => setField("environmentId", e.target.value)}
                     onBlur={() => handleBlur("environmentId")}
-                    touched={touched.environmentId}
+                    touched={formState.touched.environmentId}
                     error={validationErrors.environmentId}
                 >
                     <option value="">Bitte wählen...</option>
@@ -145,8 +126,8 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
 
             <Input
                 label="pH-Wert"
-                value={ph ?? ""}
-                onChange={handleNumberChange(setPh, "ph")}
+                value={formState.ph ?? ""}
+                onChange={handleNumberChange("ph")}
                 onBlur={() => handleBlur("ph")}
                 suffix="pH"
                 type="number"
@@ -155,13 +136,13 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 max={14}
                 error={validationErrors.water?.ph}
                 warning={validationWarnings.water?.ph}
-                touched={touched.ph}
+                touched={formState.touched.ph}
             />
 
             <Input
                 label="EC-Wert"
-                value={ec ?? ""}
-                onChange={handleNumberChange(setEc, "ec")}
+                value={formState.ec ?? ""}
+                onChange={handleNumberChange( "ec")}
                 onBlur={() => handleBlur("ec")}
                 suffix="mS/cm"
                 type="number"
@@ -170,12 +151,27 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 max={10}
                 error={validationErrors.water?.ec}
                 warning={validationWarnings.water?.ec}
-                touched={touched.ec}
+                touched={formState.touched.ec}
             />
 
-            <Button type="submit" variant="primary">
-                Speichern
-            </Button>
+            <Input
+                label="Menge"
+                value={amount ?? 0}
+                onChange={(e) => setAmount(parseInt(e.target.value))}
+                type="number"
+                step={1}
+                min={1}
+                max={10}
+            />
+
+            <div>
+                {!!isEditing && <Button type="button" variant="secondary" onClick={handleSubmitWithoutNav}>
+                    Speichern & Weiter
+                </Button>}
+                <Button type="button" variant="primary" onClick={handleSubmit}>
+                    Speichern & Zum Dashboard
+                </Button>
+            </div>
         </Form>
     );
 };
