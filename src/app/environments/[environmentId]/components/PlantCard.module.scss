@@ -1,19 +1,17 @@
 @use "../../../../styles/mixins" as m;
 
 .card {
-    @include m.card;
-    box-shadow: none;
     border: 1px solid var(--color-border-primary);
+    padding: var(--spacing-l);
+    border-radius: var(--radius-m);
     cursor: pointer;
-    text-align: start;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 
     &:hover {
-        transform: none;
         background-color: var(--color-background-tertiary);
-        color: var(--color-text-primary);
 
         .title, .species {
-            color: white;
+            color: var(--color-text-secondary);
         }
 
         .arrowRight {
