@@ -2,11 +2,8 @@ import { Activity, Droplet, Thermometer, Wind } from 'lucide-react';
 import { groupEventsByDate, formatTime, formatDate } from '../../../../helpers/date';
 import styles from './EventTab.module.scss';
 import { EnvironmentEvent } from '@/types/environment';
-import EmptyState from './EmptyState';
+import EmptyState from './shared/EmptyState';
 import TabContent from './TabContent';
-
-//TODO: Die Komponente refactoren wahrcheinlich TabContent was dynamsich befüllt werden kann
-// mit children und restlichen aufbau teilen die sich
 
 interface EventsTabProps {
     events: EnvironmentEvent[];
@@ -38,7 +35,7 @@ export default function EventsTab({ events }: EventsTabProps) {
         }
     };
 
-    //TODO: filter für events einbauen beipsiel: Heute | 7 Tage | 30 Tage | Alles 
+    // TODO: filter für events einbauen beipsiel: Heute | 7 Tage | 30 Tage | Alles 
 
     const EventItem = ({ event }: { event: EnvironmentEvent }) => (
         <li className={styles.timelineItem}>

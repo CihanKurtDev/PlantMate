@@ -1,50 +1,52 @@
 "use client";
-import { ArrowRight } from "lucide-react";
+
+import { Activity, JSX, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import styles from './EnvironmentDetailView.module.scss' 
-import { Button } from "@/components/Button/Button";
-import { useRouter } from "next/navigation";
+import PlantsTab from "./components/PlantsTab";
 import ClimateTab from "./components/ClimateTab";
 import EventsTab from "./components/EventTab";
-import { useState } from "react";
 import { mockEvents } from "@/data/mock/events";
-import EnvironmentHeader from "./components/EnvironmentHeader";
+import { ENVIRONMENT_ICONS } from "@/config/environment";
+import DetailViewLayout from "./components/shared/DetailViewLayout";
+import DetailViewHeader from "./components/shared/DetailViewHeader";
 import Tabs from "./components/Tabs";
-import PlantsTab from "./components/PlantsTab";
+import ClimateGrid from "@/components/climate/ClimateGrid";
+import { ActivityIcon, Droplets, Sprout } from "lucide-react";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
-const EnvironmentDetailView = ({ environmentId }: { environmentId: string })  => {
+export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
-    const plants = getPlantsByEnvironment(environmentId);
-    const router = useRouter()
-    const [activeTab, setActiveTab] = useState<TabVariant>('plants');
+    const [activeTab, setActiveTab] = useState<'plants' | 'climate' | 'events'>('plants');
 
     if (!environment) return null;
 
+    const plants = getPlantsByEnvironment(environmentId);
+
+    const tabs: { id: TabVariant; label: string; icon: JSX.Element }[]  = [
+        { id: 'plants', label: `Pflanzen (${plants.length})`, icon: <Sprout /> },
+        { id: 'climate', label: 'Klima-Verlauf', icon: <ActivityIcon /> },
+        { id: 'events', label: 'Ereignisse', icon: <Droplets /> }
+    ];
+
     return (
-        <div className={styles.container}>
-            <Button
-                size="fill"
-                onClick={() => router.push("/dashboard")}
+        <DetailViewLayout
+            backUrl="/dashboard"
+            backLabel="Zurück zur Übersicht"
+        >
+            <DetailViewHeader
+                title={environment.name}
+                subtitle={environment.location}
+                icon={ENVIRONMENT_ICONS[environment.type]}
+                iconVariant={environment.type.toLowerCase()}
             >
-                <ArrowRight className={styles.arrow}/>
-                Zurück zur Übersicht
-            </Button>
-            <div className={styles.content}>
-                <EnvironmentHeader environment={environment} />
-                <nav aria-label="Ansicht wechseln">
-                    <Tabs activeTab={activeTab} setActiveTab={setActiveTab} plantsCount={plants.length} />
-                </nav>
-                {activeTab === 'plants' && <PlantsTab plants={plants} />}
-                {activeTab === 'climate' && (
-                    <ClimateTab climate={environment.climate} history={environment} />
-                )}
-                {activeTab === 'events' && <EventsTab events={mockEvents} />}
-            </div>
-        </div>
+                {environment.climate && <ClimateGrid climate={environment.climate} />}
+            </DetailViewHeader>
+            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
+            {activeTab === 'plants' && <PlantsTab plants={plants} />}
+            {activeTab === 'climate' && <ClimateTab climate={environment.climate} history={environment} />}
+            {activeTab === 'events' && <EventsTab events={mockEvents} />}
+        </DetailViewLayout>
     );
 }
-
-export default EnvironmentDetailView

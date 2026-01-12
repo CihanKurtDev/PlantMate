@@ -5,33 +5,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: var(--color-flag-success);
 
     &.tent {
         background-color: var(--color-flag-alert);
-    }
-
-    &.room {
-        background-color: var(--color-background-accent);
-    }
-
-    &.greenhouse {
-        background-color: var(--color-flag-success);
-    }
-}
-
-.icon {
-    width: 1.5rem;
-    height: 1.5rem;
-
-    &.tent {
         color: var(--color-text-alert);
     }
 
     &.room {
+        background-color: var(--color-background-accent);
         color: var(--color-text-secondary);
     }
 
     &.greenhouse {
+        background-color: var(--color-flag-success);
         color: var(--color-text-success);
     }
 }

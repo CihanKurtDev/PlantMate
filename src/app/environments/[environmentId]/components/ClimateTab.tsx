@@ -1,4 +1,4 @@
-import EmptyState from "./EmptyState";
+import EmptyState from "./shared/EmptyState";
 import TabContent from "./TabContent";
 
 export default function ClimateTab({ climate, history }) {
