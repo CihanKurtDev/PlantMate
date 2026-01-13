@@ -4,9 +4,11 @@ import { ENVIRONMENT_EVENT_MAP } from '@/config/environment';
 
 interface EnvironmentEventTabProps {
     events: EnvironmentEvent[];
+    hidden: boolean
 }
 
-export default function EnvironmentEventTab({ events }: EnvironmentEventTabProps) {
+export default function EnvironmentEventTab({ events, hidden }: EnvironmentEventTabProps) {
+    if (hidden) return null
     return (
         <EventsTab
             events={events}

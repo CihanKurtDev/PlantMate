@@ -5,7 +5,8 @@ import EmptyState from './shared/EmptyState';
 import PlantCard from './PlantCard';
 import Link from 'next/link';
 
-export default function PlantsTab({ plants }: {plants: PlantData[]}) {
+export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidden: boolean}) {
+    if (hidden) return null
     return (
         <TabContent id="plants" title={`Pflanzen (${plants.length})`}>
             {plants.length === 0 ? (

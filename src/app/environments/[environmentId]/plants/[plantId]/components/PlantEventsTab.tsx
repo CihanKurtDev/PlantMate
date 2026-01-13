@@ -15,22 +15,6 @@ export default function PlantEventsTab({ events }: PlantEventsTabProps) {
             getTitle={(event) =>
                 PLANT_EVENT_MAP[event.type]?.label ?? event.type.replace(/_/g, ' ')
             }
-        >
-            {(event) => (
-                <>
-                    {event.watering && (
-                        <p>
-                            Menge: {event.watering.amount.value} {event.watering.amount.unit}
-                        </p>
-                    )}
-
-                    {event.repotting && (
-                        <p>
-                            Neuer Topf: {event.repotting.newPotSize.value} {event.repotting.newPotSize.unit}
-                        </p>
-                    )}
-                </>
-            )}
-        </EventsTab>
+        />
     );
 }

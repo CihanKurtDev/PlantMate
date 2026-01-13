@@ -1,7 +1,8 @@
 import EmptyState from "./shared/EmptyState";
 import TabContent from "./TabContent";
 
-export default function ClimateTab({ climate, history }) {
+export default function ClimateTab({ climate, history, hidden }) {
+  if (hidden) return null
   return (
     <TabContent title="Klima">
       {Object.keys(climate).length === 0 ? (

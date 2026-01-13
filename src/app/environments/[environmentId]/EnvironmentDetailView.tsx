@@ -46,9 +46,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 {environment.climate && <ClimateGrid climate={environment.climate} />}
             </DetailViewHeader>
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
-            {activeTab === 'plants' && <PlantsTab plants={plants} />}
-            {activeTab === 'climate' && <ClimateTab climate={environment.climate} history={environment} />}
-            {activeTab === 'events' && <EnvironmentEventTab events={mockEvents} />}
+            <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
+            <ClimateTab climate={environment.climate} history={environment} hidden={activeTab !== 'climate'}/>
+            <EnvironmentEventTab events={mockEvents} hidden={activeTab !== 'events'}/>
         </DetailViewLayout>
     );
 }
