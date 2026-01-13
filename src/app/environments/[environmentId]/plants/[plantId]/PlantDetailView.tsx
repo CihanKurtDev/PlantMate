@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import DetailViewLayout from "../../components/shared/DetailViewLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
 import { ActivityIcon, Droplets, Sprout } from "lucide-react";
-import Tabs from "../../components/Tabs";
-import { PlantData_Historical, PlantEvent } from "@/types/plant";
+import Tabs, { TabItem } from "../../components/Tabs";
+import { PlantData_Historical } from "@/types/plant";
 import EmptyState from "../../components/shared/EmptyState";
-import EventTab from "./components/EventTab";
 import TabContent from "../../components/TabContent";
+import PlantEventsTab from "./components/PlantEventsTab";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { plants } = usePlantMonitor();
@@ -17,6 +17,15 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     const plant = plants.find(plant => plant.id === plantId);
 
     if (!plant) return null;
+
+    // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
+    // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
+    const tabs = useMemo<TabItem<'overview' | 'water' | 'history' | 'events'>[]>(() => [
+        { id: 'overview', label: 'Übersicht', icon: <Sprout /> },
+        { id: 'water', label: 'Wasser', icon: <Droplets /> },
+        { id: 'history', label: 'Historie', icon: <ActivityIcon /> },
+        { id: 'events', label: 'Ereignisse', icon: <ActivityIcon /> },
+    ], []);
 
     return (
         <DetailViewLayout
@@ -28,13 +37,8 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 icon={Sprout}
             />
 
-            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={[
-                { id: 'overview', label: 'Übersicht', icon: <Sprout /> },
-                { id: 'water', label: 'Wasser', icon: <Droplets /> },
-                { id: 'history', label: 'Historie', icon: <ActivityIcon /> },
-                { id: 'events', label: 'Ereignisse', icon: <ActivityIcon /> },
-            ]} />
-            
+            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
+            {/* I will write real components as soon as i data */}
             {activeTab === 'overview' && (
                 <TabContent title="Basisinformationen">
                     <p><strong>Art / Spezies:</strong> {plant.species || '-'}</p>
@@ -71,13 +75,13 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                             </thead>
                             <tbody>
                                 {plant.historical.map((h: PlantData_Historical) => (
-                                <tr key={h.id}>
-                                    <td>{new Date(h.timestamp).toLocaleDateString()}</td>
-                                    <td>{h.water?.ph?.value ?? '-'}</td>
-                                    <td>{h.water?.ec?.value ?? '-'}</td>
-                                    <td>{h.height?.value ?? '-'}</td>
-                                    <td>{h.notes ?? '-'}</td>
-                                </tr>
+                                    <tr key={h.id}>
+                                        <td>{new Date(h.timestamp).toLocaleDateString()}</td>
+                                        <td>{h.water?.ph?.value ?? '-'}</td>
+                                        <td>{h.water?.ec?.value ?? '-'}</td>
+                                        <td>{h.height?.value ?? '-'}</td>
+                                        <td>{h.notes ?? '-'}</td>
+                                    </tr>
                                 ))}
                             </tbody>
                         </table>
@@ -87,9 +91,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </TabContent>
             )}
 
-
-            {/* TODO: Hier EventTab von Environment und Plant vereinheilichen */}
-            {activeTab === 'events' && <EventTab events={plant.events} />}
+            {activeTab === 'events' && <PlantEventsTab events={plant.events} />}
         </DetailViewLayout>
     );
 }

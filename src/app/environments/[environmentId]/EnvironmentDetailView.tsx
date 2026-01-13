@@ -1,10 +1,9 @@
 "use client";
 
-import { Activity, JSX, useState } from "react";
+import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import ClimateTab from "./components/ClimateTab";
-import EventsTab from "./components/EventTab";
 import { mockEvents } from "@/data/mock/events";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import DetailViewLayout from "./components/shared/DetailViewLayout";
@@ -12,6 +11,7 @@ import DetailViewHeader from "./components/shared/DetailViewHeader";
 import Tabs from "./components/Tabs";
 import ClimateGrid from "@/components/climate/ClimateGrid";
 import { ActivityIcon, Droplets, Sprout } from "lucide-react";
+import EnvironmentEventTab from "./components/EnvironmentEventTab";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
@@ -24,11 +24,13 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
     const plants = getPlantsByEnvironment(environmentId);
 
-    const tabs: { id: TabVariant; label: string; icon: JSX.Element }[]  = [
-        { id: 'plants', label: `Pflanzen (${plants.length})`, icon: <Sprout /> },
-        { id: 'climate', label: 'Klima-Verlauf', icon: <ActivityIcon /> },
-        { id: 'events', label: 'Ereignisse', icon: <Droplets /> }
-    ];
+    // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
+    // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
+    const tabs = useMemo(() => [
+        { id: 'plants' as const, label: `Pflanzen (${plants.length})`, icon: <Sprout /> },
+        { id: 'climate' as const, label: 'Klima-Verlauf', icon: <ActivityIcon /> },
+        { id: 'events' as const, label: 'Ereignisse', icon: <Droplets /> }
+    ], [plants.length, environment?.id]);
 
     return (
         <DetailViewLayout
@@ -46,7 +48,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
             {activeTab === 'plants' && <PlantsTab plants={plants} />}
             {activeTab === 'climate' && <ClimateTab climate={environment.climate} history={environment} />}
-            {activeTab === 'events' && <EventsTab events={mockEvents} />}
+            {activeTab === 'events' && <EnvironmentEventTab events={mockEvents} />}
         </DetailViewLayout>
     );
 }

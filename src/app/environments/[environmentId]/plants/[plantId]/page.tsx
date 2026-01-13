@@ -1,7 +1,7 @@
 import styles from '@/app/page.module.scss'
 import PlantDetailView from './PlantDetailView';
 
-export default async function EnvironmentDetailPage({ params }: {params: Promise<{ plantId: string }>}) {
+export default async function PlantDetailPage({ params }: {params: Promise<{ plantId: string }>}) {
   const { plantId } = await params;
 
   return (
