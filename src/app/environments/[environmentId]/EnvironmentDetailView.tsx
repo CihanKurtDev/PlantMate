@@ -19,11 +19,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
     const [activeTab, setActiveTab] = useState<'plants' | 'climate' | 'events'>('plants');
-
-    if (!environment) return null;
-
     const plants = getPlantsByEnvironment(environmentId);
-
     // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
     // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
     const tabs = useMemo(() => [
@@ -31,6 +27,8 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
         { id: 'climate' as const, label: 'Klima-Verlauf', icon: <ActivityIcon /> },
         { id: 'events' as const, label: 'Ereignisse', icon: <Droplets /> }
     ], [plants.length, environment?.id]);
+
+    if (!environment) return null;
 
     return (
         <DetailViewLayout
@@ -48,7 +46,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
             <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
             <ClimateTab climate={environment.climate} history={environment} hidden={activeTab !== 'climate'}/>
-            <EnvironmentEventTab events={mockEvents} hidden={activeTab !== 'events'}/>
+            <EnvironmentEventTab environmentId={environmentId} events={mockEvents} hidden={activeTab !== 'events'}/>
         </DetailViewLayout>
     );
 }

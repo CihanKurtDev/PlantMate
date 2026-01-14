@@ -4,23 +4,17 @@ import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import DetailViewLayout from "../../components/shared/DetailViewLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
-import { ActivityIcon, Droplets, Sprout } from "lucide-react";
+import { ActivityIcon, Sprout } from "lucide-react";
 import Tabs, { TabItem } from "../../components/Tabs";
 import { PlantData_Historical } from "@/types/plant";
 import EmptyState from "../../components/shared/EmptyState";
-import TabContent from "../../components/TabContent";
+import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
-import { Button } from "@/components/Button/Button";
-import PlantEventForm from "./components/PlantEventForm";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { plants } = usePlantMonitor();
     const [activeTab, setActiveTab] = useState<'overview' | 'history' | 'events'>('overview');
-    const [isAddingEvent, setIsAddingEvent] = useState(false);
     const plant = plants.find(plant => plant.id === plantId);
-
-    if (!plant) return null;
-
     // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
     // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
     const tabs = useMemo<TabItem<'overview' | 'history' | 'events'>[]>(() => [
@@ -28,6 +22,8 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
         { id: 'history', label: 'Historie', icon: <ActivityIcon /> },
         { id: 'events', label: 'Ereignisse', icon: <ActivityIcon /> },
     ], []);
+
+    if (!plant) return null;
 
     return (
         <DetailViewLayout
@@ -79,22 +75,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                     )}
                 </TabContent>
             )}
-            {activeTab === 'events' && (
-                <TabContent title="Ereignisse">
-                    {!isAddingEvent ? (
-                        <>
-                            <Button onClick={() => setIsAddingEvent(true)}>Neues Event</Button>
-                            <PlantEventsTab events={plant.events} />
-                        </>
-                    ) : (
-                        <PlantEventForm
-                            plantId={plantId}
-                            onCancel={() => setIsAddingEvent(false)}
-                            onSave={() => setIsAddingEvent(false)}
-                        />
-                    )}
-                </TabContent>
-            )}
+            <PlantEventsTab plantId={plantId} hidden={activeTab !== 'events'} />
         </DetailViewLayout>
     );
 }

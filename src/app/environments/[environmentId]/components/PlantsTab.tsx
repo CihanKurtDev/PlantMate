@@ -1,8 +1,8 @@
 import { PlantData } from '@/types/plant';
 import styles from './PlantsTab.module.scss';
-import TabContent from './TabContent';
+import TabContent from './shared/TabContent';
 import EmptyState from './shared/EmptyState';
-import PlantCard from './PlantCard';
+import PlantCard from './shared/PlantCard';
 import Link from 'next/link';
 
 export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidden: boolean}) {

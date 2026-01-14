@@ -1,5 +1,5 @@
 import EmptyState from "./shared/EmptyState";
-import TabContent from "./TabContent";
+import TabContent from "./shared/TabContent";
 
 export default function ClimateTab({ climate, history, hidden }) {
   if (hidden) return null
