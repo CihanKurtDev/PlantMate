@@ -1,14 +1,17 @@
 .appWrapper {
+    display: flex;
+    flex-direction: column;
     max-width: 1920px;
     margin: 0 auto;
     box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+    height: 100vh;
     position: relative;
 }
 
 .pageContainer {
-    min-height: 100vh;
     width: 100%;
     background-color: var(--color-background-primary);
+    flex: 1;
 }
 
 .contentWrapper {
