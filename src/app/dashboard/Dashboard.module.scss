@@ -1,12 +1,11 @@
+@use '../../styles/layout' as *;
+
 .container {
-  min-height: 100vh;
-  width: 100%;
-  background-color: var(--color-background-primary);
+    @extend .pageContainer;
 }
 
 .content {
-    margin: 0 auto;
-    padding: var(--spacing-xl) var(--spacing-m);
+    @extend .contentWrapper;
 }
 
 .header {

@@ -11,7 +11,7 @@
 .floating {
   @include button(primary);
 
-  position: fixed;
+  position: absolute;
   bottom: var(--spacing-l);
   right: var(--spacing-l);
   border-radius: 50%;

@@ -1,8 +1,0 @@
-@use '../../styles/layout' as *;
-
-.page {
-  @extend .authPageContainer; 
-}
-.main { 
-  @extend .authMainContent; 
-}

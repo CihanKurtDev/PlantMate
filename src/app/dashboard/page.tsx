@@ -1,12 +1,5 @@
 import Dashboard from './Dashboard'
-import styles from '../page.module.scss'
 
-const DashboardPage = () => (
-    <div className={styles.page}>
-        <main className={styles.main}>
-            <Dashboard />
-        </main>
-    </div>
-)
+const DashboardPage = () => <Dashboard />
 
 export default DashboardPage

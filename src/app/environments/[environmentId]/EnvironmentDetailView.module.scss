@@ -1,13 +1,3 @@
-.container {
-    min-height: 100vh;
-    background-color: var(--color-background-primary);
-}
-
-.arrow{
-    transform: rotate(180deg);
-    margin-right: var(--spacing-l);
-}
-
 .plantsSection h2 {
     font-size: var(--font-size-l);
     font-weight: var(--font-weight-medium);
@@ -25,11 +15,18 @@
 
 .tabRow {
     display: flex;
-
+    
     button {
-        width: 100%;
+        flex: 1;
         display: flex;
         align-items: center;
-        padding: 1rem;
+        justify-content: center;
+        position: relative;
+        padding: var(--spacing-m);
+        
+        svg {
+            position: absolute;
+            left: var(--spacing-m);
+        }
     }
 }
