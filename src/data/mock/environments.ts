@@ -11,7 +11,7 @@ const environments: EnvironmentData[] = [
             temp: { value: 24, unit: '°C' },
             humidity: { value: 55, unit: '%' },
             vpd: { value: 1.2, unit: 'kPa' },
-            co2: { value: 0.12, unit: '%' },
+            co2: { value: 0.12, unit: "ppm" },
         },
     },
     {
@@ -24,7 +24,7 @@ const environments: EnvironmentData[] = [
             temp: { value: 22, unit: '°C' },
             humidity: { value: 48, unit: '%' },
             vpd: { value: 1.0, unit: 'kPa' },
-            co2: { value: 0.10, unit: '%' },
+            co2: { value: 0.10, unit: "ppm" },
         },
     },
     {
@@ -37,7 +37,7 @@ const environments: EnvironmentData[] = [
             temp: { value: 28, unit: '°C' },
             humidity: { value: 65, unit: '%' },
             vpd: { value: 1.4, unit: 'kPa' },
-            co2: { value: 0.09, unit: '%' },
+            co2: { value: 0.09, unit: "ppm" },
         },
     },
     {
@@ -50,7 +50,7 @@ const environments: EnvironmentData[] = [
             temp: { value: 23, unit: '°C' },
             humidity: { value: 50, unit: '%' },
             vpd: { value: 1.1, unit: 'kPa' },
-            co2: { value: 0.11, unit: '%' },
+            co2: { value: 0.11, unit: "ppm" },
         },
     },
     {
@@ -63,7 +63,7 @@ const environments: EnvironmentData[] = [
             temp: { value: 20, unit: '°C' },
             humidity: { value: 58, unit: '%' },
             vpd: { value: 0.9, unit: 'kPa' },
-            co2: { value: 0.08, unit: '%' },
+            co2: { value: 0.08, unit: "ppm" },
         },
     },
     {
@@ -76,7 +76,7 @@ const environments: EnvironmentData[] = [
             temp: { value: 25, unit: '°C' },
             humidity: { value: 40, unit: '%' },
             vpd: { value: 1.6, unit: 'kPa' },
-            co2: { value: 0.14, unit: '%' },
+            co2: { value: 0.14, unit: "ppm" },
         },
     },
 ];

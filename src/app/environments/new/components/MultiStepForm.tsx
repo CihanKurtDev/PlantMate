@@ -6,7 +6,7 @@ import { PlantForm } from "./PlantForm";
 import styles from "./MultiStepForm.module.scss";
 import { PlantData } from "@/types/plant";
 import { useRouter } from "next/navigation";
-import PlantCard from "../../[environmentId]/components/PlantCard";
+import PlantCard from "../../[environmentId]/components/shared/PlantCard";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 
 export const MultiStepForm = () => {

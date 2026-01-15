@@ -1,50 +1,52 @@
 "use client";
-import { ArrowRight } from "lucide-react";
+
+import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import styles from './EnvironmentDetailView.module.scss' 
-import { Button } from "@/components/Button/Button";
-import { useRouter } from "next/navigation";
-import ClimateTab from "./components/ClimateTab";
-import EventsTab from "./components/EventTab";
-import { useState } from "react";
-import { mockEvents } from "@/data/mock/events";
-import EnvironmentHeader from "./components/EnvironmentHeader";
-import Tabs from "./components/Tabs";
 import PlantsTab from "./components/PlantsTab";
+import ClimateTab from "./components/ClimateTab";
+import { mockEvents } from "@/data/mock/events";
+import { ENVIRONMENT_ICONS } from "@/config/environment";
+import DetailViewLayout from "./components/shared/DetailViewLayout";
+import DetailViewHeader from "./components/shared/DetailViewHeader";
+import Tabs from "./components/Tabs";
+import ClimateGrid from "@/components/climate/ClimateGrid";
+import { ActivityIcon, Droplets, Sprout } from "lucide-react";
+import EnvironmentEventTab from "./components/EnvironmentEventTab";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
-const EnvironmentDetailView = ({ environmentId }: { environmentId: string })  => {
+export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
+    const [activeTab, setActiveTab] = useState<'plants' | 'climate' | 'events'>('plants');
     const plants = getPlantsByEnvironment(environmentId);
-    const router = useRouter()
-    const [activeTab, setActiveTab] = useState<TabVariant>('plants');
+    // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
+    // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
+    const tabs = useMemo(() => [
+        { id: 'plants' as const, label: `Pflanzen (${plants.length})`, icon: <Sprout /> },
+        { id: 'climate' as const, label: 'Klima-Verlauf', icon: <ActivityIcon /> },
+        { id: 'events' as const, label: 'Ereignisse', icon: <Droplets /> }
+    ], [plants.length, environment?.id]);
 
     if (!environment) return null;
 
     return (
-        <div className={styles.container}>
-            <Button
-                size="fill"
-                onClick={() => router.push("/dashboard")}
+        <DetailViewLayout
+            backUrl="/dashboard"
+            backLabel="Zurück zur Übersicht"
+        >
+            <DetailViewHeader
+                title={environment.name}
+                subtitle={environment.location}
+                icon={ENVIRONMENT_ICONS[environment.type]}
+                iconVariant={environment.type.toLowerCase()}
             >
-                <ArrowRight className={styles.arrow}/>
-                Zurück zur Übersicht
-            </Button>
-            <div className={styles.content}>
-                <EnvironmentHeader environment={environment} />
-                <nav aria-label="Ansicht wechseln">
-                    <Tabs activeTab={activeTab} setActiveTab={setActiveTab} plantsCount={plants.length} />
-                </nav>
-                {activeTab === 'plants' && <PlantsTab plants={plants} />}
-                {activeTab === 'climate' && (
-                    <ClimateTab climate={environment.climate} history={environment} />
-                )}
-                {activeTab === 'events' && <EventsTab events={mockEvents} />}
-            </div>
-        </div>
+                {environment.climate && <ClimateGrid climate={environment.climate} />}
+            </DetailViewHeader>
+            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
+            <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
+            <ClimateTab climate={environment.climate} history={environment} hidden={activeTab !== 'climate'}/>
+            <EnvironmentEventTab environmentId={environmentId} events={mockEvents} hidden={activeTab !== 'events'}/>
+        </DetailViewLayout>
     );
 }
-
-export default EnvironmentDetailView

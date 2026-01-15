@@ -1,10 +1,12 @@
 import { PlantData } from '@/types/plant';
 import styles from './PlantsTab.module.scss';
-import TabContent from './TabContent';
-import EmptyState from './EmptyState';
-import PlantCard from './PlantCard';
+import TabContent from './shared/TabContent';
+import EmptyState from './shared/EmptyState';
+import PlantCard from './shared/PlantCard';
+import Link from 'next/link';
 
-export default function PlantsTab({ plants }: {plants: PlantData[]}) {
+export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidden: boolean}) {
+    if (hidden) return null
     return (
         <TabContent id="plants" title={`Pflanzen (${plants.length})`}>
             {plants.length === 0 ? (
@@ -12,7 +14,10 @@ export default function PlantsTab({ plants }: {plants: PlantData[]}) {
             ) : (
                 <div className={styles.plantsGrid}>
                     {plants.map(plant => (
-                        <PlantCard key={plant.id} plant={plant} />
+                        <Link key={plant.id} href={`/environments/${plant.environmentId}/plants/${plant.id}`} className={styles.buttonLink}>
+                            <PlantCard key={plant.id} plant={plant} />
+                        </Link>
+                        
                     ))}
                 </div>
             )}

@@ -19,6 +19,7 @@ export interface EnvironmentData {
   type: EnvironmentType;
   location?: string;
   climate?: ClimateData;
+  events?: EnvironmentEvent[]
 }
 
 export interface EnvironmentData_Historical {

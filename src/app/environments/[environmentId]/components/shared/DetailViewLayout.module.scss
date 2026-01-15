@@ -1,0 +1,9 @@
+.container {
+    min-height: 100vh;
+    background-color: var(--color-background-primary);
+}
+
+.arrow{
+    transform: rotate(180deg);
+    margin-right: var(--spacing-l);
+}

@@ -17,6 +17,8 @@ export interface PlantData {
   species: string;
   environmentId: string;
   water?: WaterData;
+  historical?: PlantData_Historical[];
+  events?: PlantEvent[];
 }
 
 export interface PlantData_Historical {

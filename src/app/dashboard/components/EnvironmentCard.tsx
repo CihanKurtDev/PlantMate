@@ -5,7 +5,8 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import styles from "./EnvironmentCard.module.scss"
 import ClimateGrid from "@/components/climate/ClimateGrid";
 import { useRouter } from "next/navigation";
-import EnvironmentTypeIcon from "./EnvironmentTypeIcon";
+import TypeIcon from "@/components/TypeIcon/TypeIcon";
+import { ENVIRONMENT_ICONS } from "@/config/environment";
 
 const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
     const { getPlantsByEnvironment } = usePlantMonitor();
@@ -20,7 +21,7 @@ const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
         >
             <div>
                 <div className={styles.header}>
-                    <EnvironmentTypeIcon type={environment.type} />
+                    <TypeIcon icon={ENVIRONMENT_ICONS[environment.type]} variant={environment.type.toLowerCase()} />
                     <div className={styles.titleGroup}>
                         <h3 className={styles.title}>{environment.name}</h3>
                         {environment.location && (

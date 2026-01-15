@@ -108,6 +108,37 @@
     border-color: #a5d6a7;
 }
 
+.WATERING {
+    background: #e0f7fa;
+    color: #006064;
+    border-color: #4dd0e1;
+}
+
+.FERTILIZING {
+    background: #f1f8e9;
+    color: #33691e;
+    border-color: #aed581;
+}
+
+.REPOTTING {
+    background: #fff3e0;
+    color: #e65100;
+    border-color: #ffcc80;
+}
+
+.PEST_CONTROL {
+    background: #fce4ec;
+    color: #880e4f;
+    border-color: #f8bbd0;
+}
+
+.PRUNING {
+    background: #ede7f6;
+    color: #4a148c;
+    border-color: #b39ddb;
+}
+
+
 .eventsGrid {
     @media (min-width: 768px) {
         display: grid;

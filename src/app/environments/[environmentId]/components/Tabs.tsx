@@ -1,21 +1,22 @@
-import { Sprout, Activity, Droplets } from 'lucide-react';
 import styles from '../EnvironmentDetailView.module.scss';
 import { Button } from '@/components/Button/Button';
 import { JSX } from 'react';
-import { TabVariant } from '../EnvironmentDetailView';
 
-interface TabProps {
-    activeTab: string,
-    setActiveTab: React.Dispatch<React.SetStateAction<TabVariant>>,
-    plantsCount: number
+export type TabVariant = 'plants' | 'climate' | 'events'
+
+export interface TabItem<T extends string> {
+    id: T;
+    label: string;
+    icon?: JSX.Element;
 }
 
-export default function Tabs({ activeTab, setActiveTab, plantsCount }: TabProps) {
-    const tabs: { id: TabVariant; label: string; icon: JSX.Element }[]  = [
-        { id: 'plants', label: `Pflanzen (${plantsCount})`, icon: <Sprout /> },
-        { id: 'climate', label: 'Klima-Verlauf', icon: <Activity /> },
-        { id: 'events', label: 'Ereignisse', icon: <Droplets /> }
-    ];
+interface TabProps<T extends string> {
+    activeTab: T,
+    setActiveTab: React.Dispatch<React.SetStateAction<T>>,
+    tabs: TabItem<T>[];
+}
+
+export default function Tabs<T extends string>({ activeTab, setActiveTab, tabs }: TabProps<T>) {
 
     return (
         <div className={styles.tabRow}>
