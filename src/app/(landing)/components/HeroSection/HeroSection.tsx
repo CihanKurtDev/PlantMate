@@ -12,16 +12,16 @@ export const HeroSection = () => (
         Erhalte intelligente Warnungen und optimiere dein Pflanzenwachstum.
       </p>
       <div className={styles.heroBtnWrapper}>
-        <Button>
-          <Link href="/register" className={styles.buttonLink}>
+        <Link href="/register" className={styles.buttonLink}>
+          <Button>
             Jetzt starten
-          </Link>
-        </Button>
-        <Button variant="secondary">
-          <Link href="/login" className={styles.buttonLink}>
+          </Button>
+        </Link>
+        <Link href="/login" className={styles.buttonLink}>
+          <Button variant="secondary">
             Login
-          </Link>
-        </Button>
+          </Button>
+        </Link>
       </div>
     </div>
   </Section>

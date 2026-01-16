@@ -10,8 +10,7 @@ const PlantCard = ({ plant }: { plant: PlantData }) => {
                     <Sprout/>
                 </div>
                 <div className={styles.info}>
-                    <h4 className={styles.title}>{plant.title}</h4>
-                    <p className={styles.species}>{plant.species}</p>
+                    <h4 className={styles.title}>{plant.title} <p className={styles.species}>{plant.species}</p></h4>
                     {plant.water && (
                         <div className={styles.waterValues}>
                             {Object.entries(plant.water).map(([key, value]) => 

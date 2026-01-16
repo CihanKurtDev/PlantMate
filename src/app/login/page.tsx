@@ -1,11 +1,12 @@
 import LoginForm from './components/LoginForm'
-import styles from './page.module.scss'
+import styles from './LoginPage.module.scss'
+
 const LoginPage = () => (
     <div className={styles.page}>
-        <main className={styles.main}>
+        <div className={styles.card}>
             <h1>Login</h1>
             <LoginForm />
-        </main>
+        </div>
     </div>
 )
 

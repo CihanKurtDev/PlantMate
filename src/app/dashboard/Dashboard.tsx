@@ -11,17 +11,19 @@ const Dashboard = () => {
     const router = useRouter()
 
     return (
-        <div className={styles.container}>
-            <div className={styles.content}>
-                <div  className={styles.header}>
-                    <h1 >Dashboard</h1>
-                    <p>Übersicht deiner Pflanzenumgebungen</p>
-                </div>
+        <>
+            <div className={styles.container}>
+                <div className={styles.content}>
+                    <div  className={styles.header}>
+                        <h1 >Dashboard</h1>
+                        <p>Übersicht deiner Pflanzenumgebungen</p>
+                    </div>
 
-                <div className={styles.grid}>
-                    {environments.map(environment => (
-                        <EnvironmentCard key={environment.id} environment={environment}/>
-                    ))}
+                    <div className={styles.grid}>
+                        {environments.map(environment => (
+                            <EnvironmentCard key={environment.id} environment={environment}/>
+                        ))}
+                    </div>
                 </div>
             </div>
             <Button
@@ -32,7 +34,7 @@ const Dashboard = () => {
             >
                 <Plus size={32} style={{ display: "block" }} />
             </Button>
-        </div>
+        </>
     );
 }
 

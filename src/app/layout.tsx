@@ -26,10 +26,14 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Header />
-        <PlantMonitorProvider>
-          {children}
-        </PlantMonitorProvider>
+        <div className="appWrapper">
+          <Header />
+          <PlantMonitorProvider>
+            <main className="pageContainer">
+                {children}
+            </main>
+          </PlantMonitorProvider>
+        </div>
       </body>
     </html>
   );

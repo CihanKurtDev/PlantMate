@@ -79,21 +79,35 @@
   }
 }
 
-@mixin card {
+@mixin card-base {
   padding: var(--spacing-l);
   margin-bottom: var(--spacing-s);
   border-radius: var(--radius-xl);
   text-align: center;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-
-  &:hover {
-    transform: translateY(-2px);
-  }
 
   figure {
     font-size: var(--font-size-xl);
   }
+}
+
+@mixin card-interactive {
+  @include card-base;
+  cursor: pointer;    
+
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@mixin card-flat {
+  padding: var(--spacing-m);
+  border-radius: var(--radius-m);
+  border: 1px solid var(--color-border-secondary);
+  background: var(--color-background-primary);
+  margin-bottom: 0;
 }
 
 @mixin select {

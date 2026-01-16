@@ -1,0 +1,20 @@
+@use '../../styles/mixins' as *;
+
+.page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-secondary);
+}
+
+.card {
+    @include card-base;
+    width: 100%;
+    max-width: 400px;
+}
+
+.title {
+    margin-bottom: var(--spacing-l);
+    text-align: center;
+}

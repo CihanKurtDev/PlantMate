@@ -1,9 +1,20 @@
+@use '../../../../../styles/layout' as *;
+
 .container {
-    min-height: 100vh;
-    background-color: var(--color-background-primary);
+    @extend .pageContainer;
 }
 
-.arrow{
+.content {
+    @extend .contentWrapper;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-l);
+}
+
+.arrow {
     transform: rotate(180deg);
-    margin-right: var(--spacing-l);
+    margin-right: var(--spacing-xs);
 }

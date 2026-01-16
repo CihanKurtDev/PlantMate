@@ -1,6 +1,6 @@
-import { Section } from "@/components/Section/Section";
 import { FeatureCard } from "./FeatureCard";
 import styles from "./FeatureSection.module.scss";
+import CardGridSection from "../shared/CardGridSection";
 
 export interface Feature {
   icon: string;
@@ -27,13 +27,13 @@ const features: Feature[] = [
 ];
 
 export const FeatureSection = () => (
-  <Section className={styles.featureSection}>
-    <h2>Alles was du brauchst</h2>
-    <p>Professionelles Monitoring für jeden Grower</p>
-    <div className={styles.features}>
-      {features.map((feature, index) => (
+  <CardGridSection 
+    title="Alles was du brauchst"
+    subtitle="Professionelles Monitoring für jeden Grower"
+    items={features}
+    className={styles.featureSection}
+    renderItem={(feature, index) => (
         <FeatureCard key={index} {...feature} />
-      ))}
-    </div>
-  </Section>
+    )}
+  />
 );
