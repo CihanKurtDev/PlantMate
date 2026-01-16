@@ -52,7 +52,8 @@
 }
 
 .title {
-    font-size: var(--font-size-l);
+    display: flex;
+    gap: var(--spacing-s);
     font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
     overflow: hidden;
@@ -61,7 +62,6 @@
 }
 
 .species {
-    font-size: var(--font-size-m);
     color: var(--color-text-tertiary);
     font-style: italic;
     margin: 0;
