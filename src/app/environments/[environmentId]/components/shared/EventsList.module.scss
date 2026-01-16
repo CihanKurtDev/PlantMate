@@ -27,12 +27,8 @@
 }
 
 .card {
-    @include card-base;
-    padding: var(--spacing-m);
-    margin-bottom: 0;
-    text-align: inherit;
+    @include card-flat
 }
-
 
 .eventTop {
     margin-bottom: 4px;

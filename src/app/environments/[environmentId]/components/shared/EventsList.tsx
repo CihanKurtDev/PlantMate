@@ -77,10 +77,7 @@ export default function EventsList<T extends BaseEvent>({
                                                 {formatTime(event.timestamp)}
                                             </span>
                                         </div>
-
-                                        {event.notes && (
-                                            <p className={styles.eventNotes}>{event.notes}</p>
-                                        )}
+                                        <p className={styles.eventNotes}>{event.notes ? event.notes : ""}</p>
                                     </article>
                                 )}
                             </li>
