@@ -1,6 +1,6 @@
-import { Section } from "@/components/Section/Section";
 import { CustomerCard } from "./CustomerCard";
 import styles from "./CustomerSection.module.scss";
+import CardGridSection from "../shared/CardGridSection";
 
 export interface Customer {
   icon: string;
@@ -31,13 +31,13 @@ const customers: Customer[] = [
 ];
 
 export const CustomerSection = () => (
-  <Section className={styles.customerSection}>
-    <h2>Deine Vorteile auf einen Blick</h2>
-    <p>Starte unkompliziert, behalte alles im Blick und hole das Beste aus deinen Pflanzen heraus.</p>
-    <div className={styles.customerListWrapper}>
-      {customers.map((feature, index) => (
-        <CustomerCard key={index} {...feature} />
-      ))}
-    </div>
-  </Section>
+  <CardGridSection 
+    title="Deine Vorteile auf einen Blick"
+    subtitle="Starte unkompliziert, behalte alles im Blick und hole das Beste aus deinen Pflanzen heraus."
+    items={customers}
+    className={styles.customerSection}
+    renderItem={(customer, i) => (
+      <CustomerCard key={i} {...customer} />
+    )}
+  />
 );

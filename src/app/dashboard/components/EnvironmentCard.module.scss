@@ -1,10 +1,7 @@
-@use "../../../styles/mixins" as m;
-.card {
-    @include m.card;
+@use "../../../styles/mixins" as *;
 
-    &:hover {
-        cursor: pointer;    
-    }
+.card {
+    @include card-interactive;
 }
 
 .header {

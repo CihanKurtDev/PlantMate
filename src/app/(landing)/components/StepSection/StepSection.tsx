@@ -1,6 +1,6 @@
 import styles from "./StepSection.module.scss";
 import { StepCard } from "./StepCard";
-import { Section } from "@/components/Section/Section";
+import CardGridSection from "../shared/CardGridSection";
 
 export interface Step {
   num: string;
@@ -27,13 +27,13 @@ const steps: Step[] = [
 ]
 
 export const StepSection = () => (
-  <Section className={styles.stepSection}>
-    <h2>So einfach geht's</h2>
-    <p>In 3 Schritten zu optimalen Wachstumsbedingungen</p>
-    <div className={styles.steps}>
-      {steps.map((step, index) => (
-        <StepCard key={index} {...step} />
-      ))}
-    </div>
-  </Section>
+  <CardGridSection 
+    title="So einfach geht's"
+    subtitle="In 3 Schritten zu optimalen Wachstumsbedingungen"
+    items={steps}
+    className={styles.steps}
+    renderItem={(step, i) => (
+      <StepCard key={i} {...step} />
+    )}
+  />
 );
