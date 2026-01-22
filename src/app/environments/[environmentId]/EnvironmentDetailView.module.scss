@@ -1,32 +1,8 @@
-.plantsSection h2 {
-    font-size: var(--font-size-l);
-    font-weight: var(--font-weight-medium);
-    color: var(--color-text-primary);
-    margin: 0 0 var(--spacing-m) 0;
-}
+.climateGridWrapper {
+    margin-right: 0;
 
-.eventTab {
-    margin-bottom: var(--spacing-m);
-    
-    h4 {
-        margin-bottom: var(--spacing-m);
-    }
-}
-
-.tabRow {
-    display: flex;
-    
-    button {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        padding: var(--spacing-m);
-        
-        svg {
-            position: absolute;
-            left: var(--spacing-m);
-        }
+    @media (min-width: 768px) {
+        margin-right: var(--spacing-l);
+        min-width: 600px;
     }
 }

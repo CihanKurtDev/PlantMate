@@ -7,10 +7,11 @@ import ClimateTab from "./components/ClimateTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import DetailViewLayout from "./components/shared/DetailViewLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
-import Tabs from "./components/Tabs";
+import Tabs from "./components/shared/Tabs";
 import ClimateGrid from "@/components/climate/ClimateGrid";
 import { ActivityIcon, Droplets, Sprout } from "lucide-react";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
+import styles from "./EnvironmentDetailView.module.scss";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
@@ -40,7 +41,11 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 icon={ENVIRONMENT_ICONS[environment.type]}
                 iconVariant={environment.type.toLowerCase()}
             >
-                {environment.climate && <ClimateGrid climate={environment.climate} />}
+                {environment.climate && (
+                    <div className={styles.climateGridWrapper}>
+                        <ClimateGrid climate={environment.climate} />
+                    </div>
+                )}
             </DetailViewHeader>
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
             <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />

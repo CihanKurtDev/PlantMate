@@ -1,4 +1,4 @@
-import styles from '../EnvironmentDetailView.module.scss';
+import styles from './Tabs.module.scss';
 import { Button } from '@/components/Button/Button';
 import { JSX } from 'react';
 
