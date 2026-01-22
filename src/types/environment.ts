@@ -1,4 +1,4 @@
-import { LucideIcon } from "lucide-react";
+import { iconMap } from "@/app/environments/[environmentId]/components/shared/EventsList";
 import type { MeasuredValue } from "./plant";
 
 export type PercentUnit = '%';
@@ -54,7 +54,7 @@ export interface EnvironmentEvent {
     action: 'ADDED' | 'REMOVED' | 'REPLACED';
   }
 
-  customIcon?: LucideIcon,
+  customIconName?: keyof typeof iconMap,
   customBgColor?: string,
   customTextColor?: string,
   customBorderColor?: string,

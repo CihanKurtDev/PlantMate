@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import ClimateTab from "./components/ClimateTab";
-import { mockEvents } from "@/data/mock/events";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import DetailViewLayout from "./components/shared/DetailViewLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";

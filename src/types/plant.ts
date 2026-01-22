@@ -1,3 +1,5 @@
+import { iconMap } from "@/app/environments/[environmentId]/components/shared/EventsList";
+
 export type ECUnit = 'mS/cm';
 export type PHUnit = 'pH';
 
@@ -35,7 +37,8 @@ export type PlantEventType =
   | 'REPOTTING' 
   | 'PEST_CONTROL'
   | 'FERTILIZING'
-  | 'PRUNING';
+  | 'PRUNING'
+  |  string
 
 export interface PlantEvent {
   id: string;
@@ -66,4 +69,9 @@ export interface PlantEvent {
     fertilizer: string;
     amount?: MeasuredValue<'ml' | 'g'>;
   };
+
+  customIconName?: keyof typeof iconMap;
+  customBgColor?: string,
+  customTextColor?: string,
+  customBorderColor?: string,
 }

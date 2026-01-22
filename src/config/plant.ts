@@ -1,30 +1,31 @@
-import { Sprout, Droplets, Activity, Leaf } from 'lucide-react';
+import { Sprout, Droplets, Activity, Leaf, LucideIcon } from 'lucide-react';
 
-export const PLANT_EVENT_MAP = {
+export const PLANT_EVENT_MAP: Record<
+    string,
+    {
+        label: string;
+        icon: LucideIcon;
+    }
+> = {
     WATERING: {
         label: 'Bewässerung',
         icon: Droplets,
-        color: 'watering',
     },
     FERTILIZING: {
         label: 'Düngen',
         icon: Leaf,
-        color: 'fertilizing',
     },
     REPOTTING: {
         label: 'Umtopfen',
         icon: Sprout,
-        color: 'repotting',
     },
     PEST_CONTROL: {
         label: 'Schädlingsbekämpfung',
         icon: Activity,
-        color: 'pest',
     },
     PRUNING: {
         label: 'Rückschnitt',
         icon: Activity,
-        color: 'pruning',
     },
 } as const;
 

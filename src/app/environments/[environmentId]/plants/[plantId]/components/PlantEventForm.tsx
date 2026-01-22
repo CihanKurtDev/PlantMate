@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
-import { PlantEventType } from "@/types/plant";
+import { PlantEvent, PlantEventType } from "@/types/plant";
+import EventForm, { EventFormData, EventOption } from "../../../components/shared/EventForm";
 
 interface PlantEventFormProps {
     plantId: string;
@@ -12,56 +10,44 @@ interface PlantEventFormProps {
     onSave: () => void;
 }
 
+const plantEventOptions: EventOption[] = [
+    { value: "WATERING", label: "Wässern" },
+    { value: "REPOTTING", label: "Umtopfen" },
+    { value: "FERTILIZING", label: "Düngen" },
+    { value: "PEST_CONTROL", label: "Schädlingsbekämpfung" },
+    { value: "PRUNING", label: "Beschneiden" },
+    { value: "custom", label: "Eigenes Event" },
+];
+
 export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEventFormProps) {
     const { addEventToPlant } = usePlantMonitor();
-    const [type, setType] = useState<PlantEventType>("WATERING");
-    const [notes, setNotes] = useState("");
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        addEventToPlant(plantId, {
+    const handleSubmit = (eventData: EventFormData<PlantEventType>) => {
+        const isCustom = eventData.type === "custom";
+        
+        const newEvent: PlantEvent = {
             id: Date.now().toString(),
             plantId,
-            type,
-            notes,
-            timestamp:  Date.now(),
-        });
+            timestamp: Date.now(),
+            type: isCustom ? eventData.customName : eventData.type,
+            notes: eventData.notes || undefined,
+            customIconName: isCustom ? eventData.customIconName : undefined,
+            customBgColor: isCustom ? eventData.customBgColor : undefined,
+            customTextColor: isCustom ? eventData.customTextColor : undefined,
+            customBorderColor: isCustom ? eventData.customBorderColor : undefined,
+        };
 
+        addEventToPlant(plantId, newEvent);
         onSave();
     };
 
     return (
-        <Form onSubmit={handleSubmit}>
-            <FormSectionTitle>Neues Ereignis hinzufügen</FormSectionTitle>
-
-            <FormField>
-                <label htmlFor="event-type">Event Typ</label>
-                <select id="event-type" value={type} onChange={e => setType(e.target.value as PlantEventType)}>
-                    <option value="WATERING">Wässern</option>
-                    <option value="REPOTTING">Umtopfen</option>
-                    <option value="FERTILIZING">Düngen</option>
-                    <option value="PEST_CONTROL">Schädlingsbekämpfung</option>
-                    <option value="PRUNING">Beschneiden</option>
-                </select>
-            </FormField>
-
-            <FormField>
-                <label htmlFor="event-notes">Notizen</label>
-                <textarea
-                    id="event-notes"
-                    value={notes}
-                    onChange={e => setNotes(e.target.value)}
-                    placeholder="Optional: Weitere Details eintragen"
-                />
-            </FormField>
-
-            <FormField>
-                <Button type="submit">Speichern</Button>
-                <Button variant="secondary" type="button" onClick={onCancel}>
-                    Abbrechen
-                </Button>
-            </FormField>
-        </Form>
+        <EventForm<PlantEventType>
+            title="Neues Ereignis hinzufügen"
+            eventOptions={plantEventOptions}
+            defaultEventType="WATERING"
+            onSubmit={handleSubmit}
+            onCancel={onCancel}
+        />
     );
 }

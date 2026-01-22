@@ -2,6 +2,9 @@ import TabContent from "./TabContent";
 import EmptyState from "./EmptyState";
 import styles from "./EventsList.module.scss";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
+import { ActivityIcon, Droplet, Leaf, Thermometer, Wind } from "lucide-react";
+
+export const iconMap = { Leaf, Thermometer, ActivityIcon, Droplet, Wind } as const;
 
 export interface BaseEvent {
     id: string;
@@ -9,7 +12,7 @@ export interface BaseEvent {
     timestamp: number;
     notes?: string;
 
-    customIcon?: React.ComponentType<any>;
+    customIconName?: keyof typeof iconMap;
     customBgColor?: string;
     customTextColor?: string;
     customBorderColor?: string;
@@ -69,17 +72,25 @@ const getEventLabel = ( event: BaseEvent, eventMap?: Record<string, EventMapItem
     return event.type;
 };
 
-const EventIcon = ({event, eventMap}: {event: BaseEvent, eventMap?: Record<string, EventMapItem>}) => {
-    let Icon: React.ComponentType<any> | undefined;
+const DEFAULT_ICON = Leaf;
 
-    if (event.customIcon) {
-        Icon = event.customIcon;
-    } else if (eventMap && eventMap[event.type]) {
+export const EventIcon = ({event, eventMap}: {event: BaseEvent; eventMap?: Record<string, EventMapItem>}) => {
+    let Icon: React.ComponentType<{ size?: number }> | undefined;
+
+    // wenn customIcon dann den ensprechenden icon aus dem iconMap nehmen
+    // iconMap ist liste der icons die zur verfügung stehen um custom icons zu erstellen
+    if (event.customIconName) {
+        Icon = iconMap[event.customIconName];
+    }
+
+    // wenn kein customIcon dann im eventMap nachschauen
+    // das sind die standard icons für die vordefinierten event types
+    if (!Icon && eventMap && eventMap[event.type]) {
         Icon = eventMap[event.type].icon;
     }
 
     if (!Icon) {
-        return null;
+        Icon = DEFAULT_ICON;
     }
 
     return <Icon size={16} />;
@@ -128,9 +139,7 @@ const EventCard = ({ event, title, eventMap }: EventCardProps) => {
                 </span>
             </div>
 
-            {event.notes ? (
-                <p className={styles.eventNotes}>{event.notes}</p>
-            ) : null}
+            <p className={styles.eventNotes}>{event.notes ? event.notes : null}</p>
         </article>
     );
 };
@@ -153,14 +162,14 @@ export default function EventsList<T extends BaseEvent>({
     const groups = groupEventsByDate(events);
 
     return (
-        <div className={styles.eventsGrid}>
+        <>
             {groups.map(([date, groupedEvents]) => (
-                <div key={date}>
+                <section key={date}>
                     <header className={styles.dateHeader}>
                         <h4>{formatDate(new Date(date).getTime())}</h4>
                     </header>
 
-                    <ol className={styles.timelineList}>
+                    <ol className={styles.eventsGrid}>
                         {groupedEvents.map(event => (
                             <li key={event.id} className={styles.timelineItem}>
                                 {children ? (
@@ -175,8 +184,8 @@ export default function EventsList<T extends BaseEvent>({
                             </li>
                         ))}
                     </ol>
-                </div>
+                </section>
             ))}
-        </div>
+        </>
     );
 }

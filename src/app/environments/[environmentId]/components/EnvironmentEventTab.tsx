@@ -9,7 +9,7 @@ import TabContent from "./shared/TabContent";
 import EventsList from "./shared/EventsList";
 
 interface EnvironmentEventTabProps {
-    events: EnvironmentEvent[];
+    events?: EnvironmentEvent[];
     hidden: boolean;
     environmentId: string;
 }
@@ -25,7 +25,7 @@ export default function EnvironmentEventTab({ events, hidden, environmentId }: E
                 <>
                     <Button onClick={() => setIsAddingEvent(true)}>Neues Event</Button>
                     <EventsList
-                        events={events}
+                        events={events ?? []}
                         emptyMessage="Keine Events vorhanden"
                         eventMap={ENVIRONMENT_EVENT_MAP}
                         getTitle={(event) =>
