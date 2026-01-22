@@ -80,13 +80,17 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addEventToEnvironment = (environmentId: string, event: EnvironmentEvent) => {
-        setEnvironments(prev =>
-            prev.map(env =>
+        setEnvironments(prev => {
+            const updated = prev.map(env =>
                 env.id === environmentId
                     ? { ...env, events: [...(env.events ?? []), event] }
                     : env
             )
-        );
+
+            localStorage.setItem("environments", JSON.stringify(updated))
+
+            return updated
+        });
     };
 
 

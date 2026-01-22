@@ -1,3 +1,4 @@
+import { iconMap } from "@/app/environments/[environmentId]/components/shared/EventsList";
 import type { MeasuredValue } from "./plant";
 
 export type PercentUnit = '%';
@@ -34,6 +35,7 @@ export type EnvironmentEventType =
   | "Equipment_Change" 
   | "Cleaning" 
   | "Maintenance"
+  | string
 
 export interface EnvironmentEvent {
   id: string;
@@ -51,4 +53,9 @@ export interface EnvironmentEvent {
     equipment: string;
     action: 'ADDED' | 'REMOVED' | 'REPLACED';
   }
+
+  customIconName?: keyof typeof iconMap,
+  customBgColor?: string,
+  customTextColor?: string,
+  customBorderColor?: string,
 }

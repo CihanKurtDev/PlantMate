@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import ClimateTab from "./components/ClimateTab";
-import { mockEvents } from "@/data/mock/events";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import DetailViewLayout from "./components/shared/DetailViewLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
@@ -46,7 +45,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
             <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
             <ClimateTab climate={environment.climate} history={environment} hidden={activeTab !== 'climate'}/>
-            <EnvironmentEventTab environmentId={environmentId} events={mockEvents} hidden={activeTab !== 'events'}/>
+            <EnvironmentEventTab environmentId={environmentId} events={environment.events} hidden={activeTab !== 'events'}/>
         </DetailViewLayout>
     );
 }

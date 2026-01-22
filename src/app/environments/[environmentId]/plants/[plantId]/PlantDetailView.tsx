@@ -75,7 +75,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                     )}
                 </TabContent>
             )}
-            <PlantEventsTab plantId={plantId} hidden={activeTab !== 'events'} />
+            <PlantEventsTab plantId={plantId} hidden={activeTab !== 'events'} events={plant.events} />
         </DetailViewLayout>
     );
 }
