@@ -1,24 +1,18 @@
 import { useState } from "react";
-import { BaseEvent, EventBadge, EventIcon, iconMap } from "./EventsList";
+import { BaseEvent, EventBadge, EventIcon } from "./EventsList";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import styles from "./EventForm.module.scss"
+import DatePicker from "./DatePicker";
+import { EventFormData } from "@/types/events";
+import { iconMap } from "@/types/environment";
 
-export interface EventFormData<T extends string> {
-    type: T;
-    customName: string;
-    customIconName: keyof typeof iconMap;
-    customBgColor: string;
-    customTextColor: string;
-    customBorderColor: string;
-    notes: string;
-}
 
 interface EventFormProps<T extends string> {
     title?: string;
     eventOptions: EventOption[];
     defaultEventType: T;
-    onSubmit: (eventData: EventFormData<T>) => void;
+    onSubmit: (eventData: EventFormData) => void;
     onCancel: () => void;
 }
 
@@ -35,7 +29,7 @@ export default function EventForm<T extends string>({
     defaultEventType,
     eventOptions,
 }: EventFormProps<T>) {
-    const [formData, setFormData] = useState<EventFormData<T>>({
+    const [formData, setFormData] = useState<EventFormData>({
         type: defaultEventType,
         customName: "",
         customIconName: "Leaf",
@@ -43,18 +37,20 @@ export default function EventForm<T extends string>({
         customTextColor: "#424242",
         customBorderColor: "#bdbdbd",
         notes: "",
+        timestamp: Date.now()
     });
 
     const isCustom = formData.type === "custom";
+    const isWatering = formData.type === "WATERING";
 
-    const handleChange = (field: keyof EventFormData<T>, value: any) => {
+    const handleChange = (field: keyof EventFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (isCustom && !formData.customName.trim()) {
+        if (isCustom && !formData.customName?.trim()) {
             alert("Bitte gib einen Namen für dein eigenes Event ein.");
             return;
         }
@@ -65,7 +61,7 @@ export default function EventForm<T extends string>({
     const previewEvent: BaseEvent = {
         id: "preview",
         type: formData.customName || "Vorschau",
-        timestamp: Date.now(),
+        timestamp: formData.timestamp,
         customIconName: formData.customIconName,
         customBgColor: formData.customBgColor,
         customTextColor: formData.customTextColor,
@@ -76,6 +72,14 @@ export default function EventForm<T extends string>({
     return (
         <Form onSubmit={handleSubmit}>
             <FormSectionTitle>{title}</FormSectionTitle>
+
+            <FormField>
+                <DatePicker
+                    value={formData.timestamp}
+                    onChange={(timestamp) => handleChange("timestamp", timestamp)}
+                    label="Datum"
+                />
+            </FormField>
 
             <FormField>
                 <label htmlFor="event-type">Event Typ</label>
@@ -145,6 +149,40 @@ export default function EventForm<T extends string>({
                     </div>
                 </>
             )}
+
+            {isWatering && (
+                <>
+                    <FormField>
+                        <label>pH Wert</label>
+                        <input 
+                            type="number"
+                            step="0.1"
+                            value={formData.waterPh ?? ""}
+                            onChange={e => handleChange("waterPh", parseFloat(e.target.value))}
+                        />
+                    </FormField>
+
+                    <FormField>
+                        <label>EC Wert</label>
+                        <input 
+                            type="number"
+                            step="0.01"
+                            value={formData.waterEc ?? ""}
+                            onChange={e => handleChange("waterEc", parseFloat(e.target.value))}
+                        />
+                    </FormField>
+
+                    <FormField>
+                        <label>Menge (ml)</label>
+                        <input 
+                            type="number"
+                            value={formData.waterAmount ?? ""}
+                            onChange={e => handleChange("waterAmount", parseInt(e.target.value))}
+                        />
+                    </FormField>
+                </>
+            )}
+
 
             <FormField>
                 <label htmlFor="event-notes">Notizen</label>

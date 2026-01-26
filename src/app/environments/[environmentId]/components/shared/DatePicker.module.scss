@@ -1,0 +1,162 @@
+.datePicker {
+    position: relative;
+    width: 100%;
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.input {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+        border-color: #9ca3af;
+    }
+    
+    &:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+}
+
+.icon {
+    width: 1rem;
+    height: 1rem;
+    color: #6b7280;
+    flex-shrink: 0;
+}
+
+.dropdown {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    z-index: 50;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    width: 20rem;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.navButton {
+    padding: 0.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+    
+    &:hover:not(:disabled) {
+        background-color: #f3f4f6;
+    }
+    
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+}
+
+.monthYear {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.weekday {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    padding: 0.25rem 0;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.25rem;
+}
+
+.day {
+    aspect-ratio: 1;
+    padding: 0.25rem;
+    font-size: 0.875rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #374151;
+    
+    &:hover:not(:disabled) {
+        background-color: #f3f4f6;
+    }
+    
+    &.empty {
+        visibility: hidden;
+        cursor: default;
+    }
+    
+    &.disabled {
+        color: #d1d5db;
+        cursor: not-allowed;
+        
+        &:hover {
+            background-color: transparent;
+        }
+    }
+    
+    &.today {
+        font-weight: 600;
+        color: #3b82f6;
+    }
+    
+    &.selected {
+        background-color: #3b82f6;
+        color: white;
+        font-weight: 600;
+        
+        &:hover {
+            background-color: #2563eb;
+        }
+    }
+}

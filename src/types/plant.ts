@@ -1,4 +1,5 @@
-import { iconMap } from "@/app/environments/[environmentId]/components/shared/EventsList";
+import { BaseEvent } from "@/app/environments/[environmentId]/components/shared/EventsList";
+import { TimeSeriesEntry } from "./events";
 
 export type ECUnit = 'mS/cm';
 export type PHUnit = 'pH';
@@ -40,38 +41,25 @@ export type PlantEventType =
   | 'PRUNING'
   |  string
 
-export interface PlantEvent {
-  id: string;
-  plantId: string;
-  timestamp: number;
-  type: PlantEventType;
-  notes?: string;
+export interface PlantEvent extends BaseEvent {
+    plantId: string;
 
   watering?: {
     amount: MeasuredValue<'ml' | 'L'>;
     nutrients?: {
-      ec?: MeasuredValue<ECUnit>;
       ph?: MeasuredValue<PHUnit>;
-    };
+      ec?: MeasuredValue<ECUnit>;
+    }
   }
+
   repotting?: {
     oldPotSize?: MeasuredValue<'L'>;
     newPotSize: MeasuredValue<'L'>;
     substrate?: string;
-  };
-  
-  pestControl?: {
-    pest: string;
-    treatment: string;
-  };
-  
-  fertilizing?: {
-    fertilizer: string;
-    amount?: MeasuredValue<'ml' | 'g'>;
-  };
+  }
 
-  customIconName?: keyof typeof iconMap;
-  customBgColor?: string,
-  customTextColor?: string,
-  customBorderColor?: string,
+  pestControl?: { pest: string; treatment: string };
+  fertilizing?: { fertilizer: string; amount?: MeasuredValue<'ml' | 'g'> };
 }
+
+export type PlantTimeSeriesEntry  = TimeSeriesEntry<PlantEvent>

@@ -5,11 +5,11 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import DetailViewLayout from "../../components/shared/DetailViewLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
 import { ActivityIcon, Sprout } from "lucide-react";
-import Tabs, { TabItem } from "../../components/shared/Tabs";
-import { PlantData_Historical } from "@/types/plant";
-import EmptyState from "../../components/shared/EmptyState";
 import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
+import { combinePlantData } from "@/helpers/combinePlantData";
+import DataTab from "../../components/shared/DataTab";
+import Tabs, { TabItem } from "../../components/shared/Tabs";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { plants } = usePlantMonitor();
@@ -25,6 +25,12 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
 
     if (!plant) return null;
 
+    const combinedPlantData = combinePlantData(plant.historical, plant.events);
+    const chartData = combinedPlantData.map(data => ({
+        ...data,
+        ph: data.metrics?.ph,
+        ec: data.metrics?.ec
+    }));
     return (
         <DetailViewLayout
             backUrl={`/environments/${plant.environmentId}`}
@@ -36,7 +42,6 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
             />
 
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
-            {/* I will write real components as soon as i data */}
             {activeTab === 'overview' && (
                 <TabContent title="Basisinformationen">
                     <p><strong>Art / Spezies:</strong> {plant.species || '-'}</p>
@@ -44,37 +49,14 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                     {plant.water?.ec && <p>EC: {plant.water.ec.value} {plant.water.ec.unit}</p>}
                 </TabContent>
             )}
-
-            {activeTab === 'history' && (
-                <TabContent title="Historische Messungen">
-                    {plant.historical && plant.historical.length > 0 ? (
-                        <table>
-                            <thead>
-                                <tr>
-                                <th>Datum</th>
-                                <th>pH</th>
-                                <th>EC</th>
-                                <th>Höhe</th>
-                                <th>Notizen</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {plant.historical.map((h: PlantData_Historical) => (
-                                    <tr key={h.id}>
-                                        <td>{new Date(h.timestamp).toLocaleDateString()}</td>
-                                        <td>{h.water?.ph?.value ?? '-'}</td>
-                                        <td>{h.water?.ec?.value ?? '-'}</td>
-                                        <td>{h.height?.value ?? '-'}</td>
-                                        <td>{h.notes ?? '-'}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <EmptyState message="Keine historischen Daten vorhanden" />
-                    )}
-                </TabContent>
-            )}
+            <DataTab 
+                isActive={activeTab === 'history'}  
+                data={chartData} 
+                metrics={[
+                    { key: "ph", name: "pH", color: "#1e88e5" },
+                    { key: "ec", name: "EC", color: "#43a047" }
+                ]}
+            />
             <PlantEventsTab plantId={plantId} hidden={activeTab !== 'events'} events={plant.events} />
         </DetailViewLayout>
     );

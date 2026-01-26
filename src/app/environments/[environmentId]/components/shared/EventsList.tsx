@@ -2,9 +2,9 @@ import TabContent from "./TabContent";
 import EmptyState from "./EmptyState";
 import styles from "./EventsList.module.scss";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
-import { ActivityIcon, Droplet, Leaf, Thermometer, Wind } from "lucide-react";
+import { Leaf } from "lucide-react";
+import { iconMap } from "@/types/environment";
 
-export const iconMap = { Leaf, Thermometer, ActivityIcon, Droplet, Wind } as const;
 
 export interface BaseEvent {
     id: string;

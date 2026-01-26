@@ -1,8 +1,9 @@
 "use client";
 
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import { EnvironmentEventType, EnvironmentEvent } from "@/types/environment";
-import EventForm, { EventFormData, EventOption } from "./shared/EventForm";
+import { EnvironmentEvent } from "@/types/environment";
+import EventForm, { EventOption } from "./shared/EventForm";
+import { EventFormData } from "@/types/events";
 
 interface EnvironmentEventFormProps {
     environmentId: string;
@@ -21,14 +22,14 @@ const environmentEventOptions: EventOption[] = [
 export default function EnvironmentEventForm({ environmentId, onCancel, onSave }: EnvironmentEventFormProps) {
     const { addEventToEnvironment } = usePlantMonitor();
 
-    const handleSubmit = (eventData: EventFormData<EnvironmentEventType>) => {
+    const handleSubmit = (eventData: EventFormData) => {
         const isCustom = eventData.type === "custom";
         
         const newEvent: EnvironmentEvent = {
             id: Date.now().toString(),
             environmentId,
             timestamp: Date.now(),
-            type: isCustom ? eventData.customName : eventData.type,
+            type: isCustom ? eventData.customName! : eventData.type,
             notes: eventData.notes || undefined,
             customIconName: isCustom ? eventData.customIconName : undefined,
             customBgColor: isCustom ? eventData.customBgColor : undefined,
@@ -41,7 +42,7 @@ export default function EnvironmentEventForm({ environmentId, onCancel, onSave }
     };
 
     return (
-        <EventForm<EnvironmentEventType>
+        <EventForm
             title="Neues Ereignis hinzufügen"
             eventOptions={environmentEventOptions}
             defaultEventType="Climate_Adjustment"

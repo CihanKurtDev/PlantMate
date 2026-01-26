@@ -1,6 +1,7 @@
 @use "./reset"; 
 @use "./variables" as v;
 @use './layout';
+@use './recharts';
 
 :root {
   --color-background-primary: #ddd9d9;

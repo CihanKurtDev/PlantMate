@@ -1,8 +1,9 @@
 "use client";
 
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import { PlantEvent, PlantEventType } from "@/types/plant";
-import EventForm, { EventFormData, EventOption } from "../../../components/shared/EventForm";
+import { PlantEvent } from "@/types/plant";
+import EventForm, { EventOption } from "../../../components/shared/EventForm";
+import { EventFormData } from "@/types/events";
 
 interface PlantEventFormProps {
     plantId: string;
@@ -22,19 +23,31 @@ const plantEventOptions: EventOption[] = [
 export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEventFormProps) {
     const { addEventToPlant } = usePlantMonitor();
 
-    const handleSubmit = (eventData: EventFormData<PlantEventType>) => {
+    const handleSubmit = (eventData: EventFormData) => {
         const isCustom = eventData.type === "custom";
-        
+        const isWatering = eventData.type === "WATERING";
+
         const newEvent: PlantEvent = {
             id: Date.now().toString(),
             plantId,
-            timestamp: Date.now(),
-            type: isCustom ? eventData.customName : eventData.type,
+            timestamp: eventData.timestamp,
+            type: isCustom ? eventData.customName! : eventData.type,
             notes: eventData.notes || undefined,
             customIconName: isCustom ? eventData.customIconName : undefined,
             customBgColor: isCustom ? eventData.customBgColor : undefined,
             customTextColor: isCustom ? eventData.customTextColor : undefined,
             customBorderColor: isCustom ? eventData.customBorderColor : undefined,
+            ...(isWatering && eventData.waterAmount !== undefined && (
+                {
+                    watering: {
+                        amount: { value: eventData.waterAmount, unit: 'ml' },
+                        nutrients: {
+                            ...(eventData.waterPh !== undefined && { ph: { value: eventData.waterPh, unit: 'pH' } }),
+                            ...(eventData.waterEc !== undefined && { ec: { value: eventData.waterEc, unit: 'mS/cm' } }),
+                        }
+                    }
+                }
+            ))
         };
 
         addEventToPlant(plantId, newEvent);
@@ -42,7 +55,7 @@ export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEvent
     };
 
     return (
-        <EventForm<PlantEventType>
+        <EventForm
             title="Neues Ereignis hinzufügen"
             eventOptions={plantEventOptions}
             defaultEventType="WATERING"

@@ -1,11 +1,14 @@
-import { iconMap } from "@/app/environments/[environmentId]/components/shared/EventsList";
 import type { MeasuredValue } from "./plant";
+import { BaseEvent, TimeSeriesEntry } from "./events";
+import { ActivityIcon, Droplet, Leaf, Thermometer, Wind } from "lucide-react";
 
 export type PercentUnit = '%';
 export type PPMUnit = 'ppm';
 export type KPaUnit = 'kPa';
 export type EnvironmentType = 'ROOM' | 'TENT' | 'GREENHOUSE';
 export type TempUnit = '°C' | '°F';
+
+export const iconMap = { Leaf, Thermometer, ActivityIcon, Droplet, Wind } as const;
 
 interface ClimateData {
   temp?: MeasuredValue<TempUnit>;
@@ -20,13 +23,14 @@ export interface EnvironmentData {
   type: EnvironmentType;
   location?: string;
   climate?: ClimateData;
+  historical?: EnvironmentData_Historical[];
   events?: EnvironmentEvent[]
 }
 
 export interface EnvironmentData_Historical {
   id: string;
   environmentId: string;
-  timetamp: number;
+  timestamp: number;
   climate: ClimateData
 }
 
@@ -37,25 +41,18 @@ export type EnvironmentEventType =
   | "Maintenance"
   | string
 
-export interface EnvironmentEvent {
-  id: string;
+export interface EnvironmentEvent extends BaseEvent {
   environmentId: string;
-  timestamp: number;
-  type: EnvironmentEventType;
-  notes?: string;
 
   climateAdjustment?: {
     setting: string;
-    target: MeasuredValue<TempUnit | PercentUnit | PPMUnit>
+    target: MeasuredValue<TempUnit | PercentUnit | KPaUnit | PPMUnit>;
   }
 
   equipmentChange?: {
     equipment: string;
     action: 'ADDED' | 'REMOVED' | 'REPLACED';
   }
-
-  customIconName?: keyof typeof iconMap,
-  customBgColor?: string,
-  customTextColor?: string,
-  customBorderColor?: string,
 }
+
+export type EnvironmentTimeSeriesEntry  = TimeSeriesEntry<EnvironmentEvent>
