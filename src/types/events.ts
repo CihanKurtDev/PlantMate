@@ -1,0 +1,45 @@
+import { iconMap } from "./environment";
+
+export interface BaseEvent {
+  id: string;
+  timestamp: number;
+  type: string;
+  notes?: string;
+  customName?: string;
+  customIconName?: keyof typeof iconMap;
+  customBgColor?: string;
+  customTextColor?: string;
+  customBorderColor?: string;
+}
+
+export interface EventFormData {
+  type: string;
+  timestamp: number;
+  notes?: string;
+
+  customName?: string;
+  customIconName?: keyof typeof iconMap;
+  customBgColor?: string;
+  customTextColor?: string;
+  customBorderColor?: string;
+
+  waterAmount?: number;
+  waterPh?: number;
+  waterEc?: number;
+}
+
+export interface TimeSeriesEntry<EventType = any> {
+  timestamp: number;
+  entryKind: 'historical' | 'event';
+  metrics?: {
+    temp?: number;
+    humidity?: number;
+    vpd?: number;
+    co2?: number;
+    ph?: number;
+    ec?: number;
+    height?: number;
+  };
+  notes?: string;
+  eventDetails?: EventType;
+}

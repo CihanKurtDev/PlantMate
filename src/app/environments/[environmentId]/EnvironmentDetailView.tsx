@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
-import ClimateTab from "./components/ClimateTab";
+import DataTab from "./components/shared/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import DetailViewLayout from "./components/shared/DetailViewLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
@@ -11,7 +11,8 @@ import Tabs from "./components/shared/Tabs";
 import ClimateGrid from "@/components/climate/ClimateGrid";
 import { ActivityIcon, Droplets, Sprout } from "lucide-react";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
-import styles from "./EnvironmentDetailView.module.scss";
+import { combineEnvironmentData } from "@/helpers/combineEnvironmentData";
+import styles from './EnvironmentDetailView.module.scss';
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
@@ -29,6 +30,15 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     ], [plants.length, environment?.id]);
 
     if (!environment) return null;
+    const combinedEnvData = combineEnvironmentData(environment.historical, environment.events);
+    const chartData = combinedEnvData.map(entry => ({
+        timestamp: entry.timestamp,
+        temp: entry.metrics?.temp,
+        humidity: entry.metrics?.humidity,
+        vpd: entry.metrics?.vpd,
+        co2: entry.metrics?.co2,
+        notes: entry.notes,
+    }));
 
     return (
         <DetailViewLayout
@@ -49,7 +59,16 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             </DetailViewHeader>
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
             <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
-            <ClimateTab climate={environment.climate} history={environment} hidden={activeTab !== 'climate'}/>
+            <DataTab
+                isActive={activeTab === 'climate'}
+                data={chartData}
+                metrics={[
+                    { key: 'temp', name: 'Temperatur', color: '#1e88e5' },
+                    { key: 'humidity', name: 'Luftfeuchtigkeit', color: '#43a047' },
+                    { key: 'vpd', name: 'VPD', color: '#fbc02d' },
+                    { key: 'co2', name: 'CO₂', color: '#e53935' }
+                ]}
+            />
             <EnvironmentEventTab environmentId={environmentId} events={environment.events} hidden={activeTab !== 'events'}/>
         </DetailViewLayout>
     );

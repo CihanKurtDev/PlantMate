@@ -1,0 +1,55 @@
+.recharts-wrapper {
+  font-size: var(--font-size-s);
+  color: var(--color-text-primary);
+}
+
+.recharts-cartesian-axis-line {
+  stroke: var(--color-border-primary);
+  stroke-width: 2;
+}
+
+.recharts-cartesian-axis-tick-value {
+  fill: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+
+.recharts-label {
+  fill: var(--color-text-primary);
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-medium);
+}
+
+.recharts-tooltip-wrapper {
+  outline: none;
+}
+
+.recharts-default-tooltip {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--color-border-secondary);
+  border-radius: var(--radius-l);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  padding: var(--spacing-s) var(--spacing-m);
+}
+
+.recharts-tooltip-label {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-xs);
+}
+
+.recharts-tooltip-item {
+  color: var(--color-text-success);
+  font-weight: var(--font-weight-medium);
+}
+
+.recharts-legend-wrapper {
+  font-size: var(--font-size-s);
+  color: var(--color-text-tertiary);
+}
+
+.recharts-tooltip-cursor {
+  stroke: var(--color-text-alert);
+  stroke-width: 2;
+  stroke-dasharray: 4 2;
+}
