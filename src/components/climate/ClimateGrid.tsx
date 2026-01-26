@@ -30,6 +30,7 @@ const ClimateGrid = ({ climate }: ClimateGridProps) => {
                 value ? (
                     <ClimateMetric
                         key={key}
+                        climateKey={key} 
                         icon={ICONS[key]}
                         value={
                             key === "co2"

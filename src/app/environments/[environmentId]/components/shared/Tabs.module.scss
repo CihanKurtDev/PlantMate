@@ -1,0 +1,39 @@
+.tabRow {
+    background-color: var(--button-secondary-bg);
+    display: flex;
+    
+    button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: var(--spacing-m);
+        border: none;
+        cursor: pointer;
+        
+        svg {
+            display: none;
+        }
+    }
+    
+    @media (min-width: 768px) {
+        button {
+            svg {
+                display: block;
+                position: relative;
+                left: 0;
+                margin-right: var(--spacing-s);
+            }
+        }
+    }
+    
+    @media (min-width: 1024px) {
+        button {
+            justify-content: flex-start;
+            flex: initial;
+            min-width: 150px;
+
+        }
+    }
+}

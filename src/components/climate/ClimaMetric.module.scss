@@ -1,4 +1,6 @@
 .metric {
+    position: relative;
+    justify-content: center;
     display: flex;
     align-items: center;
     gap: var(--spacing-xs);
@@ -9,6 +11,8 @@
     text-align: center;
     
     .iconWrapper {
+        position: absolute;
+        left: var(--spacing-xs);
         width: 36px;
         height: 36px;
         display: flex;
@@ -16,17 +20,14 @@
         justify-content: center;
     }
 
-    @media (min-width: 1600px) {
-        border: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
 }
 
 .content {
-    flex: 1 1 0%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .label {

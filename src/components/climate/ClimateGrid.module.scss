@@ -2,10 +2,4 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
-
-    @media (min-width: 1600px) {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2rem;
-        min-width: 500px;
-    }
 }

@@ -5,7 +5,7 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import DetailViewLayout from "../../components/shared/DetailViewLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
 import { ActivityIcon, Sprout } from "lucide-react";
-import Tabs, { TabItem } from "../../components/Tabs";
+import Tabs, { TabItem } from "../../components/shared/Tabs";
 import { PlantData_Historical } from "@/types/plant";
 import EmptyState from "../../components/shared/EmptyState";
 import TabContent from "../../components/shared/TabContent";
