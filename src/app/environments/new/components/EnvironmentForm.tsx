@@ -9,6 +9,7 @@ import type { EnvironmentData, EnvironmentType } from "@/types/environment";
 import { ClimateInputs } from "../../[environmentId]/components/shared/ClimateInputs";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
+import { usePlantMonitor } from "@/context/PlantMonitorContext";
 
 interface EnvironmentFormProps {
     initialData?: EnvironmentData;
@@ -18,6 +19,8 @@ interface EnvironmentFormProps {
 export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) => {
     const { formState, setField, setClimateField } = useEnvironmentForm(initialData)
     const { errors, warnings } = useClimateValidation(formState.climate);
+    const { addEnvironment } = usePlantMonitor();
+    
    
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
@@ -28,6 +31,9 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
             console.warn("Form has validation errors:", errors);
             return;
         }
+
+        addEnvironment({ ...formState, id: crypto.randomUUID() });
+
 
         if (onSaved) {
             onSaved(formState.id, nextStep);
