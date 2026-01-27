@@ -18,14 +18,31 @@ interface WaterInputsProps {
 
 export const WaterInputs = ({ water, onChange, errors, warnings }: WaterInputsProps) => {
     const handleChange = (field: "ph" | "ec" | "amount") => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value === "" ? undefined : { 
-            value: Number(e.target.value), 
-            unit: field === "amount" ? "ml" : field 
+        const inputValue = e.target.value;
+        const numValue = parseFloat(inputValue);
+        
+        if (inputValue === "") {
+            onChange({
+                ...water,
+                [field]: undefined,
+            });
+            return;
+        }
+        
+        const getUnit = () => {
+            switch (field) {
+                case 'ph': return 'pH';
+                case 'ec': return 'mS/cm';
+                case 'amount': return 'ml';
+            }
         };
 
         onChange({
             ...water,
-            [field]: val,
+            [field]: {
+                value: numValue,
+                unit: getUnit(),
+            },
         });
     };
 
@@ -33,6 +50,7 @@ export const WaterInputs = ({ water, onChange, errors, warnings }: WaterInputsPr
         <>
             <Input
                 label="pH-Wert"
+                type="number"
                 value={water?.ph?.value ?? ""}
                 onChange={handleChange("ph")}
                 error={errors?.ph}
@@ -40,13 +58,15 @@ export const WaterInputs = ({ water, onChange, errors, warnings }: WaterInputsPr
             />
             <Input
                 label="EC-Wert"
+                type="number"
                 value={water?.ec?.value ?? ""}
                 onChange={handleChange("ec")}
                 error={errors?.ec}
                 warning={warnings?.ec}
             />
             <Input
-                label="Menge (ml)"
+                label="Menge"
+                type="number"
                 value={water?.amount?.value ?? ""}
                 onChange={handleChange("amount")}
                 error={errors?.amount}

@@ -9,16 +9,40 @@ interface ClimateInputsProps {
   warnings?: { temp?: string; humidity?: string; co2?: string; vpd?: string };
 }
 
+const getDefaultUnit = (field: keyof ClimateData): string => {
+    switch (field) {
+        case 'temp': return '°C';
+        case 'humidity': return '%';
+        case 'co2': return 'ppm';
+        case 'vpd': return 'kPa';
+        default: return '';
+    }
+};
+
 export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateInputsProps) => {
     const safeClimate: ClimateData = climate ?? {};
 
-    const handleChange = (field: keyof ClimateData) => (val: string) => {
+    const handleChange = (field: keyof ClimateData) => (e: React.ChangeEvent<HTMLInputElement>) => {
+        const inputValue = e.target.value;
+        const numValue = parseFloat(inputValue);
+        
+        if (inputValue === "") {
+            onChange({
+                ...safeClimate,
+                [field]: undefined,
+            });
+            return;
+        }
+        
+        const currentField = safeClimate[field];
+        const unit = currentField?.unit ?? getDefaultUnit(field);
+        
         onChange({
             ...safeClimate,
-            [field]:
-                val === ""
-                    ? undefined
-                    : { ...safeClimate[field], value: val },
+            [field]: {
+                value: numValue,
+                unit: unit,
+            },
         });
     };
 
@@ -34,8 +58,9 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
         <>
             <Input
                 label="Temperatur"
+                type="number"
                 value={safeClimate.temp?.value ?? ""}
-                onChange={(e) => handleChange("temp")(e.target.value)}
+                onChange={handleChange("temp")}
                 suffix={safeClimate.temp?.unit ?? "°C"}
                 error={errors?.temp}
                 warning={warnings?.temp}
@@ -50,8 +75,9 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
 
             <Input
                 label="Luftfeuchtigkeit"
+                type="number"
                 value={safeClimate.humidity?.value ?? ""}
-                onChange={(e) => handleChange("humidity")(e.target.value)}
+                onChange={handleChange("humidity")}
                 suffix="%"
                 error={errors?.humidity}
                 warning={warnings?.humidity}
@@ -59,8 +85,9 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
 
             <Input
                 label="CO₂"
+                type="number"
                 value={safeClimate.co2?.value ?? ""}
-                onChange={(e) => handleChange("co2")(e.target.value)}
+                onChange={handleChange("co2")}
                 suffix="ppm"
                 error={errors?.co2}
                 warning={warnings?.co2}
@@ -68,8 +95,9 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
 
             <Input
                 label="VPD"
+                type="number"
                 value={safeClimate.vpd?.value ?? ""}
-                onChange={(e) => handleChange("vpd")(e.target.value)}
+                onChange={handleChange("vpd")}
                 suffix="kPa"
                 error={errors?.vpd}
                 warning={warnings?.vpd}

@@ -4,11 +4,11 @@ import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
-import { useState } from "react";
 import { useClimateValidation } from "@/hooks/useClimateValidation";
-import type { ClimateData, EnvironmentData, EnvironmentType } from "@/types/environment";
+import type { EnvironmentData, EnvironmentType } from "@/types/environment";
 import { ClimateInputs } from "../../[environmentId]/components/shared/ClimateInputs";
 import styles from "./EnvironmentForm.module.scss";
+import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 
 interface EnvironmentFormProps {
     initialData?: EnvironmentData;
@@ -16,28 +16,18 @@ interface EnvironmentFormProps {
 }
 
 export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) => {
-    const [formState, setFormState] = useState<EnvironmentData>({
-        id: initialData?.id ?? crypto.randomUUID(),
-        name: initialData?.name ?? "",
-        type: initialData?.type ?? "ROOM",
-        location: initialData?.location,
-        climate: initialData?.climate,
-    });
-
+    const { formState, setField, setClimateField } = useEnvironmentForm(initialData)
     const { errors, warnings } = useClimateValidation(formState.climate);
-
-    const setField = (field: keyof EnvironmentData, value: any) => {
-        setFormState(prev => ({ ...prev, [field]: value }));
-    };
-
-    const setClimateField = (c: ClimateData) => {
-        setFormState(prev => ({ ...prev, climate: c }));
-    };
-
+   
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
 
-        if (Object.keys(errors).length > 0) return;
+        const hasErrors = Object.keys(errors).length > 0;
+        
+        if (hasErrors) {
+            console.warn("Form has validation errors:", errors);
+            return;
+        }
 
         if (onSaved) {
             onSaved(formState.id, nextStep);
@@ -50,7 +40,6 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
                 label="Name"
                 value={formState.name}
                 onChange={(e) => setField("name", e.target.value)}
-                error={formState.name === "" ? "Name erforderlich" : undefined}
             />
 
             <FormField>

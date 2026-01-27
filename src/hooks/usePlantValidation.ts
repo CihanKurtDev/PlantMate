@@ -1,5 +1,6 @@
 import { PlantData } from "@/types/plant";
 import { useWaterValidation } from "./useWaterValidation";
+import { validateWater } from "@/helpers/validaionUtils";
 
 export interface PlantFormErrors {
     title?: string;
@@ -26,19 +27,26 @@ export const usePlantValidation = () => {
         }
 
         if (plant.water) {
-            const { errors: waterErrors } = useWaterValidation(plant.water);
-            if (Object.keys(waterErrors).length > 0) errors.water = waterErrors;
+            const waterValidation = validateWater(plant.water);
+            if (Object.keys(waterValidation.errors).length > 0) {
+                errors.water = waterValidation.errors;
+            }
         }
 
         return errors;
     };
 
     const validateWarnings = (plant: PlantData): PlantFormWarnings => {
+        const warnings: PlantFormWarnings = {};
+
         if (plant.water) {
-            const { warnings: waterWarnings } = useWaterValidation(plant.water);
-            if (Object.keys(waterWarnings).length > 0) return { water: waterWarnings };
+            const waterValidation = validateWater(plant.water);
+            if (Object.keys(waterValidation.warnings).length > 0) {
+                warnings.water = waterValidation.warnings;
+            }
         }
-        return {};
+
+        return warnings;
     };
 
     return { validate, validateWarnings };
