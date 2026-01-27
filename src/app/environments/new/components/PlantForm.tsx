@@ -9,7 +9,7 @@ import { usePlantValidation } from "@/hooks/usePlantValidation";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import { WaterInputs } from "../../[environmentId]/components/shared/WaterInputs";
-import { useState } from "react";
+import { usePlantForm } from "@/hooks/usePlantForm";
 
 interface PlantFormProps {
     initialData?: PlantData; 
@@ -21,17 +21,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
     const router = useRouter();
     const isEditing = !!initialData;
 
-    const [formState, setFormState] = useState<PlantData>({
-        id: initialData?.id ?? crypto.randomUUID(),
-        title: initialData?.title ?? "",
-        species: initialData?.species ?? "",
-        environmentId: initialData?.environmentId ?? "",
-        water: initialData?.water ?? {},
-    });
-
-    const setField = <K extends keyof PlantData>(field: K, value: PlantData[K]) => {
-        setFormState(prev => ({ ...prev, [field]: value }));
-    };
+    const { formState, setField, resetForm } = usePlantForm(initialData)
 
     const validationErrors = validate(formState);
     const validationWarnings = validateWarnings(formState);
@@ -46,13 +36,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
             addPlant({ ...formState, id: crypto.randomUUID() });
         }
 
-        setFormState({
-            id: crypto.randomUUID(),
-            title: "",
-            species: "",
-            environmentId: "",
-            water: {},
-        });
+        resetForm();
     };
 
     const handleSubmit = (e: React.FormEvent) => {

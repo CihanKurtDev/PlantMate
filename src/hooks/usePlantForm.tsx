@@ -3,6 +3,7 @@ import { useState } from "react"
 
 export const usePlantForm = (initialData?: PlantData) => {
     const [formState, setFormState] = useState({
+        id: initialData?.id ?? crypto.randomUUID(),
         plantId: initialData?.id,
         title: initialData?.title || "",
         species: initialData?.species || "",
@@ -10,7 +11,7 @@ export const usePlantForm = (initialData?: PlantData) => {
         water: initialData?.water,
     })
 
-    const setField = <K extends keyof typeof formState>(field: K, value: any) => {
+    const setField = <K extends keyof PlantData>(field: K, value: any) => {
         setFormState(prev => ({ ...prev, [field]: value }));
     };
 
