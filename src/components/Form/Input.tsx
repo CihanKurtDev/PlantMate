@@ -4,7 +4,6 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string | React.ReactNode
   error?: string
   warning?: string
-  touched?: boolean
   iconLeft?: React.ReactNode
   suffix?: string  | React.ReactNode
 }
@@ -13,7 +12,6 @@ export const Input = ({
   label, 
   error, 
   warning, 
-  touched, 
   className = "", 
   id,
   iconLeft,
@@ -32,13 +30,13 @@ export const Input = ({
       <div className={styles.inputWrapper}>
         <input
           id={inputId}
-          className={`${styles.input} ${touched && error ? styles.inputError : ""} ${className}`}
+          className={`${styles.input} ${error ? styles.inputError : ""} ${className}`}
           {...props}
         />
         <div className={styles.suffixWrapper}>
           {suffix && <span className={styles.inputSuffix}>{suffix}</span>}
-          {touched && error && <span className={styles.fieldError}>{error}</span>}
-          {touched && !error && warning && <span className={styles.fieldWarning}>{warning}</span>}
+          {error && <span className={styles.fieldError}>{error}</span>}
+          {!error && warning && <span className={styles.fieldWarning}>{warning}</span>}
         </div>
       </div>
 

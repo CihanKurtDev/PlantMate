@@ -27,10 +27,6 @@ export interface LoginFormErrors {
 export interface LoginFormState {
     isLoading: boolean;
     errors: LoginFormErrors;
-    touched: {
-        email: boolean,
-        password: boolean
-    }
 }
 
 export type LoginStatus = "idle" | "loading" | "success" | "error"

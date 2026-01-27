@@ -9,7 +9,8 @@ export interface MeasuredValue<Unit extends string> {
   unit: Unit;
 }
 
-interface WaterData { 
+export interface WaterData { 
+  amount?: MeasuredValue<'ml' | 'L'>
   ph?: MeasuredValue<PHUnit>; 
   ec?: MeasuredValue<ECUnit> 
 }
@@ -44,13 +45,7 @@ export type PlantEventType =
 export interface PlantEvent extends BaseEvent {
     plantId: string;
 
-  watering?: {
-    amount: MeasuredValue<'ml' | 'L'>;
-    nutrients?: {
-      ph?: MeasuredValue<PHUnit>;
-      ec?: MeasuredValue<ECUnit>;
-    }
-  }
+  watering?: WaterData
 
   repotting?: {
     oldPotSize?: MeasuredValue<'L'>;

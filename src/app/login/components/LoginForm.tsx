@@ -23,20 +23,12 @@ const LoginForm = () => {
     })
     const [status, setStatus] = useState<LoginStatus>("idle")
     const [error, setError] = useState<string | undefined>()
-    const [touched, setTouched] = useState<{ email: boolean; password: boolean }>({
-        email: false,
-        password: false,
-    })
 
     const { validate } = useLoginValidation()
     const router = useRouter()
     const validationErrors = validate(form)
     const hasInvalidValues = Object.values(validationErrors).some(Boolean)
     const isDisabled = status === "loading" || hasInvalidValues
-
-    const handleBlur = (field: "email" | "password") => {
-        setTouched(prev => ({ ...prev, [field]: true }))
-    }
 
     const handleChange = (field: "email" | "password", value: string) => {
         setForm(prev => ({ ...prev, [field]: value }))
@@ -45,7 +37,6 @@ const LoginForm = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setTouched({ email: true, password: true })
         setError(undefined)
         if (hasInvalidValues) return
         setStatus("loading")
@@ -70,10 +61,8 @@ const LoginForm = () => {
                 type="email"
                 label="Email"
                 error={validationErrors.email}
-                touched={touched.email}
                 value={form.email}
                 onChange={e => handleChange("email", e.target.value)}
-                onBlur={() => handleBlur("email")}
                 disabled={status === "loading"}
                 required
             />
@@ -83,16 +72,14 @@ const LoginForm = () => {
                 type="password"
                 label="Passwort"
                 error={validationErrors.password}
-                touched={touched.password}
                 value={form.password}
                 onChange={e => handleChange("password", e.target.value)}
-                onBlur={() => handleBlur("password")}
                 required
             />
 
             <Checkbox
                 label="Angemeldet bleiben"
-                checked={form.rememberMe}
+                checked={form.rememberMe || false}
                 onChange={checked => setForm(prev => ({ ...prev, rememberMe: checked }))}
                 disabled={status === "loading"}
             />

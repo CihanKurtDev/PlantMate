@@ -7,26 +7,11 @@ export const usePlantForm = (initialData?: PlantData) => {
         title: initialData?.title || "",
         species: initialData?.species || "",
         environmentId: initialData?.environmentId || "",
-        ph: initialData?.water?.ph?.value,
-        ec: initialData?.water?.ec?.value,
-        touched: {
-            title: false,
-            species: false,
-            environmentId: false,
-            ph: false,
-            ec: false,
-        },        
+        water: initialData?.water,
     })
 
     const setField = <K extends keyof typeof formState>(field: K, value: any) => {
         setFormState(prev => ({ ...prev, [field]: value }));
-    };
-
-    const setTouchedField = (field: keyof typeof formState.touched, value: boolean) => {
-        setFormState(prev => ({ 
-            ...prev, 
-            touched: { ...prev.touched, [field]: value } 
-        }));
     };
 
     const resetForm = () => {
@@ -36,17 +21,9 @@ export const usePlantForm = (initialData?: PlantData) => {
             title: "",
             species: "",
             environmentId: prev.environmentId,
-            ph: undefined,
-            ec: undefined,
-            touched: {
-                title: false,
-                species: false,
-                environmentId: false,
-                ph: false,
-                ec: false,
-            },
+            water: undefined,
         }));
     };
     
-    return { formState, setField, setTouchedField, resetForm }
+    return { formState, setField, resetForm }
 }

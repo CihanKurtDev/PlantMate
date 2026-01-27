@@ -14,8 +14,8 @@ export function combinePlantData(historical: PlantData_Historical[] = [], events
 
     const eventEntries: PlantTimeSeriesEntry[] = events
         .map((e): PlantTimeSeriesEntry | null => {
-            const ph = e.watering?.nutrients?.ph?.value;
-            const ec = e.watering?.nutrients?.ec?.value;
+            const ph = e.watering?.ph?.value;
+            const ec = e.watering?.ec?.value;
 
             if (ph === undefined && ec === undefined) return null;
 

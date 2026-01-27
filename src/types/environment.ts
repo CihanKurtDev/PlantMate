@@ -10,7 +10,7 @@ export type TempUnit = '°C' | '°F';
 
 export const iconMap = { Leaf, Thermometer, ActivityIcon, Droplet, Wind } as const;
 
-interface ClimateData {
+export interface ClimateData {
   temp?: MeasuredValue<TempUnit>;
   humidity?: MeasuredValue<PercentUnit>;
   vpd?: MeasuredValue<KPaUnit>;

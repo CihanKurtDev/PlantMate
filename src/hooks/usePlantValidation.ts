@@ -1,40 +1,19 @@
 import { PlantData } from "@/types/plant";
+import { useWaterValidation } from "./useWaterValidation";
 
 export interface PlantFormErrors {
     title?: string;
     species?: string;
     environmentId?: string;
-    water?: {
-        ph?: string;
-        ec?: string;
-    };
+    water?: ReturnType<typeof useWaterValidation>["errors"];
 }
 
 export interface PlantFormWarnings { 
-    water?: {
-        ph?: string;
-        ec?: string;
-    };
+    water?: ReturnType<typeof useWaterValidation>["warnings"];
 } 
 
 export const usePlantValidation = () => {
-    const validateNumberField = (
-        value: number | undefined,
-        min: number,
-        max: number,
-        label: string,
-    ): string | undefined => {
-        if (value === undefined || value === null) return undefined;
-        if (isNaN(value)) return "Bitte eine Zahl eingeben";
-        const rounded = parseFloat(value.toFixed(2));
-
-        if (rounded < min || rounded > max) {
-            return `${label} muss zwischen ${min} und ${max} liegen`;
-        }
-        return undefined;
-    };
-
-    const validate = (plant: PlantData) => {
+    const validate = (plant: PlantData): PlantFormErrors => {
         const errors: PlantFormErrors = {};
 
         if (!plant.title || plant.title.trim() === "") errors.title = "Name erforderlich";
@@ -47,39 +26,19 @@ export const usePlantValidation = () => {
         }
 
         if (plant.water) {
-            const { ph, ec } = plant.water;
-            const waterErrors: PlantFormErrors["water"] = {};
-
-            waterErrors.ph = validateNumberField(ph?.value, 0, 14, "pH-Wert");
-            waterErrors.ec = validateNumberField(ec?.value, 0, 10, "EC-Wert");
-
-            if (Object.values(waterErrors).some(Boolean)) errors.water = waterErrors;
+            const { errors: waterErrors } = useWaterValidation(plant.water);
+            if (Object.keys(waterErrors).length > 0) errors.water = waterErrors;
         }
 
         return errors;
     };
 
     const validateWarnings = (plant: PlantData): PlantFormWarnings => {
-        const warnings: PlantFormWarnings = {};
-
         if (plant.water) {
-            const { ph, ec } = plant.water;
-            const waterWarnings: PlantFormWarnings["water"] = {};
-
-            if (ph?.value !== undefined) {
-                if (ph.value < 5.5) waterWarnings.ph = "pH-Wert sehr niedrig: Nährstoffaufnahme beeinträchtigt";
-                else if (ph.value > 7.5) waterWarnings.ph = "pH-Wert sehr hoch: Mikronährstoffmangel möglich";
-            }
-
-            if (ec?.value !== undefined) {
-                if (ec.value < 0.5) waterWarnings.ec = "EC-Wert sehr niedrig: Nährstoffmangel";
-                else if (ec.value > 3.5) waterWarnings.ec = "EC-Wert sehr hoch: Gefahr von Nährstoffverbrennung";
-            }
-
-            if (Object.keys(waterWarnings).length > 0) warnings.water = waterWarnings;
+            const { warnings: waterWarnings } = useWaterValidation(plant.water);
+            if (Object.keys(waterWarnings).length > 0) return { water: waterWarnings };
         }
-
-        return warnings;
+        return {};
     };
 
     return { validate, validateWarnings };
