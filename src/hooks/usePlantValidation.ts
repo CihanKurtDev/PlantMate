@@ -1,4 +1,4 @@
-import { PlantData, PlantFormData } from "@/types/plant";
+import { PlantFormData } from "@/types/plant";
 import { useWaterValidation } from "./useWaterValidation";
 import { validateWater } from "@/helpers/validaionUtils";
 

@@ -4,12 +4,13 @@ import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
-import { useClimateValidation } from "@/hooks/useClimateValidation";
 import type { EnvironmentData, EnvironmentType } from "@/types/environment";
 import { ClimateInputs } from "../../[environmentId]/components/shared/ClimateInputs";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
+import { convertClimateInputToData } from "@/helpers/climateConverter";
+import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 
 interface EnvironmentFormProps {
     initialData?: EnvironmentData;
@@ -18,23 +19,26 @@ interface EnvironmentFormProps {
 
 export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) => {
     const { formState, setField, setClimateField } = useEnvironmentForm(initialData)
-    const { errors, warnings } = useClimateValidation(formState.climate);
+    const { validate, validateWarnings } = useEnvironmentValidation();
     const { addEnvironment } = usePlantMonitor();
     
-   
+     const validationErrors = validate(formState);
+    const validationWarnings = validateWarnings(formState);
+
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
 
-        const hasErrors = Object.keys(errors).length > 0;
+        const hasErrors = Object.keys(validationErrors).length > 0;
         
         if (hasErrors) {
-            console.warn("Form has validation errors:", errors);
+            console.warn("Form has validation errors:", validationErrors);
             return;
         }
 
+        const climateData = convertClimateInputToData(formState.climate);
         const envId = crypto.randomUUID();
 
-        addEnvironment({ ...formState, id: envId });
+        addEnvironment({ ...formState, climate: climateData, id: envId });
 
         if (onSaved) {
             onSaved(envId, nextStep);
@@ -47,6 +51,7 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
                 label="Name"
                 value={formState.name}
                 onChange={(e) => setField("name", e.target.value)}
+                error={validationErrors.name}
             />
 
             <FormField>
@@ -65,6 +70,7 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
                 label="Location"
                 value={formState.location ?? ""}
                 onChange={(e) => setField("location", e.target.value)}
+                error={validationErrors.location}
             />
 
             <FormSectionTitle>Klimadaten</FormSectionTitle>
@@ -72,8 +78,8 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
             <ClimateInputs
                 climate={formState.climate}
                 onChange={setClimateField}
-                errors={errors}
-                warnings={warnings}
+                errors={validationErrors.climate}
+                warnings={validationWarnings.climate}
             />
 
             <div className={styles.buttonRow}>

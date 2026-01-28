@@ -1,5 +1,5 @@
 import { validateClimate } from "@/helpers/validaionUtils";
-import { ClimateData } from "@/types/environment";
+import { ClimateDataInput } from "@/types/environment";
 import { useMemo } from "react";
 
 export interface ClimateErrors {
@@ -16,6 +16,6 @@ export interface ClimateWarnings {
     vpd?: string;
 }
 
-export const useClimateValidation = (climate?: ClimateData): { errors: ClimateErrors; warnings: ClimateWarnings } => {
+export const useClimateValidation = (climate?: ClimateDataInput): { errors: ClimateErrors; warnings: ClimateWarnings } => {
     return useMemo(() => validateClimate(climate), [climate]);
 };

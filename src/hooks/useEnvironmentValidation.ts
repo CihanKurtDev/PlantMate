@@ -1,6 +1,6 @@
-import { EnvironmentData } from "@/types/environment";
-import { useClimateValidation } from "./useClimateValidation";
 import { validateClimate } from "@/helpers/validaionUtils";
+import { ClimateDataInput, EnvironmentFormData } from "@/types/environment";
+import { useClimateValidation } from "./useClimateValidation";
 
 export interface EnvironmentFormErrors {
     name?: string;
@@ -14,7 +14,7 @@ export interface EnvironmentFormWarnings {
 }
 
 export const useEnvironmentValidation = () => {
-    const validate = (env: EnvironmentData): EnvironmentFormErrors => {
+    const validate = (env: EnvironmentFormData): EnvironmentFormErrors => {
         const errors: EnvironmentFormErrors = {};
 
         if (!env.name || env.name.trim() === "") errors.name = "Name erforderlich";
@@ -24,7 +24,7 @@ export const useEnvironmentValidation = () => {
         if (env.location && env.location.length > 50) errors.location = "Location zu lang (max. 50 Zeichen)";
 
         if (env.climate) {
-            const climateValidation = validateClimate(env.climate);
+            const climateValidation = validateClimate(env.climate as ClimateDataInput);
             if (Object.keys(climateValidation.errors).length > 0) {
                 errors.climate = climateValidation.errors;
             }
@@ -33,10 +33,10 @@ export const useEnvironmentValidation = () => {
         return errors;
     };
 
-    const validateWarnings = (env: EnvironmentData): EnvironmentFormWarnings => {
+    const validateWarnings = (env: EnvironmentFormData): EnvironmentFormWarnings => {
         const warnings: EnvironmentFormWarnings = {};
         if (env.climate) {
-           const climateValidation = validateClimate(env.climate);
+            const climateValidation = validateClimate(env.climate as ClimateDataInput);
             if (Object.keys(climateValidation.warnings).length > 0) {
                 warnings.climate = climateValidation.warnings;
             }

@@ -16,6 +16,23 @@ export interface ClimateData {
   vpd?: MeasuredValue<KPaUnit>;
   co2?: MeasuredValue<PPMUnit>;
 }
+export interface ClimateDataInput {
+  temp?: {
+    value?: string;
+    unit?: TempUnit;
+  };
+  humidity?: string;
+  vpd?: string;
+  co2?: string;
+}
+
+export interface EnvironmentFormData {
+  id: string;
+  name: string;
+  type: EnvironmentType;
+  location?: string;
+  climate?: ClimateDataInput;
+}
 
 export interface EnvironmentData {
   id: string;

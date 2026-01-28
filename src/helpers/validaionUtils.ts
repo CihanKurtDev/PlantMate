@@ -1,4 +1,4 @@
-import { ClimateData } from "@/types/environment";
+import { ClimateDataInput } from "@/types/environment";
 import { WaterDataInput } from "@/types/plant";
 
 
@@ -16,54 +16,36 @@ export interface ClimateWarnings {
     vpd?: string;
 }
 
-export const validateClimate = (climate?: ClimateData): { errors: ClimateErrors; warnings: ClimateWarnings } => {
-    const errors: ClimateErrors = {};
-    const warnings: ClimateWarnings = {};
+export const validateClimate = (climate?: ClimateDataInput) => {
+    const errors: Record<string, string> = {};
+    const warnings: Record<string, string> = {};
 
-    if (climate?.temp?.value !== undefined) {
-        const tempValue = climate.temp.value;
-        
-        if (typeof tempValue !== 'number' || isNaN(tempValue)) {
-            errors.temp = "Bitte eine Zahl eingeben";
-        } else if (tempValue < 0 || tempValue > 50) {
-            errors.temp = "Temperatur unrealistisch";
-        } else {
-            if (tempValue < 18) warnings.temp = "Temperatur sehr niedrig";
-            else if (tempValue > 30) warnings.temp = "Temperatur sehr hoch";
-        }
+    if (climate?.temp?.value) {
+        const value = parseFloat(climate.temp.value);
+        if (isNaN(value)) errors.temp = "Bitte eine Zahl eingeben";
+        else if (value < 0 || value > 50) errors.temp = "Temperatur unrealistisch";
+        else if (value < 18) warnings.temp = "Temperatur sehr niedrig";
+        else if (value > 30) warnings.temp = "Temperatur sehr hoch";
     }
 
-    if (climate?.humidity?.value !== undefined) {
-        const humValue = climate.humidity.value;
-        
-        if (typeof humValue !== 'number' || isNaN(humValue)) {
-            errors.humidity = "Bitte eine Zahl eingeben";
-        } else if (humValue < 0 || humValue > 100) {
-            errors.humidity = "Feuchtigkeit unrealistisch";
-        } else {
-            if (humValue < 40) warnings.humidity = "Luftfeuchtigkeit sehr niedrig";
-            else if (humValue > 80) warnings.humidity = "Luftfeuchtigkeit sehr hoch";
-        }
+    if (climate?.humidity) {
+        const value = parseFloat(climate.humidity);
+        if (isNaN(value)) errors.humidity = "Bitte eine Zahl eingeben";
+        else if (value < 0 || value > 100) errors.humidity = "Feuchtigkeit unrealistisch";
+        else if (value < 40) warnings.humidity = "Luftfeuchtigkeit sehr niedrig";
+        else if (value > 80) warnings.humidity = "Luftfeuchtigkeit sehr hoch";
     }
 
-    if (climate?.co2?.value !== undefined) {
-        const co2Value = climate.co2.value;
-        
-        if (typeof co2Value !== 'number' || isNaN(co2Value)) {
-            errors.co2 = "Bitte eine Zahl eingeben";
-        } else if (co2Value < 0 || co2Value > 5000) {
-            errors.co2 = "CO₂-Wert unrealistisch";
-        }
+    if (climate?.co2) {
+        const value = parseFloat(climate.co2);
+        if (isNaN(value)) errors.co2 = "Bitte eine Zahl eingeben";
+        else if (value < 0 || value > 5000) errors.co2 = "CO₂-Wert unrealistisch";
     }
 
-    if (climate?.vpd?.value !== undefined) {
-        const vpdValue = climate.vpd.value;
-        
-        if (typeof vpdValue !== 'number' || isNaN(vpdValue)) {
-            errors.vpd = "Bitte eine Zahl eingeben";
-        } else if (vpdValue < 0 || vpdValue > 5) {
-            errors.vpd = "VPD unrealistisch";
-        }
+    if (climate?.vpd) {
+        const value = parseFloat(climate.vpd);
+        if (isNaN(value)) errors.vpd = "Bitte eine Zahl eingeben";
+        else if (value < 0 || value > 5) errors.vpd = "VPD unrealistisch";
     }
 
     return { errors, warnings };
