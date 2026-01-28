@@ -14,9 +14,10 @@ interface WaterInputsProps {
         ec?: string;
         amount?: string;
     };
+    hideAmountInput?: boolean;
 }
 
-export const WaterInputs = ({ water, onChange, errors, warnings }: WaterInputsProps) => {
+export const WaterInputs = ({ water, onChange, errors, warnings, hideAmountInput = false }: WaterInputsProps) => {
     const handleChange = (field: "ph" | "ec" | "amount") => (e: React.ChangeEvent<HTMLInputElement>) => {
         const inputValue = e.target.value;
         const numValue = parseFloat(inputValue);
@@ -64,14 +65,14 @@ export const WaterInputs = ({ water, onChange, errors, warnings }: WaterInputsPr
                 error={errors?.ec}
                 warning={warnings?.ec}
             />
-            <Input
+            {!hideAmountInput && <Input
                 label="Menge"
                 type="number"
                 value={water?.amount?.value ?? ""}
                 onChange={handleChange("amount")}
                 error={errors?.amount}
                 warning={warnings?.amount}
-            />
+            />}
         </>
     );
 };

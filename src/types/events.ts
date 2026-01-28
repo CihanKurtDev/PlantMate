@@ -1,5 +1,5 @@
 import { iconMap } from "./environment";
-import { MeasuredValue, WaterData } from "./plant";
+import { WaterData } from "./plant";
 
 export interface BaseEvent {
   id: string;

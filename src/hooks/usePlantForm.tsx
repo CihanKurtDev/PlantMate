@@ -1,5 +1,5 @@
 import { PlantData } from "@/types/plant"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 
 export const usePlantForm = (initialData?: PlantData) => {
     const [formState, setFormState] = useState({
@@ -11,9 +11,9 @@ export const usePlantForm = (initialData?: PlantData) => {
         water: initialData?.water,
     })
 
-    const setField = <K extends keyof PlantData>(field: K, value: any) => {
+    const setField = useCallback(<K extends keyof PlantData>(field: K, value: any) => {
         setFormState(prev => ({ ...prev, [field]: value }));
-    };
+    }, []);
 
     const resetForm = () => {
         setFormState(prev => ({

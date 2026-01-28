@@ -4,7 +4,6 @@ import { useState } from "react";
 import { EnvironmentForm } from "./EnvironmentForm";
 import { PlantForm } from "./PlantForm";
 import styles from "./MultiStepForm.module.scss";
-import { PlantData } from "@/types/plant";
 import { useRouter } from "next/navigation";
 import PlantCard from "../../[environmentId]/components/shared/PlantCard";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
@@ -33,14 +32,6 @@ export const MultiStepForm = () => {
         </div>
     );
 
-
-    const initialPlantData: PlantData = {
-        id: crypto.randomUUID(),
-        title: "",
-        species: "",
-        environmentId: createdEnvironmentId
-    };
-
     return (
         <div className={styles.multistepContainer}>
             {stepIndicator}
@@ -52,7 +43,7 @@ export const MultiStepForm = () => {
             ) : (
                 <>
                     <h2 className={styles.stepTitle}>Pflanze erstellen</h2>
-                    <PlantForm initialData={initialPlantData} />
+                    <PlantForm environmentId={createdEnvironmentId} />
                     {plants?.map(plant => <PlantCard key={plant.id} plant={plant}/>)}
                 </>
             )}

@@ -10,18 +10,27 @@ import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import { WaterInputs } from "../../[environmentId]/components/shared/WaterInputs";
 import { usePlantForm } from "@/hooks/usePlantForm";
+import { useEffect, useState } from "react";
 
 interface PlantFormProps {
     initialData?: PlantData; 
+    environmentId?: string;
 }
 
-export const PlantForm = ({ initialData }: PlantFormProps) => {
+export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
     const { addPlant, environments } = usePlantMonitor();
     const { validate, validateWarnings } = usePlantValidation();
+    const [plantCount, setPlantCount] = useState<number>(1)
     const router = useRouter();
     const isEditing = !!initialData;
 
     const { formState, setField, resetForm } = usePlantForm(initialData)
+
+    useEffect(() => {
+        if (!initialData && environmentId) {
+            setField("environmentId", environmentId);
+        }
+    }, [environmentId, initialData]);
 
     const validationErrors = validate(formState);
     const validationWarnings = validateWarnings(formState);
@@ -30,9 +39,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
         e.preventDefault();
         if (Object.keys(validationErrors).length > 0) return;
 
-        const amount = formState.water?.amount?.value ?? 1;
-
-        for (let i = 0; i < amount; i++) {
+        for (let i = 0; i < plantCount; i++) {
             addPlant({ ...formState, id: crypto.randomUUID() });
         }
 
@@ -78,6 +85,16 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 </Select>
             </FormField>
 
+            {!isEditing && (
+                <Input
+                    label="Anzahl Pflanzen"
+                    type="number"
+                    value={plantCount}
+                    onChange={(e) => setPlantCount(Math.max(1, parseInt(e.target.value) || 1))}
+                    min={1}
+                />
+            )}
+
             <FormSectionTitle>Wasserwerte</FormSectionTitle>
 
             <WaterInputs
@@ -85,6 +102,7 @@ export const PlantForm = ({ initialData }: PlantFormProps) => {
                 onChange={(water) => setField("water", water)}
                 errors={validationErrors.water}
                 warnings={validationWarnings.water}
+                hideAmountInput={true}
             />
 
             <div>
