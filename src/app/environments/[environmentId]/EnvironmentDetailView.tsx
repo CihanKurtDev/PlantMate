@@ -5,14 +5,16 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
-import DetailViewLayout from "./components/shared/DetailViewLayout";
+import PageLayout from "../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
 import Tabs from "./components/shared/Tabs";
 import ClimateGrid from "@/components/climate/ClimateGrid";
-import { ActivityIcon, Droplets, Sprout } from "lucide-react";
+import { ActivityIcon, Droplets, Plus, Sprout } from "lucide-react";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import { combineEnvironmentData } from "@/helpers/combineEnvironmentData";
 import styles from './EnvironmentDetailView.module.scss';
+import { Button } from "@/components/Button/Button";
+import { useRouter } from "next/navigation";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
@@ -21,6 +23,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const environment = environments.find(e => e.id === environmentId);
     const [activeTab, setActiveTab] = useState<'plants' | 'climate' | 'events'>('plants');
     const plants = getPlantsByEnvironment(environmentId);
+    const router = useRouter();
     // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
     // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
     const tabs = useMemo(() => [
@@ -41,10 +44,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     }));
 
     return (
-        <DetailViewLayout
-            backUrl="/dashboard"
-            backLabel="Zurück zur Übersicht"
-        >
+        <PageLayout>
             <DetailViewHeader
                 title={environment.name}
                 subtitle={environment.location}
@@ -70,6 +70,14 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
             <EnvironmentEventTab environmentId={environmentId} events={environment.events} hidden={activeTab !== 'events'}/>
-        </DetailViewLayout>
+            <Button
+                variant="floating"
+                size="round"
+                onClick={() => router.push(`/environments/${environmentId}/plants/new`)}
+                aria-label="Neue Umgebung hinzufügen"
+            >
+                <Plus size={32} style={{ display: "block" }} />
+            </Button>
+        </PageLayout>
     );
 }

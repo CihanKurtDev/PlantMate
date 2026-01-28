@@ -1,0 +1,18 @@
+@use '../../styles/layout' as *;
+
+.container {
+    @extend .pageContainer;
+}
+
+.content {
+    @extend .contentWrapper;
+}
+
+.header {
+    padding: var(--spacing-m);
+
+    p {
+        color: var(--color-text-tertiary);
+        margin: 0;
+    }
+}

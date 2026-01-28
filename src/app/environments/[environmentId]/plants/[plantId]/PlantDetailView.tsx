@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import DetailViewLayout from "../../components/shared/DetailViewLayout";
+import PageLayout from "../../../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
 import { ActivityIcon, Sprout } from "lucide-react";
 import TabContent from "../../components/shared/TabContent";
@@ -32,10 +32,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
         ec: data.metrics?.ec
     }));
     return (
-        <DetailViewLayout
-            backUrl={`/environments/${plant.environmentId}`}
-            backLabel="Zurück zur Übersicht"
-        >
+        <PageLayout>
             <DetailViewHeader
                 title={plant.title}
                 icon={Sprout}
@@ -58,6 +55,6 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 ]}
             />
             <PlantEventsTab plantId={plantId} hidden={activeTab !== 'events'} events={plant.events} />
-        </DetailViewLayout>
+        </PageLayout>
     );
 }
