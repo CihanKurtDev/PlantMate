@@ -11,6 +11,7 @@ import { Select } from "@/components/Form/Select";
 import { WaterInputs } from "../../[environmentId]/components/shared/WaterInputs";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
+import { convertWaterInputToData } from "@/helpers/waterConverter";
 
 interface PlantFormProps {
     initialData?: PlantData; 
@@ -39,8 +40,15 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
         e.preventDefault();
         if (Object.keys(validationErrors).length > 0) return;
 
+        const waterData = convertWaterInputToData(formState.water);
+
+        const plantData: PlantData = {
+            ...formState,
+            water: waterData,
+        };
+
         for (let i = 0; i < plantCount; i++) {
-            addPlant({ ...formState, id: crypto.randomUUID() });
+            addPlant({ ...plantData, id: crypto.randomUUID() });
         }
 
         resetForm();

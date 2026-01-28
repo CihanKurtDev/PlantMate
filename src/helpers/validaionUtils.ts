@@ -1,5 +1,5 @@
 import { ClimateData } from "@/types/environment";
-import { WaterData } from "@/types/plant";
+import { WaterDataInput } from "@/types/plant";
 
 
 export interface ClimateErrors {
@@ -82,14 +82,14 @@ export interface WaterWarnings {
     amount?: string;
 }
 
-export const validateWater = (water?: WaterData): { errors: WaterErrors; warnings: WaterWarnings } => {
+export const validateWater = (water?: WaterDataInput): { errors: WaterErrors; warnings: WaterWarnings } => {
     const errors: WaterErrors = {};
     const warnings: WaterWarnings = {};
 
-    if (water?.ph?.value !== undefined) {
-        const phValue = water.ph.value;
+    if (water?.ph !== undefined && water.ph !== "") {
+        const phValue = parseFloat(water.ph);
         
-        if (typeof phValue !== 'number' || isNaN(phValue)) {
+        if (isNaN(phValue)) {
             errors.ph = "Bitte eine Zahl eingeben";
         } else if (phValue < 0 || phValue > 14) {
             errors.ph = "pH-Wert muss zwischen 0 und 14 liegen";
@@ -99,10 +99,10 @@ export const validateWater = (water?: WaterData): { errors: WaterErrors; warning
         }
     }
 
-    if (water?.ec?.value !== undefined) {
-        const ecValue = water.ec.value;
+    if (water?.ec !== undefined && water.ec !== "") {
+        const ecValue = parseFloat(water.ec);
         
-        if (typeof ecValue !== 'number' || isNaN(ecValue)) {
+        if (isNaN(ecValue)) {
             errors.ec = "Bitte eine Zahl eingeben";
         } else if (ecValue < 0 || ecValue > 10) {
             errors.ec = "EC-Wert muss zwischen 0 und 10 liegen";
@@ -112,10 +112,10 @@ export const validateWater = (water?: WaterData): { errors: WaterErrors; warning
         }
     }
 
-    if (water?.amount?.value !== undefined) {
-        const amountValue = water.amount.value;
+    if (water?.amount !== undefined && water.amount !== "") {
+        const amountValue = parseFloat(water.amount);
         
-        if (typeof amountValue !== 'number' || isNaN(amountValue)) {
+        if (isNaN(amountValue)) {
             errors.amount = "Bitte eine Zahl eingeben";
         } else if (amountValue <= 0) {
             errors.amount = "Menge muss größer als 0 sein";

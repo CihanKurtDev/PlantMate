@@ -9,10 +9,25 @@ export interface MeasuredValue<Unit extends string> {
   unit: Unit;
 }
 
+export interface WaterDataInput { 
+  amount?: string
+  ph?: string
+  ec?: string
+}
+
 export interface WaterData { 
   amount?: MeasuredValue<'ml' | 'L'>
   ph?: MeasuredValue<PHUnit>; 
   ec?: MeasuredValue<ECUnit> 
+}
+
+export interface PlantFormData {
+  id: string;
+  plantId?: string;
+  title: string;
+  species: string;
+  environmentId: string;
+  water?: WaterDataInput;
 }
 
 export interface PlantData {

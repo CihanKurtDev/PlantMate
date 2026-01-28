@@ -1,4 +1,4 @@
-import { PlantData } from "@/types/plant";
+import { PlantData, PlantFormData } from "@/types/plant";
 import { useWaterValidation } from "./useWaterValidation";
 import { validateWater } from "@/helpers/validaionUtils";
 
@@ -14,7 +14,7 @@ export interface PlantFormWarnings {
 } 
 
 export const usePlantValidation = () => {
-    const validate = (plant: PlantData): PlantFormErrors => {
+    const validate = (plant: PlantFormData): PlantFormErrors => {
         const errors: PlantFormErrors = {};
 
         if (!plant.title || plant.title.trim() === "") errors.title = "Name erforderlich";
@@ -36,7 +36,7 @@ export const usePlantValidation = () => {
         return errors;
     };
 
-    const validateWarnings = (plant: PlantData): PlantFormWarnings => {
+    const validateWarnings = (plant: PlantFormData): PlantFormWarnings => {
         const warnings: PlantFormWarnings = {};
 
         if (plant.water) {

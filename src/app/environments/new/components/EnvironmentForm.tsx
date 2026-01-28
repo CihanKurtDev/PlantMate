@@ -32,11 +32,12 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
             return;
         }
 
-        addEnvironment({ ...formState, id: crypto.randomUUID() });
+        const envId = crypto.randomUUID();
 
+        addEnvironment({ ...formState, id: envId });
 
         if (onSaved) {
-            onSaved(formState.id, nextStep);
+            onSaved(envId, nextStep);
         }
     };
 
