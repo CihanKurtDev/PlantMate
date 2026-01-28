@@ -37,14 +37,12 @@ export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEvent
             customBgColor: isCustom ? eventData.customBgColor : undefined,
             customTextColor: isCustom ? eventData.customTextColor : undefined,
             customBorderColor: isCustom ? eventData.customBorderColor : undefined,
-            ...(isWatering && eventData.waterAmount !== undefined && (
+            ...(isWatering && eventData.watering?.amount !== undefined && (
                 {
                     watering: {
-                        amount: { value: eventData.waterAmount, unit: 'ml' },
-                        nutrients: {
-                            ...(eventData.waterPh !== undefined && { ph: { value: eventData.waterPh, unit: 'pH' } }),
-                            ...(eventData.waterEc !== undefined && { ec: { value: eventData.waterEc, unit: 'mS/cm' } }),
-                        }
+                        amount: eventData.watering.amount,
+                        ph: eventData.watering.ph,
+                        ec: eventData.watering.ec
                     }
                 }
             ))

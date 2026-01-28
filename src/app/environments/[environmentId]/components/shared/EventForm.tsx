@@ -6,6 +6,9 @@ import styles from "./EventForm.module.scss"
 import DatePicker from "./DatePicker";
 import { EventFormData } from "@/types/events";
 import { iconMap } from "@/types/environment";
+import { WaterInputs } from "./WaterInputs";
+import { WaterData } from "@/types/plant";
+import { useWaterValidation } from "@/hooks/useWaterValidation";
 
 
 interface EventFormProps<T extends string> {
@@ -20,7 +23,6 @@ export interface EventOption {
     value: string;
     label: string;
 }
-
 
 export default function EventForm<T extends string>({ 
     onCancel, 
@@ -37,21 +39,32 @@ export default function EventForm<T extends string>({
         customTextColor: "#424242",
         customBorderColor: "#bdbdbd",
         notes: "",
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        watering: { ph: undefined, ec: undefined },
     });
-
+    
     const isCustom = formData.type === "custom";
     const isWatering = formData.type === "WATERING";
-
+    
     const handleChange = (field: keyof EventFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
+    const handleWaterChange = (water: WaterData) => {
+        setFormData(prev => ({ ...prev, watering: water }));
+    };
+
+    const { errors: waterErrors, warnings: waterWarnings } = useWaterValidation(formData.watering);
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
         if (isCustom && !formData.customName?.trim()) {
             alert("Bitte gib einen Namen für dein eigenes Event ein.");
+            return;
+        }
+        
+        if (isWatering && Object.values(waterErrors).some(Boolean)) {
+            alert("Bitte korrigiere die Wasserwerte!");
             return;
         }
 
@@ -151,38 +164,13 @@ export default function EventForm<T extends string>({
             )}
 
             {isWatering && (
-                <>
-                    <FormField>
-                        <label>pH Wert</label>
-                        <input 
-                            type="number"
-                            step="0.1"
-                            value={formData.waterPh ?? ""}
-                            onChange={e => handleChange("waterPh", parseFloat(e.target.value))}
-                        />
-                    </FormField>
-
-                    <FormField>
-                        <label>EC Wert</label>
-                        <input 
-                            type="number"
-                            step="0.01"
-                            value={formData.waterEc ?? ""}
-                            onChange={e => handleChange("waterEc", parseFloat(e.target.value))}
-                        />
-                    </FormField>
-
-                    <FormField>
-                        <label>Menge (ml)</label>
-                        <input 
-                            type="number"
-                            value={formData.waterAmount ?? ""}
-                            onChange={e => handleChange("waterAmount", parseInt(e.target.value))}
-                        />
-                    </FormField>
-                </>
+                <WaterInputs
+                    water={formData.watering}
+                    onChange={handleWaterChange}
+                    errors={waterErrors}
+                    warnings={waterWarnings}
+                />
             )}
-
 
             <FormField>
                 <label htmlFor="event-notes">Notizen</label>

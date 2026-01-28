@@ -10,11 +10,28 @@ export type TempUnit = '°C' | '°F';
 
 export const iconMap = { Leaf, Thermometer, ActivityIcon, Droplet, Wind } as const;
 
-interface ClimateData {
+export interface ClimateData {
   temp?: MeasuredValue<TempUnit>;
   humidity?: MeasuredValue<PercentUnit>;
   vpd?: MeasuredValue<KPaUnit>;
   co2?: MeasuredValue<PPMUnit>;
+}
+export interface ClimateDataInput {
+  temp?: {
+    value?: string;
+    unit?: TempUnit;
+  };
+  humidity?: string;
+  vpd?: string;
+  co2?: string;
+}
+
+export interface EnvironmentFormData {
+  id: string;
+  name: string;
+  type: EnvironmentType;
+  location?: string;
+  climate?: ClimateDataInput;
 }
 
 export interface EnvironmentData {

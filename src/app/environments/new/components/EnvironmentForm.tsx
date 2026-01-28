@@ -1,144 +1,64 @@
-"use client"
+"use client";
 
-import React, { useState } from "react";
-import type { EnvironmentData, EnvironmentType, TempUnit, PercentUnit, KPaUnit, PPMUnit } from "@/types/environment";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
-import styles from "./EnvironmentForm.module.scss";
-import { useRouter } from "next/navigation";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
+import type { EnvironmentData, EnvironmentType } from "@/types/environment";
+import { ClimateInputs } from "../../[environmentId]/components/shared/ClimateInputs";
+import styles from "./EnvironmentForm.module.scss";
+import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
+import { usePlantMonitor } from "@/context/PlantMonitorContext";
+import { convertClimateInputToData } from "@/helpers/climateConverter";
+import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 
 interface EnvironmentFormProps {
     initialData?: EnvironmentData;
-    onSaved?: (id: string, nextStep: "plant" | "dashboard") => void;
+    onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
 }
 
 export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) => {
-    const { addEnvironment } = usePlantMonitor();
+    const { formState, setField, setClimateField } = useEnvironmentForm(initialData)
     const { validate, validateWarnings } = useEnvironmentValidation();
-    const router = useRouter();
-
-    const [name, setName] = useState(initialData?.name || "");
-    const [type, setType] = useState<EnvironmentType>(initialData?.type || "ROOM");
-    const [location, setLocation] = useState(initialData?.location || "");
-
-    const [temp, setTemp] = useState<number | undefined>(initialData?.climate?.temp?.value);
-    const [tempUnit, setTempUnit] = useState<TempUnit>(initialData?.climate?.temp?.unit || "°C");
-
-    const [humidity, setHumidity] = useState<number | undefined>(initialData?.climate?.humidity?.value);
-    const [co2, setCo2] = useState<number | undefined>(initialData?.climate?.co2?.value);
-    const [vpd, setVpd] = useState<number | undefined>(initialData?.climate?.vpd?.value);
-
-    const [touched, setTouched] = useState({
-        name: false,
-        type: false,
-        location: false,
-        temp: false,
-        humidity: false,
-        co2: false,
-        vpd: false,
-    });
-
-    const handleBlur = (field: keyof typeof touched) => {
-        setTouched(prev => ({ ...prev, [field]: true }));
-    };
-
-    const getFormData = (): EnvironmentData => {
-        const climate: Partial<EnvironmentData["climate"]> = {};
-
-        if (temp !== undefined) climate.temp = { value: temp, unit: tempUnit };
-        if (humidity !== undefined) climate.humidity = { value: humidity, unit: "%" as PercentUnit };
-        if (co2 !== undefined) climate.co2 = { value: co2, unit: "ppm" as PPMUnit };
-        if (vpd !== undefined) climate.vpd = { value: vpd, unit: "kPa" as KPaUnit };
-
-        return {
-            id: initialData?.id || crypto.randomUUID(),
-            name,
-            type,
-            location,
-            climate
-        };
-    };
+    const { addEnvironment } = usePlantMonitor();
     
-    const formData: EnvironmentData = getFormData()
-    
+     const validationErrors = validate(formState);
+    const validationWarnings = validateWarnings(formState);
+
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
-        setTouched({
-            name: true,
-            type: true,
-            location: true,
-            temp: true,
-            humidity: true,
-            co2: true,
-            vpd: true,
-        });
-        
-        
-        const validationErrors = validate(formData);
-        if (Object.keys(validationErrors).length > 0) return;
 
-        addEnvironment(formData);
-
-        if (onSaved) {
-            onSaved(formData.id, nextStep);
+        const hasErrors = Object.keys(validationErrors).length > 0;
+        
+        if (hasErrors) {
+            console.warn("Form has validation errors:", validationErrors);
+            return;
         }
 
-        setName("");
-        setType("ROOM");
-        setLocation("");
-        setTemp(undefined);
-        setTempUnit("°C");
-        setHumidity(undefined);
-        setCo2(undefined);
-        setVpd(undefined);
-        setTouched({
-            name: false,
-            type: false,
-            location: false,
-            temp: false,
-            humidity: false,
-            co2: false,
-            vpd: false,
-        });
+        const climateData = convertClimateInputToData(formState.climate);
+        const envId = crypto.randomUUID();
 
+        addEnvironment({ ...formState, climate: climateData, id: envId });
+
+        if (onSaved) {
+            onSaved(envId, nextStep);
+        }
     };
 
-    const handleNumberChange = (setter: React.Dispatch<React.SetStateAction<number | undefined>>, field: keyof typeof touched) =>
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            const val = e.target.value;
-            setter(val === "" ? undefined : parseFloat(val));
-            setTouched(prev => ({ ...prev, [field]: true }));
-        };
-
-    const validationErrors = validate(formData);
-    const validationWarnings = validateWarnings(formData);
-
-    const getTempRange = () => tempUnit === "°C" ? { min: 0, max: 40 } : { min: 32, max: 104 };
-
     return (
-        <Form onSubmit={ () => handleSubmit}>
+        <Form onSubmit={(e) => handleSubmit(e, "dashboard")}>
             <Input
                 label="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                onBlur={() => handleBlur("name")}
+                value={formState.name}
+                onChange={(e) => setField("name", e.target.value)}
                 error={validationErrors.name}
-                touched={touched.name}
-                required
             />
 
             <FormField>
                 <Select
                     label="Typ"
-                    value={type}
-                    onChange={(e) => setType(e.target.value as EnvironmentType)}
-                    onBlur={() => handleBlur("type")}
-                    touched={touched.type}
-                    error={validationErrors.type}
+                    value={formState.type}
+                    onChange={(e) => setField("type", e.target.value as EnvironmentType)}
                 >
                     <option value="ROOM">Room</option>
                     <option value="TENT">Tent</option>
@@ -148,85 +68,20 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
 
             <Input
                 label="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                onBlur={() => handleBlur("location")}
+                value={formState.location ?? ""}
+                onChange={(e) => setField("location", e.target.value)}
                 error={validationErrors.location}
-                touched={touched.location}
-                placeholder="z.B. Keller, Wohnzimmer"
             />
 
             <FormSectionTitle>Klimadaten</FormSectionTitle>
 
-            <div className={styles.row}>
-                <Input
-                    label="Temperatur"
-                    value={temp ?? ""}
-                    onChange={handleNumberChange(setTemp, "temp")}
-                    onBlur={() => handleBlur("temp")}
-                    suffix={tempUnit}
-                    type="number"
-                    step={0.01}
-                    {...getTempRange()}
-                    error={validationErrors.climate?.temp}
-                    warning={validationWarnings.climate?.temp}
-                    touched={touched.temp}
-                />
-                <Select
-                    value={tempUnit}
-                    onChange={(e) => setTempUnit(e.target.value as TempUnit)}
-                    touched={true}
-                    className={styles.unitSelect}
-                >
-                    <option value="°C">°C</option>
-                    <option value="F">F</option>
-                </Select>
-            </div>
-
-            <Input
-                label="Luftfeuchtigkeit"
-                value={humidity ?? ""}
-                onChange={handleNumberChange(setHumidity, "humidity")}
-                onBlur={() => handleBlur("humidity")}
-                suffix="%"
-                type="number"
-                step={0.01}
-                min={0}
-                max={100}
-                error={validationErrors.climate?.humidity}
-                warning={validationWarnings.climate?.humidity}
-                touched={touched.humidity}
+            <ClimateInputs
+                climate={formState.climate}
+                onChange={setClimateField}
+                errors={validationErrors.climate}
+                warnings={validationWarnings.climate}
             />
 
-            <Input
-                label="CO₂"
-                value={co2 ?? ""}
-                onChange={handleNumberChange(setCo2, "co2")}
-                onBlur={() => handleBlur("co2")}
-                suffix="ppm"
-                type="number"
-                step={0.01}
-                min={0}
-                max={5000}
-                error={validationErrors.climate?.co2}
-                warning={validationWarnings.climate?.co2}
-                touched={touched.co2}
-            />
-
-            <Input
-                label="VPD"
-                value={vpd ?? ""}
-                onChange={handleNumberChange(setVpd, "vpd")}
-                onBlur={() => handleBlur("vpd")}
-                suffix="kPa"
-                type="number"
-                step={0.01}
-                min={0}
-                max={10}
-                error={validationErrors.climate?.vpd}
-                warning={validationWarnings.climate?.vpd}
-                touched={touched.vpd}
-            />
             <div className={styles.buttonRow}>
                 <Button type="button" variant="primary" onClick={(e) => handleSubmit(e, "plant")}>
                     Weiter zu Pflanzen

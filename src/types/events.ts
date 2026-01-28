@@ -1,4 +1,5 @@
 import { iconMap } from "./environment";
+import { WaterData } from "./plant";
 
 export interface BaseEvent {
   id: string;
@@ -23,9 +24,7 @@ export interface EventFormData {
   customTextColor?: string;
   customBorderColor?: string;
 
-  waterAmount?: number;
-  waterPh?: number;
-  waterEc?: number;
+  watering?: WaterData
 }
 
 export interface TimeSeriesEntry<EventType = any> {
