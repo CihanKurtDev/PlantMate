@@ -13,7 +13,7 @@ export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidd
     if (hidden) return null
     const rows = mapPlantsToTableRows(plants, environments);
     return (
-        <TabContent id="plants" title={`Pflanzen (${plants.length})`}>
+        <TabContent id="plants">
             {plants.length === 0 ? (
                 <EmptyState message='Keine Pflanzen vorhanden' />
             ) : (

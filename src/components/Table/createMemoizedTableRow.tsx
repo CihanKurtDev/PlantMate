@@ -1,6 +1,7 @@
 import { TableColumn } from "@/types/table";
 import { memo, useMemo } from "react";
 import styles from './Table.module.scss';
+import { useRouter } from "next/navigation";
 
 interface TableRowProps<RowType extends { key: string }> {
   rowData: RowType;
@@ -17,6 +18,7 @@ interface TableRowProps<RowType extends { key: string }> {
 export const createMemoizedTableRow = <RowType extends { key: string }>() => {
     return memo((props: TableRowProps<RowType>) => {
         const { rowData, columns, isSelected = false, onSelect, isEditing } = props;
+        const router = useRouter();
 
         const rowProps = useMemo(() => ({
             ...rowData,
@@ -34,10 +36,22 @@ export const createMemoizedTableRow = <RowType extends { key: string }>() => {
             return <li className={styles.rowElement} key={i}>{cellContent as React.ReactNode}</li>;
         });
 
+        const handleRowClick = () => {
+            if (isEditing) {
+                onSelect(); // Mehrfachauswahl im Edit-Modus
+            } else if ("id" in rowData) {
+                // Generischer Link: Environment + Plant wenn vorhanden, sonst nur Environment
+                const link = "environmentId" in rowData && rowData.environmentId
+                    ? `/environments/${rowData.environmentId}/plants/${rowData.id}`
+                    : `/environments/${rowData.id}`;
+                router.push(link);
+            }
+        };
+
         return (
             <ul
                 className={styles.tableRow}
-                onClick={onSelect}
+                onClick={handleRowClick}
             >
                 {generatedCellContent}
             </ul>

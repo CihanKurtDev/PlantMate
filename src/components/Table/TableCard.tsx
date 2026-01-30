@@ -62,7 +62,11 @@ function createTableCard<RowType extends { key: string }>() {
                                 toggleEditMode={() => setIsEditing(prev => !prev)} 
                             />
                         }
-                        <TableActionBar onSearch={setSearch} />
+                        <TableActionBar 
+                            onSearch={setSearch} 
+                            isEditing={isEditing}
+                            toggleEditMode={() => setIsEditing(prev => !prev)}
+                        />
                     </div>
                     <Table config={memoizedConfig} rows={paginatedRows} isEditing={isEditing} />
                     { tableHasRows && 

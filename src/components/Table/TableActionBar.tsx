@@ -1,16 +1,25 @@
 import React, { memo } from "react";
 import styles from './TableActionBar.module.scss';
+import { Button } from "../Button/Button";
 
 interface TableActionBarProps {
-    onSearch: (newSearch: string) => void
+    onSearch: (newSearch: string) => void;
+    isEditing: boolean;
+    toggleEditMode: () => void;
 }
 
-export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch }) => {
+export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode }) => {
     return (
         <div className={styles.tableActionBar}>
             <div className={styles.leftActions}>
-                <button className={styles.tableButton}>Export</button>
-                <button className={styles.tableButton}>Neu</button>
+                <Button
+                    variant={isEditing ? "error" : "primary"}
+                    onClick={toggleEditMode}
+                >
+                    {isEditing ? "Bearbeitung beenden" : "Bearbeiten"}
+                </Button>
+                <Button>Export</Button>
+                <Button>Neu</Button>
             </div>
             <div className={styles.rightActions}>
                 <div className={styles.searchInputWrapper}>
