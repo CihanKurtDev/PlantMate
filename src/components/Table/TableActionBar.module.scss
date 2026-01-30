@@ -1,0 +1,48 @@
+@use '../../styles/mixins' as *;
+
+.tableActionBar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-reg) 0;
+
+    .leftActions {
+        display: flex;
+        gap: var(--spacing-s);
+
+        .tableButton {
+            @include button(secondary);
+            padding: var(--spacing-s) var(--spacing-reg);
+            transition: background-color 0.2s ease;
+        }
+    }
+
+    .rightActions {
+        .searchInputWrapper {
+            position: relative;
+
+            .searchIcon {
+                position: absolute;
+                top: 50%;
+                left: var(--spacing-s);
+                transform: translateY(-50%);
+                color: var(--color-text-tertiary);
+                pointer-events: none;
+            }
+
+            .searchInput {
+                padding: var(--spacing-s) var(--spacing-reg) var(--spacing-s) var(--spacing-l);
+                border: 1px solid var(--color-text-tertiary);
+                border-radius: var(--radius-s);
+                font-size: var(--font-size-s);
+                width: 200px;
+
+                &:focus {
+                    border-color: var(--text-primary);
+                    outline: none;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,49 @@
+@use '../../styles/mixins' as *;
+
+.tableFilterBar {
+    border-bottom: 1px solid var(--color-background-primary);
+    width: 100%;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+
+    span {
+        color: gray;
+        display: flex;
+        padding: var(--spacing-none) var(--spacing-m) var(--spacing-reg) var(--spacing-reg);
+        border-bottom: 1px solid transparent;
+
+        &:hover,
+        &.selected {
+            cursor: pointer;
+            border-bottom: 1px solid var(--color-background-accent);
+            color: var(--color-surface-brand-primary);
+
+            div {
+                color: var(--color-text-secondary);
+                background-color: var(--color-background-accent);
+            }
+        }
+    }
+
+    .tableFilters {
+        display: flex;
+        align-items: self-end;
+    }
+
+    .filterTab>div {
+        border-radius: var(--radius-s);
+        background: var(--color-background-primary);
+        padding: var(--spacing-none) var(--spacing-s);
+        margin-left: var(--spacing-xs);
+    }
+
+    .editTableButton {
+        @include button(secondary);
+        display: flex;
+        padding: var(--spacing-s);
+        gap: var(--spacing-s);
+        margin-bottom: var(--spacing-xs);
+        align-items: center;
+    }
+}

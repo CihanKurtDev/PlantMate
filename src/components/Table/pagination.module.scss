@@ -1,0 +1,45 @@
+.paginationBarWrapper {
+    display: flex;
+    justify-content: space-between;
+    height: 32px;
+
+    .paginationIcons {
+        display: flex;
+    }
+
+    .paginationWrapper,
+    .dropdownWrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    .dropdown {
+        width: 48px;
+        margin-right: var(--spacing-s);
+    }
+
+    .pagination {
+        padding: 0;
+        display: flex;
+
+        .paginationItem {
+            box-sizing: content-box;
+            width: var(--spacing-reg);
+            height: var(--spacing-reg);
+            padding: var(--spacing-s);
+            border-radius: var(--radius-circle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            &.active {
+                background-color: var(--color-background-accent);
+                color: var(--color-text-secondary)
+            }
+        }
+    }
+}
