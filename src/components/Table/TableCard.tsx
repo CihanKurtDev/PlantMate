@@ -54,6 +54,11 @@ function createTableCard<RowType extends { key: string }>() {
             setSelectedRows([]);
         }
 
+        const toggleEditMode = () => {
+            setIsEditing((prev) => !prev);
+            setSelectedRows([]);
+        }
+
         return (
             <section className={styles.tableCard}>
                 <TableCardHeader 
@@ -67,13 +72,13 @@ function createTableCard<RowType extends { key: string }>() {
                                 filters={filtersWithCounts} 
                                 filter={filter} 
                                 setFilter={setFilter} 
-                                toggleEditMode={() => setIsEditing(prev => !prev)} 
+                                toggleEditMode={toggleEditMode} 
                             />
                         }
                         <TableActionBar 
                             onSearch={setSearch} 
                             isEditing={isEditing}
-                            toggleEditMode={() => setIsEditing(prev => !prev)}
+                            toggleEditMode={toggleEditMode}
                             deleteSelectedRows={deleteSelectedRows}
                             hasSelectedRows={selectedRows.length > 0}
                         />

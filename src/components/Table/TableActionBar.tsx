@@ -15,12 +15,11 @@ export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, i
         <div className={styles.tableActionBar}>
             <div className={styles.leftActions}>
                 <Button
-                    variant={isEditing ? "error" : "primary"}
                     onClick={toggleEditMode}
                 >
                     {isEditing ? "Bearbeitung beenden" : "Bearbeiten"}
                 </Button>
-                {hasSelectedRows && <Button onClick={deleteSelectedRows}>Löschen</Button>}
+                {hasSelectedRows && isEditing && <Button variant="error" onClick={deleteSelectedRows}>Löschen</Button>}
             </div>
             <div className={styles.rightActions}>
                 <div className={styles.searchInputWrapper}>

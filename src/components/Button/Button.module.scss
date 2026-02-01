@@ -8,6 +8,10 @@
   @include button(secondary);
 }
 
+.error {
+  @include button(error);
+}
+
 .floating {
   @include button(primary);
 
