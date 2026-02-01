@@ -1,15 +1,13 @@
 import { PlantData } from '@/types/plant';
-import styles from './PlantsTab.module.scss';
 import TabContent from './shared/TabContent';
 import EmptyState from './shared/EmptyState';
 import { mapPlantsToTableRows } from '@/components/Table/adapters/plantTableAdapter';
 import { usePlantMonitor } from '@/context/PlantMonitorContext';
-import { Table } from '@/components/Table/Table';
 import { plantTableConfig } from '@/config/plantTableConfig';
 import { PlantTableCard } from '@/components/Table/TableCard';
 
 export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidden: boolean}) {
-    const { environments } = usePlantMonitor();
+    const { environments, deletePlants } = usePlantMonitor();
     if (hidden) return null
     const rows = mapPlantsToTableRows(plants, environments);
     return (
@@ -19,7 +17,10 @@ export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidd
             ) : (
                 <PlantTableCard
                     data={rows}
-                    tableConfig={plantTableConfig}
+                    tableConfig={{
+                        ...plantTableConfig,
+                        onDeleteSelected: (keys: string[]) => deletePlants(keys)
+                    }}
                 />
             )}
         </TabContent>

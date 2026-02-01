@@ -50,7 +50,7 @@ export const createMemoizedTableRow = <RowType extends { key: string }>() => {
 
         return (
             <ul
-                className={styles.tableRow}
+                className={`${styles.tableRow} ${isSelected ? styles.tableRowSelected : ''}`}
                 onClick={handleRowClick}
             >
                 {generatedCellContent}

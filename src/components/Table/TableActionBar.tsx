@@ -6,9 +6,11 @@ interface TableActionBarProps {
     onSearch: (newSearch: string) => void;
     isEditing: boolean;
     toggleEditMode: () => void;
+    deleteSelectedRows: () => void;
+    hasSelectedRows: boolean;
 }
 
-export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode }) => {
+export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode, deleteSelectedRows, hasSelectedRows }) => {
     return (
         <div className={styles.tableActionBar}>
             <div className={styles.leftActions}>
@@ -18,8 +20,7 @@ export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, i
                 >
                     {isEditing ? "Bearbeitung beenden" : "Bearbeiten"}
                 </Button>
-                <Button>Export</Button>
-                <Button>Neu</Button>
+                {hasSelectedRows && <Button onClick={deleteSelectedRows}>Löschen</Button>}
             </div>
             <div className={styles.rightActions}>
                 <div className={styles.searchInputWrapper}>

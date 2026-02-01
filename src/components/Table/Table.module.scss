@@ -32,6 +32,7 @@
 .tableRow {
     border-bottom: 1px solid var(--color-border-primary);
     display: contents;
+    cursor: pointer;
 
     .rowElement {
         height: var(--spacing-2xl);
@@ -39,12 +40,16 @@
     }
 }
 
-.tableRow:hover {
-    cursor: pointer;
-    font-weight: bold;
-
+.tableRowSelected {
     li {
-        background-color: var(--background-primary);
+        background-color: var(--color-background-tertiary);
+    }
+}
+
+.tableRow:hover {
+    li {
+        background-color: var(--color-background-secondary);
+        color: black;
     }
 }
 

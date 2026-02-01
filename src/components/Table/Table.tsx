@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { createMemoizedTableRow } from "./createMemoizedTableRow";
 import { TableHeader } from "./TableHeader";
 import { TableConfig } from "@/types/table";
@@ -14,10 +13,8 @@ import styles from './Table.module.scss';
 //
 // In short, <div>-based tables give us full control over layout, styling, and performance optimizations in dynamic React tables, at the cost of losing native table semantics.
 
-
-export const Table = <RowType extends { key: string }>({ config, rows, isEditing }: { config: TableConfig<RowType>, rows: RowType[], isEditing: boolean }) => {
+export const Table = <RowType extends { key: string }>({ config, rows, isEditing, selectedRows, setSelectedRows }: { config: TableConfig<RowType>, rows: RowType[], isEditing: boolean, selectedRows: string[], setSelectedRows: React.Dispatch<React.SetStateAction<string[]>> }) => {
     const { columns } = config;
-    const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
     const tableHasRows = rows.length > 0;
 

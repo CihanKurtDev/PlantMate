@@ -12,7 +12,9 @@ import { PlantTableRow } from "./adapters/plantTableAdapter";
 
 interface TableCardProps<RowType extends { key: string }> {
     data: RowType[];
-    tableConfig: TableConfig<RowType>;
+    tableConfig: TableConfig<RowType> & {
+        onDeleteSelected?: (keys: string[]) => void
+    };
 }
 
 function createTableCard<RowType extends { key: string }>() {
@@ -30,6 +32,7 @@ function createTableCard<RowType extends { key: string }>() {
 
         const [isTableCollapsed, setIsTableCollapsed] = useState(false);
         const [isEditing, setIsEditing] = useState(false);
+        const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
         const filtersWithCounts = useMemo(() => {
             return computeFiltersTabs(data, tableConfig);
@@ -45,6 +48,11 @@ function createTableCard<RowType extends { key: string }>() {
             }),
             [tableConfig, visibleColumns]
         );
+
+        const deleteSelectedRows = () => {
+            tableConfig.onDeleteSelected?.(selectedRows)
+            setSelectedRows([]);
+        }
 
         return (
             <section className={styles.tableCard}>
@@ -66,9 +74,11 @@ function createTableCard<RowType extends { key: string }>() {
                             onSearch={setSearch} 
                             isEditing={isEditing}
                             toggleEditMode={() => setIsEditing(prev => !prev)}
+                            deleteSelectedRows={deleteSelectedRows}
+                            hasSelectedRows={selectedRows.length > 0}
                         />
                     </div>
-                    <Table config={memoizedConfig} rows={paginatedRows} isEditing={isEditing} />
+                    <Table config={memoizedConfig} rows={paginatedRows} isEditing={isEditing} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />
                     { tableHasRows && 
                         <Pagination 
                             rows={filteredRows} 
@@ -84,6 +94,4 @@ function createTableCard<RowType extends { key: string }>() {
     return memo(TableCardComponent);
 }
 
-// TODO: remove this this is just temp
 export const PlantTableCard = createTableCard<PlantTableRow>();
-// export const ProjectTableCard = createTableCard<ProjectData>();
