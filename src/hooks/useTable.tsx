@@ -42,34 +42,43 @@ export function useTable<RowType extends { key: string }>({ data, config, initia
         setTableState(prev => ({ ...prev, search: newSearch }));
     }, []);
 
+    const normalizeString = (value: unknown): string =>
+    typeof value === "string" ? value.toLowerCase().trim() : "";
 
     const filteredRows = useMemo(() => {
+        const activeFilter = config.filters.find(f => f.displayText === filter);
+
         return data.filter(row => {
             const matchesFilter =
+                !activeFilter ||
                 filter === "Alle" ||
+                (
+                    activeFilter.customSearchFunc
+                        ? activeFilter.customSearchFunc(row)
+                        : (
+                            config.filterKey &&
+                            normalizeString(
+                                getNestedValue(row, config.filterKey as string)
+                            ) === normalizeString(filter)
+                        )
+                );
+
+            const matchesSearch =
+                searchTerm === "" ||
                 config.searchKeys.some(key => {
                     const val = getNestedValue(row, key);
-                    return val && val.toString().toLowerCase().includes(filter.toLowerCase());
+                    return val &&
+                        val.toString().toLowerCase().includes(searchTerm);
                 });
-
-            const matchesSearch = searchTerm === "" || config.searchKeys.some(key => {
-                const val = getNestedValue(row, key);
-                return val && val.toString().toLowerCase().includes(searchTerm);
-            });
 
             return matchesFilter && matchesSearch;
         });
-    }, [data, filter, searchTerm, config.searchKeys]);
+
+    }, [data, filter, searchTerm, config]);
 
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
     const paginatedRows = filteredRows.slice(startIndex, endIndex);
-
-    const visibleColumns = useMemo(() => {
-        if (!paginatedRows.length) return [];
-        const keys = Object.keys(paginatedRows[0]);
-        return config.columns.filter(col => keys.includes(col.key as string));
-    }, [paginatedRows, config.columns]);
 
     return {
         filter,
@@ -80,6 +89,5 @@ export function useTable<RowType extends { key: string }>({ data, config, initia
         setTableState,
         filteredRows,
         paginatedRows,
-        visibleColumns,
     };
 }

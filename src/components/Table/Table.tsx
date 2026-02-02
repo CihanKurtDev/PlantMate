@@ -15,7 +15,7 @@ import styles from './Table.module.scss';
 
 export const Table = <RowType extends { key: string }>({ config, rows, isEditing, selectedRows, setSelectedRows }: { config: TableConfig<RowType>, rows: RowType[], isEditing: boolean, selectedRows: string[], setSelectedRows: React.Dispatch<React.SetStateAction<string[]>> }) => {
     const { columns } = config;
-
+    console.log(columns)
     const tableHasRows = rows.length > 0;
 
     const handleRowSelect = (key: string) => {

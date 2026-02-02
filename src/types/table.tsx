@@ -17,14 +17,16 @@ export type TableColumn<T> = {
     }
 }[keyof T];
 
-export interface TableFilter {
-    displayText: string 
+export interface TableFilter<RowType> {
+    displayText: string,
+    icon?: React.ReactElement;
+    customSearchFunc?: (row: RowType) => boolean;
 }
 
 export interface TableConfig<RowType> {
     title: string,
     columns: TableColumn<RowType>[],
-    filters: TableFilter[],
+    filters: TableFilter<RowType>[],
     searchKeys: string[],
     filterKey?: keyof RowType;
 }

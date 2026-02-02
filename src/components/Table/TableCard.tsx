@@ -26,7 +26,6 @@ function createTableCard<RowType extends { key: string }>() {
             tableState,
             setTableState,
             paginatedRows,
-            visibleColumns,
             filteredRows,
         } = useTable({ data, config: tableConfig });
 
@@ -44,9 +43,8 @@ function createTableCard<RowType extends { key: string }>() {
         const memoizedConfig = useMemo(
             () => ({
                 ...tableConfig,
-                columns: visibleColumns,
             }),
-            [tableConfig, visibleColumns]
+            [tableConfig]
         );
 
         const deleteSelectedRows = () => {
@@ -72,7 +70,6 @@ function createTableCard<RowType extends { key: string }>() {
                                 filters={filtersWithCounts} 
                                 filter={filter} 
                                 setFilter={setFilter} 
-                                toggleEditMode={toggleEditMode} 
                             />
                         }
                         <TableActionBar 

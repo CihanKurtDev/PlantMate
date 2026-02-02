@@ -1,34 +1,35 @@
 import { memo } from "react";
-import { Button } from "../Button/Button";
 import styles from './TableFilterBar.module.scss';
+import { TableFilter } from "@/types/table";
 
-interface TableFilterBarProps {
-    filters: { displayText: string, count: number }[];
+interface TableFilterBarProps<RowType> {
+    filters: (TableFilter<RowType> & { count: number })[]
     filter: string;
     setFilter: (value: string) => void;
-    toggleEditMode: () => void
 }
 
-export const TableFilterBar: React.FC<TableFilterBarProps> = memo(({ filters, filter, setFilter, toggleEditMode: toggleEditMode }) => {
-    const filterTabs = filters.map((filterItem, id) => {
-        return (
-            <span
-                className={`${styles.filterTab} ${filter === filterItem.displayText ? styles.selected : ""}`}
-                key={id}
-                onClick={() => setFilter(filterItem.displayText)}
-            >
-                {filterItem.displayText}
-                <div>{filterItem.count}</div>
-            </span>
-        )
-    })
-
+export const TableFilterBar = <RowType,>({
+    filters,
+    filter,
+    setFilter,
+}: TableFilterBarProps<RowType>) => {
     return (
         <div className={styles.tableFilterBar}>
             <div className={styles.tableFilters}>
-                {filterTabs}
+                {filters.map((f, id) => (
+                    <span
+                        className={`${styles.filterTab} ${filter === f.displayText ? styles.selected : ""}`}
+                        key={id}
+                        onClick={() => setFilter(f.displayText)}
+                    >
+                        {f.icon && f.icon}
+                        {f.displayText}
+                        <div>{f.count}</div>
+                    </span>
+                ))}
             </div>
-            <Button className={styles.editTableButton} onClick={toggleEditMode}>Bearbeiten</Button>
         </div>
-    )
-})
+    );
+};
+
+export const MemoizedTableFilterBar = memo(TableFilterBar)

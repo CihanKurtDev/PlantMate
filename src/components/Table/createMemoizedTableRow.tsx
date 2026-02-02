@@ -28,12 +28,12 @@ export const createMemoizedTableRow = <RowType extends { key: string }>() => {
         }), [rowData, isSelected, onSelect, isEditing])
 
         const generatedCellContent = columns.map((column, i) => {
-        const value = rowData[column.key];
-        const cellContent = column.render
-            ? column.render(value, rowProps)
-            : value;
+            const value = rowData[column.key];
+            const cellContent = column.render
+                ? column.render(value, rowProps)
+                : value;
 
-            return <li className={styles.rowElement} key={i}>{cellContent as React.ReactNode}</li>;
+                return <li className={styles.rowElement} key={i}>{cellContent as React.ReactNode}</li>;
         });
 
         const handleRowClick = () => {
