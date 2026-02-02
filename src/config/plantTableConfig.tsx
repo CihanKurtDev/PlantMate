@@ -1,7 +1,7 @@
 import { PlantTableRow } from "@/components/Table/adapters/plantTableAdapter";
 import { daysSince, formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
-import { AlertCircle, CalendarClock, Droplet, Inbox } from "lucide-react";
+import { ActivityIcon, AlertCircle, CalendarClock, Droplet, Inbox } from "lucide-react";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -25,10 +25,6 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
     title: "Pflanzen",
     searchKeys: ["title", "species", "environmentName"],
         filters: [
-        {
-            displayText: "Alle",
-            icon: <Droplet size={16} />
-        },
         {
             displayText: "Braucht Wasser",
             icon: <AlertCircle size={16} />,
@@ -61,6 +57,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
         },
         {
             displayText: "Ungesund",
+            icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
                 const ph = row.water?.ph?.value;
                 const ec = row.water?.ec?.value;

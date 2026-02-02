@@ -66,7 +66,7 @@ function createTableCard<RowType extends { key: string }>() {
                 <div className={`${styles.collapsable} ${isTableCollapsed ? styles.collapsed : ""}`}>
                     <div className={styles.tableActionWrapper}>
                         { tableHasFilters && 
-                            <TableFilterBar 
+                            <TableFilterBar
                                 filters={filtersWithCounts} 
                                 filter={filter} 
                                 setFilter={setFilter} 

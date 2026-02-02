@@ -18,12 +18,14 @@ export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, i
         <div className={styles.tableActionBar}>
             <div className={styles.leftActions}>
                 <Button
+                    variant="rounded"
                     onClick={toggleEditMode}
                 >
                     {isEditing ? "Bearbeitung beenden" : "Bearbeiten"}
                 </Button>
                 <Button
                     onClick={() => router.push(`/environments/${environmentId}/plants/new`)}
+                    variant="rounded"
                 >
                     Neu
                 </Button>

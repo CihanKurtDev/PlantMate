@@ -119,7 +119,7 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
                         Speichern & Weiter
                     </Button>
                 )}
-                <Button type="button" variant="primary" onClick={handleSubmit}>
+                <Button type="button" onClick={handleSubmit}>
                     Speichern & Zum Dashboard
                 </Button>
             </div>

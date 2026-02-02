@@ -40,6 +40,11 @@
   }
 }
 
+.rounded {
+  @include button(primary);
+  border-radius: var(--radius-s);
+}
+
 .round {
   padding: var(--spacing-s);
 }

@@ -1,4 +1,3 @@
-import { memo } from "react";
 import styles from './TableFilterBar.module.scss';
 import { TableFilter } from "@/types/table";
 
@@ -13,6 +12,7 @@ export const TableFilterBar = <RowType,>({
     filter,
     setFilter,
 }: TableFilterBarProps<RowType>) => {
+    const selectedFilter = filters.find(f => f.displayText === filter);
     return (
         <div className={styles.tableFilterBar}>
             <div className={styles.tableFilters}>
@@ -20,16 +20,13 @@ export const TableFilterBar = <RowType,>({
                     <span
                         className={`${styles.filterTab} ${filter === f.displayText ? styles.selected : ""}`}
                         key={id}
-                        onClick={() => setFilter(f.displayText)}
+                        onClick={() => setFilter(filter === f.displayText ? "" : f.displayText)}
                     >
                         {f.icon && f.icon}
                         {f.displayText}
-                        <div>{f.count}</div>
                     </span>
                 ))}
             </div>
         </div>
     );
 };
-
-export const MemoizedTableFilterBar = memo(TableFilterBar)
