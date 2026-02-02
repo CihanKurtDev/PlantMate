@@ -1,5 +1,4 @@
 import type { Dispatch, SetStateAction } from "react";
-import { Button } from "../Button/Button";
 import styles from './TableCardHeader.module.scss';
 import { ChevronDown, ChevronUp } from "lucide-react";
 
@@ -11,11 +10,9 @@ interface TableCardHeaderProps {
 
 export const TableCardHeader: React.FC<TableCardHeaderProps> = ({title, isTableCollapsed, setIsTableCollapsed}) =>  {
     return (
-        <div className={styles.tableCardHeader}>
+        <div className={styles.tableCardHeader} onClick={() => setIsTableCollapsed(!isTableCollapsed)}>
             <h2>{title}</h2>
-            <Button className={styles.openCardButton} onClick={() => setIsTableCollapsed(!isTableCollapsed)}>
-                {isTableCollapsed ? <ChevronDown /> : <ChevronUp />}
-            </Button>
+            {isTableCollapsed ? <ChevronDown /> : <ChevronUp />}
         </div>
     )
 }
