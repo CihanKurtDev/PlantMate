@@ -78,6 +78,7 @@ function createTableCard<RowType extends { key: string }>() {
                             toggleEditMode={toggleEditMode}
                             deleteSelectedRows={deleteSelectedRows}
                             hasSelectedRows={selectedRows.length > 0}
+                            environmentId={data[0]?.environmentId}
                         />
                     </div>
                     <Table config={memoizedConfig} rows={paginatedRows} isEditing={isEditing} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />
