@@ -70,14 +70,6 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
             <EnvironmentEventTab environmentId={environmentId} events={environment.events} hidden={activeTab !== 'events'}/>
-            <Button
-                variant="floating"
-                size="round"
-                onClick={() => router.push(`/environments/${environmentId}/plants/new`)}
-                aria-label="Neue Umgebung hinzufügen"
-            >
-                <Plus size={32} style={{ display: "block" }} />
-            </Button>
         </PageLayout>
     );
 }

@@ -58,8 +58,7 @@ export type PlantEventType =
   |  string
 
 export interface PlantEvent extends BaseEvent {
-    plantId: string;
-
+  plantId: string;
   watering?: WaterData
 
   repotting?: {

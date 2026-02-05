@@ -3,7 +3,7 @@ import styles from './TabContent.module.scss';
 
 type TabContentProps = {
   id?: string;
-  title: string;
+  title?: string;
   subtitle?: React.ReactNode;
   children: React.ReactNode;
 };
@@ -13,12 +13,12 @@ export default function TabContent({ id, title, subtitle, children }: TabContent
 
     return (
         <section id={id} className={styles.container} aria-labelledby={headingId}>
-            <header className={styles.header}>
+            {title && <header className={styles.header}>
                 <div>
-                    <h2 id={headingId} className={styles.heading}>{title}</h2>
+                    {title && <h2 id={headingId} className={styles.heading}>{title}</h2>}
                     {subtitle && <div className={styles.subtitle}>{subtitle}</div>}
                 </div>
-            </header>
+            </header>}
             {children}
         </section>
     );

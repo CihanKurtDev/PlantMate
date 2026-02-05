@@ -1,0 +1,50 @@
+@use '../../styles/mixins' as *;
+
+.tableFilterBar {
+    border-bottom: 1px solid var(--color-background-primary);
+    width: 100%;
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    justify-content: flex-start;
+    padding: var(--spacing-s) 0;
+    gap: var(--spacing-s);
+    flex-direction: column;
+
+    .tableFilters {
+        display: flex;
+        gap: var(--spacing-s);
+        align-items: center;
+    }
+
+    .filterTab {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-xs) var(--spacing-s);
+        border-radius: var(--radius-s);
+        background-color: var(--color-background-tertiary);
+        color: var(--color-text-secondary);
+        font-size: var(--font-size-s);
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        position: relative;
+
+        svg {
+            display: inline-block;
+        }
+
+        &.selected {
+            color: var(--color-text-primary);
+ 
+            > div {
+                color: var(--color-highlight-action);
+            }
+        }
+
+        > div {
+            color: var(--color-text-secondary);
+            border-radius: var(--radius-s);
+            text-align: center;
+        }
+    }
+}

@@ -11,6 +11,7 @@ interface PlantMonitorContextType {
     getPlantsByEnvironment: (envId: string) => PlantData[];
     addEventToPlant: (plantId: string, event: PlantEvent) => void,
     addEventToEnvironment: (environmentId: string, event: EnvironmentEvent) => void,
+    deletePlants: (ids: string[]) => void;
 }
 
 const PlantMonitorContext = createContext<PlantMonitorContextType | undefined>(undefined);
@@ -50,6 +51,14 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
     const addPlant = (plant: PlantData) => {
         setPlants(prev => {
             const updated = [...prev, plant];
+            localStorage.setItem("plants", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const deletePlants = (ids: string[]) => {
+        setPlants(prev => {
+            const updated = prev.filter(plant => !ids.includes(plant.id!));
             localStorage.setItem("plants", JSON.stringify(updated));
             return updated;
         });
@@ -99,7 +108,7 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <PlantMonitorContext.Provider value={{ environments, plants, addEnvironment, getPlantsByEnvironment, addPlant, addEventToPlant, addEventToEnvironment }}>
+        <PlantMonitorContext.Provider value={{ environments, plants, addEnvironment, getPlantsByEnvironment, addPlant, deletePlants, addEventToPlant, addEventToEnvironment }}>
             {children}
         </PlantMonitorContext.Provider>
     );

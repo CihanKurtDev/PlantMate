@@ -86,3 +86,6 @@ export const setTimeToNoon = (date: Date): Date => {
     newDate.setHours(12, 0, 0, 0);
     return newDate;
 };
+
+export const daysSince = (timestamp: number) =>
+    (Date.now() - timestamp) / (1000 * 60 * 60 * 24);

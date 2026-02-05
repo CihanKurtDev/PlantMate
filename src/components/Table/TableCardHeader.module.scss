@@ -1,0 +1,18 @@
+.tableCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: black;
+    cursor: pointer;
+
+    .openCardButton {
+        background-color: transparent;
+        width: 36px;
+        color: var(--text-primary);
+        border: none;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+}

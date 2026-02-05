@@ -8,6 +8,10 @@
   @include button(secondary);
 }
 
+.error {
+  @include button(error);
+}
+
 .floating {
   @include button(primary);
 
@@ -34,6 +38,11 @@
     width: 64px;
     height: 64px;
   }
+}
+
+.rounded {
+  @include button(primary);
+  border-radius: var(--radius-s);
 }
 
 .round {
