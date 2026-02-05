@@ -11,7 +11,7 @@ interface TableProps<RowType extends { key: string }> {
     onSelectRow: (key: string) => void;
     onRowClick?: (row: RowType) => void;
     sortConfig: SortConfig<RowType>;
-    onSort: (keyOrId: keyof RowType | string) => void;
+    onSort: (key: keyof RowType) => void;
 }
 
 export const Table = <RowType extends { key: string }>({ 

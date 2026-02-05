@@ -1,8 +1,7 @@
 import { PlantTableRow } from "@/components/Table/adapters/plantTableAdapter";
-import { daysSince, formatDateShort } from "@/helpers/date";
+import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
 import { ActivityIcon, AlertCircle, CalendarClock, Droplet, Inbox } from "lucide-react";
-import { JSX } from "react";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -12,48 +11,28 @@ const dangerColor = "#b91c1c";
 const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
 
-
-export const getLastEvent = (events?: PlantTableRow["events"]) =>
-    events && events.length > 0 ? events[events.length - 1] : undefined;
-
-export const getLastWatering = (events?: PlantTableRow["events"]) =>
-    events
-        ?.slice()
-        .reverse()
-        .find((e) => e.type === "WATERING");
-
-const extractPH = (row: PlantTableRow) => row.water?.ph?.value ?? null;
-const extractEC = (row: PlantTableRow) => row.water?.ec?.value ?? null;
-const extractLastEventTime = (row: PlantTableRow) => getLastEvent(row.events)?.timestamp ?? 0;
-const extractLastWateringTime = (row: PlantTableRow) => getLastWatering(row.events)?.timestamp ?? 0;
-
 export const plantTableConfig: TableConfig<PlantTableRow> = {
     title: "Pflanzen",
-    searchKeys: [],
-        filters: [
+    searchKeys: ["title", "species"],
+    
+    filters: [
         {
             displayText: "Braucht Wasser",
             icon: <AlertCircle size={16} />,
-            customSearchFunc: (row) => {
-                const last = getLastWatering(row.events);
-                if (!last) return true;
-                return daysSince(last.timestamp) > 7;
-            },
+            customSearchFunc: (row) => row.daysSinceWatering > 7
         },
         {
             displayText: "PH",
             icon: <AlertCircle size={16} />,
             customSearchFunc: (row) => {
-                const value = row.water?.ph?.value;
-                return value !== undefined && (value < 5.5 || value > 7.5);
+                return row.phValue !== null && (row.phValue < 5.5 || row.phValue > 7.5);
             },
         },
         {
             displayText: "EC",
             icon: <AlertCircle size={16} />,
             customSearchFunc: (row) => {
-                const value = row.water?.ec?.value;
-                return value !== undefined && (value < 0.5 || value > 3.5);
+                return row.ecValue !== null && (row.ecValue < 0.5 || row.ecValue > 3.5);
             },
         },
         {
@@ -65,15 +44,11 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             displayText: "Ungesund",
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
-                const ph = row.water?.ph?.value;
-                const ec = row.water?.ec?.value;
-                const last = getLastWatering(row.events);
-
-                const waterNeeded = !last || daysSince(last.timestamp) > 7;
-                const phBad = ph !== undefined && (ph < 5.5 || ph > 7.5);
-                const ecBad = ec !== undefined && (ec < 0.5 || ec > 3.5);
+                const waterNeeded = row.daysSinceWatering > 7;
+                const phBad = row.phValue !== null && (row.phValue < 5.5 || row.phValue > 7.5);
+                const ecBad = row.ecValue !== null && (row.ecValue < 0.5 || row.ecValue > 3.5);
                 const noEvents = !row.events || row.events.length === 0;
-
+                
                 return waterNeeded || phBad || ecBad || noEvents;
             },
         },
@@ -83,80 +58,76 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
         {
             key: "title",
             displayText: "Name",
-            render: (value: string | undefined) => value ? <span>{value}</span> : EMPTY,
+            sortable: true,
+            render: (value: string) => 
+                value ? <span>{value}</span> : EMPTY
         },
+        
         {
             key: "species",
             displayText: "Art",
-            render: (value: string | undefined) => value ? <span>{value}</span> : EMPTY,
+            sortable: true,
+            render: (value: string) => 
+                value ? <span>{value}</span> : EMPTY
         },
+        
         {
-            id: "ph",
+            key: "phValue",
             displayText: "pH",
             sortable: true,
-            sortBy: extractPH,
-            render: (row: PlantTableRow): JSX.Element => {
-                const value = row.water?.ph?.value;
-                const unit = row.water?.ph?.unit;
-
-                if (value === undefined) return EMPTY;
-
+            render: (value: number | null, row) => {
+                if (value === null) return EMPTY;
+                
                 return (
                     <span style={getWarnStyle(value < 5.5 || value > 7.5)}>
-                        {value} {unit ?? ""}
-                    </span>
-                );
-            },
-        },
-        {
-            id: "ec",
-            displayText: "EC",
-            sortable: true,
-            sortBy: extractEC,
-            render: (row: PlantTableRow): JSX.Element => {
-                const value = row.water?.ec?.value;
-                const unit = row.water?.ec?.unit;
-
-                if (value === undefined) return EMPTY;
-
-                return (
-                    <span style={getWarnStyle(value < 0.5 || value > 3.5)}>
-                        {value} {unit ?? ""}
+                        {value} {row?.phUnit ?? ""}
                     </span>
                 );
             }
         },
+        
         {
-            id: "last-event",
-            displayText: "Letztes Event",
+            key: "ecValue",
+            displayText: "EC",
             sortable: true,
-            sortBy: extractLastEventTime,
-            render: (row: PlantTableRow): JSX.Element => {
-                const last = getLastEvent(row.events);
-                if (!last) return EMPTY;
-
-                const formatted = `${last.type.charAt(0).toUpperCase()}${last.type.slice(1).toLowerCase()} · ${formatDateShort(new Date(last.timestamp))}`;
-
+            render: (value: number | null, row) => {
+                if (value === null) return EMPTY;
+                
                 return (
-                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <CalendarClock size={18} />
-                        <span style={{ fontSize: "0.95em", color: "#333" }}>{formatted}</span>
+                    <span style={getWarnStyle(value < 0.5 || value > 3.5)}>
+                        {value} {row?.ecUnit ?? ""}
                     </span>
                 );
-            },
+            }
         },
         
         {
-            id: "last-watering",
+            key: "lastEventTimestamp",
+            displayText: "Letztes Event",
+            sortable: true,
+            render: (value: number, row) => {
+                if (!value || !row?.lastEventFormatted) return EMPTY;
+                
+                return (
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <CalendarClock size={18} />
+                        <span style={{ fontSize: "0.95em", color: "#333" }}>
+                            {row.lastEventFormatted} · {formatDateShort(new Date(value))}
+                        </span>
+                    </span>
+                );
+            }
+        },
+        
+        {
+            key: "lastWateringTimestamp",
             displayText: "Zuletzt gegossen",
             sortable: true,
-            sortBy: extractLastWateringTime,
-            render: (row: PlantTableRow): JSX.Element => {
-                const lastWatering = getLastWatering(row.events);
-                if (!lastWatering) return EMPTY;
-
-                const days = daysSince(lastWatering.timestamp);
-
+            render: (value: number, row) => {
+                if (!value || !row?.lastWateringDate) return EMPTY;
+                
+                const days = row.daysSinceWatering;
+                
                 return (
                     <span
                         style={{
@@ -167,10 +138,10 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
                         }}
                     >
                         <Droplet size={18} />
-                        {formatDateShort(new Date(lastWatering.timestamp))}
+                        {row.lastWateringDate}
                     </span>
                 );
-            },
+            }
         },
     ],
 };

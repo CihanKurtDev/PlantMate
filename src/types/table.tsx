@@ -33,25 +33,10 @@ export type SortConfig<T> = {
     direction: SortDirection;
 } | null;
 
-export type ComputedTableColumn<T> = {
-    id: string;
-    displayText: string;
-    sortable?: boolean;
-    sortBy?: (row: T) => any;
-    render: (row: T) => JSX.Element;
-};
-
-export function isComputedColumn<T>(col: FlexibleTableColumn<T>): col is ComputedTableColumn<T> {
-    return 'id' in col && !('key' in col);
-}
-
-
 export interface TableConfig<RowType> {
     title: string,
-    columns: FlexibleTableColumn<RowType>[],
+    columns: TableColumn<RowType>[],
     filters: TableFilter<RowType>[],
     searchKeys: string[],
     filterKey?: keyof RowType;
 }
-
-export type FlexibleTableColumn<T> = TableColumn<T> | ComputedTableColumn<T>;

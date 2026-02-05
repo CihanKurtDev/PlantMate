@@ -1,11 +1,11 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
-import { isComputedColumn, type TableColumn, type SortConfig } from "../../types/table"
+import { type TableColumn, type SortConfig } from "../../types/table"
 import styles from './TableHeader.module.scss';
 
 interface TableHeaderProps<RowType> {
     headerData: TableColumn<RowType>[];
     sortConfig: SortConfig<RowType>;
-    onSort: (keyOrId: keyof RowType | string) => void;
+    onSort: (key: keyof RowType) => void;
 }
 
 const SortIcon = ({ isActive, direction }: { isActive: boolean, direction: 'asc' | 'desc' | null }) => {
@@ -15,17 +15,18 @@ const SortIcon = ({ isActive, direction }: { isActive: boolean, direction: 'asc'
         : <ArrowDown size={14} />;
 };
 
-export const TableHeader = <RowType extends { key: string }>({ headerData, sortConfig, onSort }: TableHeaderProps<RowType>) => {
+export const TableHeader = <RowType extends { key: string }>({ 
+    headerData, 
+    sortConfig, 
+    onSort 
+}: TableHeaderProps<RowType>) => {
     return (
         <div className={styles.tableHead}>
             <ul>
                 {headerData.map((header, index) => {
                     const isSortable = header.sortable !== false;
-                    const sortId = isComputedColumn(header) ? header.id : String(header.key);
-                    const isActive = Boolean(
-                        (sortConfig?.id && sortConfig.id === sortId) || 
-                        (sortConfig?.key && String(sortConfig.key) === sortId)
-                    );
+                    const sortKey = header.key;
+                    const isActive = Boolean(sortConfig?.key === sortKey);
                     
                     return (
                         <li
@@ -35,7 +36,7 @@ export const TableHeader = <RowType extends { key: string }>({ headerData, sortC
                                 ${isSortable ? styles.sortable : ''}
                                 ${isActive ? styles.active : ''}
                             `}
-                            onClick={() => isSortable && onSort(sortId)}
+                            onClick={() => isSortable && onSort(sortKey)}
                         >
                             {header.displayText}
                             {isSortable && (

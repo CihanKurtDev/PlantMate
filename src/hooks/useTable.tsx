@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { isComputedColumn, type SortConfig, type TableConfig } from "../types/table";
+import { type SortConfig, type TableConfig } from "../types/table";
 import { createSorter, getNextSortState } from "@/helpers/sortUtils";
 
 function getNestedValue(obj: any, key: string) {
@@ -7,7 +7,7 @@ function getNestedValue(obj: any, key: string) {
 }
 
 const normalizeString = (value: unknown): string =>
-typeof value === "string" ? value.toLowerCase().trim() : "";
+    typeof value === "string" ? value.toLowerCase().trim() : "";
 
 export interface TableStateProps<T> {
     page: number;
@@ -23,7 +23,11 @@ interface UseTableProps<RowType> {
     initialLimit?: number;
 }
 
-export function useTable<RowType extends { key: string }>({ data, config, initialLimit = 10 }: UseTableProps<RowType>) {
+export function useTable<RowType extends { key: string }>({ 
+    data, 
+    config, 
+    initialLimit = 10 
+}: UseTableProps<RowType>) {
     const [tableState, setTableState] = useState<TableStateProps<RowType>>({
         page: 1,
         limit: initialLimit,
@@ -47,36 +51,16 @@ export function useTable<RowType extends { key: string }>({ data, config, initia
         setTableState(prev => ({ ...prev, search: newSearch }));
     }, []);
 
-    const handleSort = useCallback((keyOrId: keyof RowType | string) => {
-        setTableState(prev => {
-            const isVirtual = typeof keyOrId === 'string' && 
-                config.columns.some(col => isComputedColumn(col) && col.id === keyOrId);
-
-            if (isVirtual) {
-                const currentId = prev.sortConfig?.id;
-                const currentDirection = prev.sortConfig?.direction;
-                
-                if (currentId !== keyOrId) {
-                    return { ...prev, sortConfig: { id: keyOrId, direction: 'asc' } };
-                }
-                
-                if (currentDirection === 'asc') {
-                    return { ...prev, sortConfig: { id: keyOrId, direction: 'desc' } };
-                }
-                
-                return { ...prev, sortConfig: null };
-            }
-
-            return {
-                ...prev,
-                sortConfig: getNextSortState(
-                    prev.sortConfig?.key ?? null,
-                    prev.sortConfig?.direction ?? null,
-                    keyOrId as keyof RowType
-                )
-            };
-        });
-    }, [config.columns]);
+    const handleSort = useCallback((key: keyof RowType) => {
+        setTableState(prev => ({
+            ...prev,
+            sortConfig: getNextSortState(
+                prev.sortConfig?.key ?? null,
+                prev.sortConfig?.direction ?? null,
+                key
+            )
+        }));
+    }, []);
 
     const filteredRows = useMemo(() => {
         const activeFilter = config.filters.find(f => f.displayText === filter);
@@ -109,15 +93,9 @@ export function useTable<RowType extends { key: string }>({ data, config, initia
     }, [data, filter, searchTerm, config]);
 
     const sortedRows = useMemo(() => {
-        if (!sortConfig) return filteredRows;
+        if (!sortConfig || !sortConfig.key) return filteredRows;
 
-        const column = config.columns.find(col => {
-            if (isComputedColumn(col)) {
-                return col.id === sortConfig.id;
-            }
-            return col.key === sortConfig.key;
-        });
-
+        const column = config.columns.find(col => col.key === sortConfig.key);
         if (!column) return filteredRows;
 
         function compareValues(a: any, b: any): number {
@@ -137,12 +115,8 @@ export function useTable<RowType extends { key: string }>({ data, config, initia
                 return sortConfig.direction === 'desc' ? -result : result;
             }
 
-            if (!isComputedColumn(column)) {
-                const sortFn = createSorter(column.key);
-                return sortFn(rowA, rowB, sortConfig.direction);
-            }
-
-            return 0;
+            const sortFn = createSorter(column.key);
+            return sortFn(rowA, rowB, sortConfig.direction);
         };
 
         return [...filteredRows].sort(compareRows);
