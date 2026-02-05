@@ -1,4 +1,4 @@
-import { TableColumn, isComputedColumn } from "@/types/table";
+import { TableColumn } from "@/types/table";
 import { memo, useMemo } from "react";
 import styles from './Table.module.scss';
 
@@ -24,14 +24,12 @@ export const createMemoizedTableRow = <RowType extends { key: string }>() => {
             isSelected,
             onSelect,
             isEditing,
-        }), [rowData, isSelected, onSelect, isEditing])
+        }), [rowData, isSelected, onSelect, isEditing]);
 
         const generatedCellContent = columns.map((column, i) => {
-            const cellContent = isComputedColumn(column)
-                ? column.render(rowData)
-                : (column.render
-                    ? column.render(rowData[column.key], rowProps)
-                    : rowData[column.key]);
+            const cellContent = column.render
+                ? column.render(rowData[column.key], rowProps)
+                : rowData[column.key];
 
             return <li className={styles.rowElement} key={i}>{cellContent as React.ReactNode}</li>;
         });

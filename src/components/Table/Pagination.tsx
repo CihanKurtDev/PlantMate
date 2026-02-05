@@ -1,12 +1,12 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { TableStateProps } from "../../hooks/useTable";
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import styles from './Pagination.module.scss';
+import styles from './pagination.module.scss';
 
 interface PaginationProps<RowType> {
     rows: RowType[],
-    tableState: TableStateProps,
-    setTableState: Dispatch<SetStateAction<TableStateProps>>
+    tableState: TableStateProps<RowType>,
+    setTableState: Dispatch<SetStateAction<TableStateProps<RowType>>>
 }
 
 export const Pagination = <RowType extends { key: string }>({ rows, tableState, setTableState }: PaginationProps<RowType>) => {
