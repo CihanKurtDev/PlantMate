@@ -1,13 +1,13 @@
-import { TableColumn } from "@/types/table";
+import { TableColumn, isComputedColumn } from "@/types/table";
 import { memo, useMemo } from "react";
 import styles from './Table.module.scss';
-import { useRouter } from "next/navigation";
 
 interface TableRowProps<RowType extends { key: string }> {
   rowData: RowType;
   columns: TableColumn<RowType>[];
   isSelected: boolean;
   onSelect: () => void;
+  onClick?: () => void;
   isEditing: boolean;
 }
 
@@ -17,8 +17,7 @@ interface TableRowProps<RowType extends { key: string }> {
 
 export const createMemoizedTableRow = <RowType extends { key: string }>() => {
     return memo((props: TableRowProps<RowType>) => {
-        const { rowData, columns, isSelected = false, onSelect, isEditing } = props;
-        const router = useRouter();
+        const { rowData, columns, isSelected = false, onSelect, onClick, isEditing } = props;
 
         const rowProps = useMemo(() => ({
             ...rowData,
@@ -28,23 +27,20 @@ export const createMemoizedTableRow = <RowType extends { key: string }>() => {
         }), [rowData, isSelected, onSelect, isEditing])
 
         const generatedCellContent = columns.map((column, i) => {
-            const value = rowData[column.key];
-            const cellContent = column.render
-                ? column.render(value, rowProps)
-                : value;
+            const cellContent = isComputedColumn(column)
+                ? column.render(rowData)
+                : (column.render
+                    ? column.render(rowData[column.key], rowProps)
+                    : rowData[column.key]);
 
-                return <li className={styles.rowElement} key={i}>{cellContent as React.ReactNode}</li>;
+            return <li className={styles.rowElement} key={i}>{cellContent as React.ReactNode}</li>;
         });
 
         const handleRowClick = () => {
             if (isEditing) {
-                onSelect(); // Mehrfachauswahl im Edit-Modus
-            } else if ("id" in rowData) {
-                // Generischer Link: Environment + Plant wenn vorhanden, sonst nur Environment
-                const link = "environmentId" in rowData && rowData.environmentId
-                    ? `/environments/${rowData.environmentId}/plants/${rowData.id}`
-                    : `/environments/${rowData.id}`;
-                router.push(link);
+                onSelect();
+            } else if (onClick) {
+                onClick();
             }
         };
 

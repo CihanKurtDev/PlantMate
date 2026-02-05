@@ -13,7 +13,8 @@ import { PlantTableRow } from "./adapters/plantTableAdapter";
 interface TableCardProps<RowType extends { key: string }> {
     data: RowType[];
     tableConfig: TableConfig<RowType> & {
-        onDeleteSelected?: (keys: string[]) => void
+        onDeleteSelected?: (keys: string[]) => void;
+        onRowClick?: (row: RowType) => void;
     };
 }
 
@@ -27,6 +28,7 @@ function createTableCard<RowType extends { key: string }>() {
             setTableState,
             paginatedRows,
             filteredRows,
+            handleSort
         } = useTable({ data, config: tableConfig });
 
         const [isTableCollapsed, setIsTableCollapsed] = useState(false);
@@ -40,13 +42,6 @@ function createTableCard<RowType extends { key: string }>() {
         const tableHasFilters = filtersWithCounts.length > 0;
         const tableHasRows = paginatedRows.length > 0;
 
-        const memoizedConfig = useMemo(
-            () => ({
-                ...tableConfig,
-            }),
-            [tableConfig]
-        );
-
         const deleteSelectedRows = () => {
             tableConfig.onDeleteSelected?.(selectedRows)
             setSelectedRows([]);
@@ -57,11 +52,18 @@ function createTableCard<RowType extends { key: string }>() {
             setSelectedRows([]);
         }
 
+        const handleSelectRow = (key: string) => {
+            setSelectedRows((prev) =>
+                prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+            );
+        };
+
         return (
             <section className={styles.tableCard}>
                 <TableCardHeader 
                     title={tableConfig.title}  
-                    isTableCollapsed={isTableCollapsed} setIsTableCollapsed={setIsTableCollapsed} 
+                    isTableCollapsed={isTableCollapsed} 
+                    setIsTableCollapsed={setIsTableCollapsed} 
                 />
                 <div className={`${styles.collapsable} ${isTableCollapsed ? styles.collapsed : ""}`}>
                     <div className={styles.tableActionWrapper}>
@@ -78,10 +80,19 @@ function createTableCard<RowType extends { key: string }>() {
                             toggleEditMode={toggleEditMode}
                             deleteSelectedRows={deleteSelectedRows}
                             hasSelectedRows={selectedRows.length > 0}
-                            environmentId={data[0]?.environmentId}
+                            environmentId={(data[0] as any)?.environmentId}
                         />
                     </div>
-                    <Table config={memoizedConfig} rows={paginatedRows} isEditing={isEditing} selectedRows={selectedRows} setSelectedRows={setSelectedRows} />
+                    <Table 
+                        columns={tableConfig.columns} 
+                        rows={paginatedRows} 
+                        isEditing={isEditing} 
+                        selectedRows={selectedRows} 
+                        onSelectRow={handleSelectRow}
+                        onRowClick={tableConfig.onRowClick}
+                        sortConfig={tableState.sortConfig} 
+                        onSort={handleSort}
+                    />
                     { tableHasRows && 
                         <Pagination 
                             rows={filteredRows} 

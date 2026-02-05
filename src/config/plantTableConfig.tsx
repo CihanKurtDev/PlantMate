@@ -2,6 +2,7 @@ import { PlantTableRow } from "@/components/Table/adapters/plantTableAdapter";
 import { daysSince, formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
 import { ActivityIcon, AlertCircle, CalendarClock, Droplet, Inbox } from "lucide-react";
+import { JSX } from "react";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -12,18 +13,23 @@ const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
 
 
-const getLastEvent = (events?: PlantTableRow["events"]) =>
+export const getLastEvent = (events?: PlantTableRow["events"]) =>
     events && events.length > 0 ? events[events.length - 1] : undefined;
 
-const getLastWatering = (events?: PlantTableRow["events"]) =>
+export const getLastWatering = (events?: PlantTableRow["events"]) =>
     events
         ?.slice()
         .reverse()
         .find((e) => e.type === "WATERING");
 
+const extractPH = (row: PlantTableRow) => row.water?.ph?.value ?? null;
+const extractEC = (row: PlantTableRow) => row.water?.ec?.value ?? null;
+const extractLastEventTime = (row: PlantTableRow) => getLastEvent(row.events)?.timestamp ?? 0;
+const extractLastWateringTime = (row: PlantTableRow) => getLastWatering(row.events)?.timestamp ?? 0;
+
 export const plantTableConfig: TableConfig<PlantTableRow> = {
     title: "Pflanzen",
-    searchKeys: ["title", "species", "environmentName"],
+    searchKeys: [],
         filters: [
         {
             displayText: "Braucht Wasser",
@@ -73,24 +79,25 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
         },
     ],
 
-
     columns: [
         {
             key: "title",
             displayText: "Name",
-            render: (value) => value ? <span>{value}</span> : EMPTY,
+            render: (value: string | undefined) => value ? <span>{value}</span> : EMPTY,
         },
         {
             key: "species",
             displayText: "Art",
-            render: (value) => value ? <span>{value}</span> : EMPTY,
+            render: (value: string | undefined) => value ? <span>{value}</span> : EMPTY,
         },
         {
-            key: "water",
+            id: "ph",
             displayText: "pH",
-            render: (water) => {
-                const value = water?.ph?.value;
-                const unit = water?.ph?.unit;
+            sortable: true,
+            sortBy: extractPH,
+            render: (row: PlantTableRow): JSX.Element => {
+                const value = row.water?.ph?.value;
+                const unit = row.water?.ph?.unit;
 
                 if (value === undefined) return EMPTY;
 
@@ -102,11 +109,13 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             },
         },
         {
-            key: "water",
+            id: "ec",
             displayText: "EC",
-            render: (water) => {
-                const value = water?.ec?.value;
-                const unit = water?.ec?.unit;
+            sortable: true,
+            sortBy: extractEC,
+            render: (row: PlantTableRow): JSX.Element => {
+                const value = row.water?.ec?.value;
+                const unit = row.water?.ec?.unit;
 
                 if (value === undefined) return EMPTY;
 
@@ -115,36 +124,38 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
                         {value} {unit ?? ""}
                     </span>
                 );
-            },
+            }
         },
         {
-            key: "events",
+            id: "last-event",
             displayText: "Letztes Event",
-            render: (_, row) => {
-                const last = getLastEvent(row?.events);
+            sortable: true,
+            sortBy: extractLastEventTime,
+            render: (row: PlantTableRow): JSX.Element => {
+                const last = getLastEvent(row.events);
                 if (!last) return EMPTY;
 
-                const formattedContent =
-                    `${last.type.charAt(0).toUpperCase() + last.type.slice(1).toLowerCase()} · ${formatDateShort(new Date(last.timestamp))}`;
+                const formatted = `${last.type.charAt(0).toUpperCase()}${last.type.slice(1).toLowerCase()} · ${formatDateShort(new Date(last.timestamp))}`;
 
                 return (
                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                         <CalendarClock size={18} />
-                        <span style={{ fontSize: "0.95em", color: "#333" }}>{formattedContent}</span>
+                        <span style={{ fontSize: "0.95em", color: "#333" }}>{formatted}</span>
                     </span>
                 );
             },
         },
+        
         {
-            key: "events",
+            id: "last-watering",
             displayText: "Zuletzt gegossen",
-            render: (_, row) => {
-                const lastWatering = getLastWatering(row?.events);
+            sortable: true,
+            sortBy: extractLastWateringTime,
+            render: (row: PlantTableRow): JSX.Element => {
+                const lastWatering = getLastWatering(row.events);
                 if (!lastWatering) return EMPTY;
 
-                const daysSince =
-                    (Date.now() - lastWatering.timestamp) /
-                    (1000 * 60 * 60 * 24);
+                const days = daysSince(lastWatering.timestamp);
 
                 return (
                     <span
@@ -152,7 +163,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
                             display: "flex",
                             alignItems: "center",
                             gap: 4,
-                            ...(daysSince > 10 ? { color: dangerColor } : {}),
+                            color: days > 10 ? dangerColor : undefined,
                         }}
                     >
                         <Droplet size={18} />
