@@ -1,17 +1,8 @@
 .metric {
-    position: relative;
-    justify-content: center;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs);
     font-size: var(--font-size-s);
-    border: 1px solid rgb(231, 229, 228);
     border-radius: var(--radius-m);
-    text-align: center;
     
     .iconWrapper {
-        position: absolute;
         left: var(--spacing-xs);
         width: 36px;
         height: 36px;
@@ -19,22 +10,37 @@
         align-items: center;
         justify-content: center;
     }
-
+    
 }
 
 .content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    padding: var(--spacing-l);
     width: 100%;
+    background: var(--color-background-primary);
+    border-radius: var(--radius-m);
+}
+
+.labelWrapper {
+    display: flex;
+    width: 100%;
+    gap: var(--spacing-m);
+    margin-bottom: var(--spacing-m);
+    align-items: center;
 }
 
 .label {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-l);
     color: inherit;
 }
 
 .value {
     font-weight: bold;
+    font-size: var(--font-size-xl);
+}
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-m);
 }

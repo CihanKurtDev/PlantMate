@@ -15,8 +15,8 @@ const ICONS: Record<string, any> = {
 };
 
 const LABELS: Record<string, string> = {
-    temp: "Temp.",
-    humidity: "RLF",
+    temp: "Temperatur",
+    humidity: "Luftfeuchtigkeit",
     vpd: "VPD",
     co2: "CO₂",
 };

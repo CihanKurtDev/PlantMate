@@ -13,7 +13,6 @@ import { ActivityIcon, Droplets, Plus, Sprout } from "lucide-react";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import { combineEnvironmentData } from "@/helpers/combineEnvironmentData";
 import styles from './EnvironmentDetailView.module.scss';
-import { Button } from "@/components/Button/Button";
 import { useRouter } from "next/navigation";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
@@ -50,13 +49,12 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 subtitle={environment.location}
                 icon={ENVIRONMENT_ICONS[environment.type]}
                 iconVariant={environment.type.toLowerCase()}
-            >
-                {environment.climate && (
-                    <div className={styles.climateGridWrapper}>
-                        <ClimateGrid climate={environment.climate} />
-                    </div>
-                )}
-            </DetailViewHeader>
+            />
+            {environment.climate && (
+                <div className={styles.climateGridWrapper}>
+                    <ClimateGrid climate={environment.climate} />
+                </div>
+            )}
             <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
             <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
             <DataTab
