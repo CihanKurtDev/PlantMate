@@ -1,39 +1,5 @@
-.tableCard {
-    background-color: white;
-    border-radius: var(--radius-xl);
-    padding: var(--spacing-m);
-    color: black;
-
-    .collapsable {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-l);
-
-        overflow: hidden;
-        transition: max-height 0.3s ease, opacity 0.3s ease;
-        opacity: 1;
-        max-height: 1000px;
-
-        &.collapsed {
-            max-height: 0;
-            opacity: 0;
-        }
-    }
-
-    .tableCardHeader {
-        display: flex;
-        justify-content: space-between;
-        color: black;
-
-        .openCardButton {
-            background-color: transparent;
-            width: 36px;
-            color: var(--text-primary);
-            border: none;
-
-            &:hover {
-                cursor: pointer;
-            }
-        }
-    }
+.tableActionWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
 }

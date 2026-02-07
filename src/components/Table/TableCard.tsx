@@ -2,13 +2,13 @@ import React, { memo, useMemo, useState } from "react";
 import { Table } from "./Table";
 import type { TableConfig } from "../../types/table";
 import { computeFiltersTabs } from "../../helpers/computeFilterTabs";
-import { TableCardHeader } from "./TableCardHeader";
 import { TableFilterBar } from "./TableFilterBar";
 import { TableActionBar } from "./TableActionBar";
 import { useTable } from "@/hooks/useTable";
 import { Pagination } from "./Pagination";
 import styles from './TableCard.module.scss';
 import { PlantTableRow } from "./adapters/plantTableAdapter";
+import { Card } from "../Card/Card";
 
 interface TableCardProps<RowType extends { key: string }> {
     data: RowType[];
@@ -31,7 +31,6 @@ function createTableCard<RowType extends { key: string }>() {
             handleSort
         } = useTable({ data, config: tableConfig });
 
-        const [isTableCollapsed, setIsTableCollapsed] = useState(false);
         const [isEditing, setIsEditing] = useState(false);
         const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
@@ -59,13 +58,7 @@ function createTableCard<RowType extends { key: string }>() {
         };
 
         return (
-            <section className={styles.tableCard}>
-                <TableCardHeader 
-                    title={tableConfig.title}  
-                    isTableCollapsed={isTableCollapsed} 
-                    setIsTableCollapsed={setIsTableCollapsed} 
-                />
-                <div className={`${styles.collapsable} ${isTableCollapsed ? styles.collapsed : ""}`}>
+            <Card collapsible={true} title={tableConfig.title}>
                     <div className={styles.tableActionWrapper}>
                         { tableHasFilters && 
                             <TableFilterBar
@@ -100,8 +93,7 @@ function createTableCard<RowType extends { key: string }>() {
                             setTableState={setTableState} 
                         />
                     }
-                </div>
-            </section>
+            </Card>
         );
     };
 
