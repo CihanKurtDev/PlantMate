@@ -14,11 +14,9 @@
 }
 
 .modal {
-  background: #fff;
   border-radius: 12px;
   max-width: 600px;
   width: 90%;
-  padding: 1.5rem;
   position: relative;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease;
@@ -33,10 +31,6 @@
   border: none;
   cursor: pointer;
   color: #333;
-}
-
-.content {
-  margin-top: 1rem;
 }
 
 @keyframes fadeIn {
