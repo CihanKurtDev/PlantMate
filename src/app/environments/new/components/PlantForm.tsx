@@ -23,7 +23,6 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
     const { validate, validateWarnings } = usePlantValidation();
     const [plantCount, setPlantCount] = useState<number>(1)
     const router = useRouter();
-    const isEditing = !!initialData;
 
     const { formState, setField, resetForm } = usePlantForm(initialData)
 
@@ -93,15 +92,13 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
                 </Select>
             </FormField>
 
-            {!isEditing && (
-                <Input
-                    label="Anzahl Pflanzen"
-                    type="number"
-                    value={plantCount}
-                    onChange={(e) => setPlantCount(Math.max(1, parseInt(e.target.value) || 1))}
-                    min={1}
-                />
-            )}
+            <Input
+                label="Anzahl Pflanzen"
+                type="number"
+                value={plantCount}
+                onChange={(e) => setPlantCount(Math.max(1, parseInt(e.target.value) || 1))}
+                min={1}
+            />
 
             <FormSectionTitle>Wasserwerte</FormSectionTitle>
 
@@ -114,11 +111,9 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
             />
 
             <div>
-                {isEditing && (
-                    <Button type="button" variant="secondary" onClick={handleSubmitWithoutNav}>
-                        Speichern & Weiter
-                    </Button>
-                )}
+                <Button type="button" variant="secondary" onClick={handleSubmitWithoutNav}>
+                    Speichern & Weiter
+                </Button>
                 <Button type="button" onClick={handleSubmit}>
                     Speichern & Zum Dashboard
                 </Button>
