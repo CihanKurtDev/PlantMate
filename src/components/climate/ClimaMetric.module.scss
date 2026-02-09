@@ -1,16 +1,6 @@
 .metric {
     font-size: var(--font-size-s);
     border-radius: var(--radius-m);
-    
-    .iconWrapper {
-        left: var(--spacing-xs);
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
 }
 
 .content {
@@ -36,11 +26,4 @@
 .value {
     font-weight: bold;
     font-size: var(--font-size-xl);
-}
-
-.iconWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-m);
 }

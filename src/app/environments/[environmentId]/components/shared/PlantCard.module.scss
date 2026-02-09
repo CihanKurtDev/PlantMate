@@ -34,23 +34,6 @@
     text-decoration: none;
 }
 
-.iconWrapper {
-    width: 3rem;
-    height: 3rem;
-    border-radius: var(--radius-circle);
-    background-color: var(--color-flag-success);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    svg {
-        width: 1.5rem;
-        height: 1.5rem;
-        color: var(--color-text-success);
-    }
-}
-
 .title {
     display: flex;
     gap: var(--spacing-s);
