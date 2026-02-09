@@ -7,22 +7,22 @@ import DataTab from "./components/shared/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import PageLayout from "../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
-import Tabs from "./components/shared/Tabs";
 import ClimateGrid from "@/components/climate/ClimateGrid";
-import { ActivityIcon, Droplets, Plus, Sprout } from "lucide-react";
+import { ActivityIcon, Droplets, Sprout } from "lucide-react";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import { combineEnvironmentData } from "@/helpers/combineEnvironmentData";
 import styles from './EnvironmentDetailView.module.scss';
-import { useRouter } from "next/navigation";
+import Modal from "@/components/Modal/Modal";
+import EnvironmentEventForm from "./components/EnvironmentEventForm";
+import { Button } from "@/components/Button/Button";
 
 export type TabVariant = 'plants' | 'climate' | 'events'
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
-    const [activeTab, setActiveTab] = useState<'plants' | 'climate' | 'events'>('plants');
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const plants = getPlantsByEnvironment(environmentId);
-    const router = useRouter();
     // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
     // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
     const tabs = useMemo(() => [
@@ -32,6 +32,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     ], [plants.length, environment?.id]);
 
     if (!environment) return null;
+    
     const combinedEnvData = combineEnvironmentData(environment.historical, environment.events);
     const chartData = combinedEnvData.map(entry => ({
         timestamp: entry.timestamp,
@@ -42,6 +43,11 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
         notes: entry.notes,
     }));
 
+    const handleModalClose = () => setIsModalOpen(false);
+    const handleEventSave = () => {
+        setIsModalOpen(false);
+    };
+
     return (
         <PageLayout>
             <DetailViewHeader
@@ -49,16 +55,19 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 subtitle={environment.location}
                 icon={ENVIRONMENT_ICONS[environment.type]}
                 iconVariant={environment.type.toLowerCase()}
-            />
+            >
+                <Button onClick={() => setIsModalOpen(true)}>
+                    Ereignis hinzufügen
+                </Button>
+            </DetailViewHeader>
             {environment.climate && (
                 <div className={styles.climateGridWrapper}>
                     <ClimateGrid climate={environment.climate} />
                 </div>
             )}
-            <Tabs activeTab={activeTab} setActiveTab={setActiveTab} tabs={tabs} />
-            <PlantsTab plants={plants} hidden={activeTab !== 'plants'} />
+            <PlantsTab plants={plants} />
+            <EnvironmentEventTab environmentId={environmentId} events={environment.events}/>
             <DataTab
-                isActive={activeTab === 'climate'}
                 data={chartData}
                 metrics={[
                     { key: 'temp', name: 'Temperatur', color: '#1e88e5' },
@@ -67,7 +76,14 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     { key: 'co2', name: 'CO₂', color: '#e53935' }
                 ]}
             />
-            <EnvironmentEventTab environmentId={environmentId} events={environment.events} hidden={activeTab !== 'events'}/>
+
+            <Modal isOpen={isModalOpen} onClose={handleModalClose}>
+                <EnvironmentEventForm
+                    environmentId={environmentId}
+                    onCancel={handleModalClose}
+                    onSave={handleEventSave}
+                />
+            </Modal>
         </PageLayout>
     );
 }

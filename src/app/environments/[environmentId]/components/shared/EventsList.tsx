@@ -105,20 +105,16 @@ const EventCard = ({ event, title }: EventCardProps) => {
 
     return (
         <article className={styles.card}>
-            <div className={styles.eventTitleWrapper}>
-                <div className={styles.eventInfoWrapper}>
-                    <TypeIcon
-                        icon={IconComponent}
-                        variant={event.customBgColor ? undefined : event.type}
-                        customBgColor={event.customBgColor}
-                        customTextColor={event.customTextColor}
-                        customBorderColor={event.customBorderColor}
-                    />
-                    <h4>{title}</h4>
-                    <p className={styles.eventNotes}>{event.notes ?? null}</p>
-                </div>
-
-                <EventBadge event={event} />
+            <TypeIcon
+                icon={IconComponent}
+                variant={event.customBgColor ? undefined : event.type}
+                customBgColor={event.customBgColor}
+                customTextColor={event.customTextColor}
+                customBorderColor={event.customBorderColor}
+            />
+            <div className={styles.eventInfoWrapper}>
+                <h4>{title}</h4>
+                {event.notes && <p className={styles.eventNotes}>{event.notes}</p>}
             </div>
 
             <span className={styles.eventTime}>{formatTime(event.timestamp)}</span>
@@ -149,7 +145,7 @@ export default function EventsList<T extends BaseEvent>({
             title="Events"
         > 
             {groups.map(([date, groupedEvents]) => (
-                <section key={date}>
+                <section className={styles.dateSection} key={date}>
                     <header className={styles.dateHeader}>
                         <h4>{formatDate(new Date(date).getTime())}</h4>
                     </header>

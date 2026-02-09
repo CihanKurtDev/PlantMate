@@ -22,7 +22,7 @@ export const Card = ({
   title,
   collapsible = false,
   defaultCollapsed = false,
-  headingLevel = "h2", //
+  headingLevel = "h2",
 }: CardProps) => {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
 

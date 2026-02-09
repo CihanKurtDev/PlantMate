@@ -59,40 +59,40 @@ function createTableCard<RowType extends { key: string }>() {
 
         return (
             <Card collapsible={true} title={tableConfig.title}>
-                    <div className={styles.tableActionWrapper}>
-                        { tableHasFilters && 
-                            <TableFilterBar
-                                filters={filtersWithCounts} 
-                                filter={filter} 
-                                setFilter={setFilter} 
-                            />
-                        }
-                        <TableActionBar 
-                            onSearch={setSearch} 
-                            isEditing={isEditing}
-                            toggleEditMode={toggleEditMode}
-                            deleteSelectedRows={deleteSelectedRows}
-                            hasSelectedRows={selectedRows.length > 0}
-                            environmentId={(data[0] as any)?.environmentId}
-                        />
-                    </div>
-                    <Table 
-                        columns={tableConfig.columns} 
-                        rows={paginatedRows} 
-                        isEditing={isEditing} 
-                        selectedRows={selectedRows} 
-                        onSelectRow={handleSelectRow}
-                        onRowClick={tableConfig.onRowClick}
-                        sortConfig={tableState.sortConfig} 
-                        onSort={handleSort}
-                    />
-                    { tableHasRows && 
-                        <Pagination 
-                            rows={filteredRows} 
-                            tableState={tableState} 
-                            setTableState={setTableState} 
+                <div className={styles.tableActionWrapper}>
+                    { tableHasFilters && 
+                        <TableFilterBar
+                            filters={filtersWithCounts} 
+                            filter={filter} 
+                            setFilter={setFilter} 
                         />
                     }
+                    <TableActionBar 
+                        onSearch={setSearch} 
+                        isEditing={isEditing}
+                        toggleEditMode={toggleEditMode}
+                        deleteSelectedRows={deleteSelectedRows}
+                        hasSelectedRows={selectedRows.length > 0}
+                        environmentId={(data[0] as any)?.environmentId}
+                    />
+                </div>
+                <Table 
+                    columns={tableConfig.columns} 
+                    rows={paginatedRows} 
+                    isEditing={isEditing} 
+                    selectedRows={selectedRows} 
+                    onSelectRow={handleSelectRow}
+                    onRowClick={tableConfig.onRowClick}
+                    sortConfig={tableState.sortConfig} 
+                    onSort={handleSort}
+                />
+                { tableHasRows && 
+                    <Pagination 
+                        rows={filteredRows} 
+                        tableState={tableState} 
+                        setTableState={setTableState} 
+                    />
+                }
             </Card>
         );
     };

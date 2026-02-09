@@ -1,8 +1,6 @@
 .climateGridWrapper {
-    margin-right: 0;
 
     @media (min-width: 768px) {
-        margin-right: var(--spacing-l);
         min-width: 600px;
     }
 }
