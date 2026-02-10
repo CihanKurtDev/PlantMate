@@ -18,7 +18,7 @@ export default function EnvironmentEventTab({ events, environmentId }: Environme
 
     return (
         <TabContent id="events">
-            <Card title="events">
+            <Card title="events" collapsible={true}>
                 {!isAddingEvent ? (
                     <EventsList
                         events={events ?? []}
