@@ -5,9 +5,15 @@
     padding: var(--spacing-m);
 }
 
+.dateSection {
+display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
+}
+
 .dateHeader {
     padding: var(--spacing-xs) 0;
-    margin-bottom: var(--spacing-s);
+    border-bottom: 1px solid #cedbce;
 
     h4 {
         font-size: var(--font-size-s);
@@ -16,21 +22,11 @@
     }
 }
 
-.timelineItem {
-    margin-bottom: var(--spacing-l);
-    border-top: 1px solid var(--color-border-primary);
-    padding-top: var(--spacing-l);
-    
-    @media (min-width: 768px) {
-        padding-top: 0;
-        padding-left: var(--spacing-l);
-        border-top: none;
-        border-left: 1px solid var(--color-border-primary);
-    }
-}
-
 .card {
-    @include card-flat
+    @include card-flat;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .eventTop {
@@ -39,10 +35,7 @@
 
 .eventTitleWrapper {
     display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-    gap: var(--spacing-s);
+    gap: var(--spacing-m);
 }
 
 .eventTitle {
@@ -58,7 +51,7 @@
 
 .eventNotes {
     font-size: var(--font-size-s);
-    margin-top: var(--spacing-xs);
+    color: var(--color-text-tertiary);
     height: 25px;
 }
 

@@ -1,12 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import styles from './ClimaMetric.module.scss';
-
-export const CLIMATE_STYLES: Record<string, { color: string }> = {
-    temp: { color: '#d05959' },
-    humidity: { color: '#087a6d' },
-    vpd: { color: '#d3893e' },
-    co2: { color: '#555252' }, 
-};
+import TypeIcon from "../TypeIcon/TypeIcon";
 
 interface ClimateMetricProps {
     icon: LucideIcon;
@@ -15,25 +9,18 @@ interface ClimateMetricProps {
     climateKey: string;
 }
 
-const ClimateMetric = ({ icon: Icon, value, label, climateKey }: ClimateMetricProps) =>  {
-    const stylesForKey = CLIMATE_STYLES[climateKey]
-
-    return (
-        <div 
-            className={styles.metric}       
-            style={{
-                color: stylesForKey.color,
-            }
-        }>
-            <div  className={styles.iconWrapper}>
-                <Icon style={{ color: stylesForKey.color }} />
-            </div>
-            <div className={styles.content}>
-                <div className={styles.value}>{value}</div>
+const ClimateMetric = ({ icon, value, label, climateKey }: ClimateMetricProps) => (
+    <div 
+        className={styles.metric}       
+    >
+        <div className={styles.content}>
+            <div  className={styles.labelWrapper}>
+                <TypeIcon icon={icon} variant={climateKey} />
                 <div className={styles.label}>{label}</div>
             </div>
+            <div className={styles.value}>{value}</div>
         </div>
-    );
-}
+    </div>
+);
 
 export default ClimateMetric

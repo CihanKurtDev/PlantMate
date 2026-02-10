@@ -2,8 +2,10 @@ import TabContent from "./TabContent";
 import EmptyState from "./EmptyState";
 import styles from "./EventsList.module.scss";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
-import { Leaf } from "lucide-react";
+import { Leaf, Settings, Sparkles, Thermometer, Wrench } from "lucide-react";
 import { iconMap } from "@/types/environment";
+import { Card } from "@/components/Card/Card";
+import TypeIcon from "@/components/TypeIcon/TypeIcon";
 
 
 export interface BaseEvent {
@@ -72,30 +74,6 @@ const getEventLabel = ( event: BaseEvent, eventMap?: Record<string, EventMapItem
     return event.type;
 };
 
-const DEFAULT_ICON = Leaf;
-
-export const EventIcon = ({event, eventMap}: {event: BaseEvent; eventMap?: Record<string, EventMapItem>}) => {
-    let Icon: React.ComponentType<{ size?: number }> | undefined;
-
-    // wenn customIcon dann den ensprechenden icon aus dem iconMap nehmen
-    // iconMap ist liste der icons die zur verfügung stehen um custom icons zu erstellen
-    if (event.customIconName) {
-        Icon = iconMap[event.customIconName];
-    }
-
-    // wenn kein customIcon dann im eventMap nachschauen
-    // das sind die standard icons für die vordefinierten event types
-    if (!Icon && eventMap && eventMap[event.type]) {
-        Icon = eventMap[event.type].icon;
-    }
-
-    if (!Icon) {
-        Icon = DEFAULT_ICON;
-    }
-
-    return <Icon size={16} />;
-};
-
 export const EventBadge = ({event, eventMap }: { event: BaseEvent; eventMap?: Record<string, EventMapItem> }) => {
     const style = getCustomStyle(event);
     const label = getEventLabel(event, eventMap);
@@ -115,31 +93,31 @@ interface EventCardProps {
     eventMap?: Record<string, EventMapItem>;
 }
 
-const EventCard = ({ event, title, eventMap }: EventCardProps) => {
-    const style = getCustomStyle(event);
-    const typeClass = getTypeClass(event);
-    const iconClassName = joinClassNames(styles.timelineIcon, typeClass);
+const ICONS: Record<string, any> = {
+    Climate_Adjustment: Thermometer,
+    Equipment_Change: Settings,
+    Maintenance: Wrench,
+    Cleaning: Sparkles,
+};
+
+const EventCard = ({ event, title }: EventCardProps) => {
+    const IconComponent = event.customIconName ? iconMap[event.customIconName] : ICONS[event.type] || Leaf;
 
     return (
         <article className={styles.card}>
-            <div className={styles.eventTop}>
-                <div className={styles.eventTitleWrapper}>
-                    <h4 className={styles.eventTitle}>
-                        <span className={iconClassName} style={style}>
-                            <EventIcon event={event} eventMap={eventMap} />
-                        </span>
-                        {title}
-                    </h4>
-
-                    <EventBadge event={event} eventMap={eventMap} />
-                </div>
-
-                <span className={styles.eventTime}>
-                    {formatTime(event.timestamp)}
-                </span>
+            <TypeIcon
+                icon={IconComponent}
+                variant={event.customBgColor ? undefined : event.type}
+                customBgColor={event.customBgColor}
+                customTextColor={event.customTextColor}
+                customBorderColor={event.customBorderColor}
+            />
+            <div className={styles.eventInfoWrapper}>
+                <h4>{title}</h4>
+                {event.notes && <p className={styles.eventNotes}>{event.notes}</p>}
             </div>
 
-            <p className={styles.eventNotes}>{event.notes ? event.notes : null}</p>
+            <span className={styles.eventTime}>{formatTime(event.timestamp)}</span>
         </article>
     );
 };
@@ -152,11 +130,7 @@ export default function EventsList<T extends BaseEvent>({
     eventMap,
 }: EventsListProps<T>) {
     if (!events || events.length === 0) {
-        return (
-            <TabContent id="events" title="Ereignisse">
-                <EmptyState message={emptyMessage} />
-            </TabContent>
-        );
+        return <EmptyState message={emptyMessage} />
     }
 
     const groups = groupEventsByDate(events);
@@ -164,7 +138,7 @@ export default function EventsList<T extends BaseEvent>({
     return (
         <>
             {groups.map(([date, groupedEvents]) => (
-                <section key={date}>
+                <section className={styles.dateSection} key={date}>
                     <header className={styles.dateHeader}>
                         <h4>{formatDate(new Date(date).getTime())}</h4>
                     </header>

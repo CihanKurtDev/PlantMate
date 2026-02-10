@@ -16,35 +16,29 @@ body {
   line-height: 1.5;
 }
 
+@function is-map($value) {
+  @return type-of($value) == 'map';
+}
+
+@mixin generate-vars($map, $prefix) {
+  @each $key, $value in $map {
+    @if is-map($value) {
+      @include generate-vars($value, "#{$prefix}-#{$key}");
+    } @else {
+      --#{$prefix}-#{$key}: #{$value};
+    }
+  }
+}
+
 :root {
-  @each $category, $map in v.$colors-light { 
-    @each $name, $val in $map {--color-#{$category}-#{$name}: #{$val}; }
-  }
-
-  @each $category, $map in v.$fonts {
-    @each $name, $val in $map { --font-#{$category}-#{$name}: #{$val}; }
-
-  }
-
-  @each $category, $map in v.$buttons-light {
-    @each $name, $val in $map { --button-#{$category}-#{$name}: #{$val}; }
-  }
-
-  @each $name, $radius in v.$radii { --radius-#{$name}: #{$radius}; }
-
-  @each $name, $spacing in v.$spacings { --spacing-#{$name}: #{$spacing}; }
+  @include generate-vars(v.$colors-light, "color");
+  @include generate-vars(v.$fonts, "font");
+  @include generate-vars(v.$buttons-light, "button");
+  @include generate-vars(v.$radii, "radius");
+  @include generate-vars(v.$spacings, "spacing");
 }
 
 :root[data-theme="dark"] {
-  @each $category, $map in v.$colors-dark {
-    @each $name, $val in $map {
-      --color-#{$category}-#{$name}: #{$val};
-    }
-  }
-
-  @each $category, $map in v.$buttons-dark {
-    @each $name, $val in $map {
-      --button-#{$category}-#{$name}: #{$val};
-    }
-  }
+  @include generate-vars(v.$colors-dark, "color");
+  @include generate-vars(v.$buttons-dark, "button");
 }

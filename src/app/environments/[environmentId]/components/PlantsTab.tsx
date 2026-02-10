@@ -7,10 +7,9 @@ import { plantTableConfig } from '@/config/plantTableConfig';
 import { PlantTableCard } from '@/components/Table/TableCard';
 import { useRouter } from 'next/navigation';
 
-export default function PlantsTab({ plants, hidden }: {plants: PlantData[], hidden: boolean}) {
-    const { environments, deletePlants } = usePlantMonitor();
-    if (hidden) return null
-    const rows = mapPlantsToTableRows(plants, environments);
+export default function PlantsTab({ plants }: {plants: PlantData[]}) {
+    const { deletePlants } = usePlantMonitor();
+    const rows = mapPlantsToTableRows(plants);
     const router = useRouter()
     return (
         <TabContent id="plants">

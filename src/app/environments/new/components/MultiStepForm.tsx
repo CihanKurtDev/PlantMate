@@ -5,14 +5,10 @@ import { EnvironmentForm } from "./EnvironmentForm";
 import { PlantForm } from "./PlantForm";
 import styles from "./MultiStepForm.module.scss";
 import { useRouter } from "next/navigation";
-import PlantCard from "../../[environmentId]/components/shared/PlantCard";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 
 export const MultiStepForm = () => {
-    const { getPlantsByEnvironment } = usePlantMonitor();
     const [step, setStep] = useState<"environment" | "plant">("environment");
     const [createdEnvironmentId, setCreatedEnvironmentId] = useState<string>("");
-    const plants = getPlantsByEnvironment(createdEnvironmentId);
     const router = useRouter();
 
     const handleEnvironmentSaved = (envId: string, nextStep: "plant" | "dashboard") => {
@@ -44,7 +40,6 @@ export const MultiStepForm = () => {
                 <>
                     <h2 className={styles.stepTitle}>Pflanze erstellen</h2>
                     <PlantForm environmentId={createdEnvironmentId} />
-                    {plants?.map(plant => <PlantCard key={plant.id} plant={plant}/>)}
                 </>
             )}
         </div>

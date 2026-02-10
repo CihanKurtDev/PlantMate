@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BaseEvent, EventBadge, EventIcon } from "./EventsList";
+import { BaseEvent, EventBadge } from "./EventsList";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import styles from "./EventForm.module.scss"
@@ -9,6 +9,7 @@ import { iconMap } from "@/types/environment";
 import { WaterInputs } from "./WaterInputs";
 import { WaterData } from "@/types/plant";
 import { useWaterValidation } from "@/hooks/useWaterValidation";
+import TypeIcon from "@/components/TypeIcon/TypeIcon";
 
 
 interface EventFormProps<T extends string> {
@@ -81,6 +82,8 @@ export default function EventForm<T extends string>({
         customBorderColor: formData.customBorderColor,
         notes: "",
     };
+
+    const PreviewIcon = formData.customIconName ? iconMap[formData.customIconName] : iconMap.Leaf;
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -158,7 +161,14 @@ export default function EventForm<T extends string>({
 
                     <div className={styles.preview}>
                         <EventBadge event={previewEvent} />
-                        {formData.customIconName && <EventIcon event={previewEvent} />}
+                        {formData.customIconName && (
+                            <TypeIcon 
+                                icon={PreviewIcon} 
+                                customBgColor={formData.customBgColor} 
+                                customTextColor={formData.customTextColor}
+                                customBorderColor={formData.customBorderColor}
+                            />
+                        )}
                     </div>
                 </>
             )}

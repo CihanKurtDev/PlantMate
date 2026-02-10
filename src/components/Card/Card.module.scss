@@ -1,5 +1,60 @@
 @use "../../styles/mixins" as *;
 
-.baseCard {
-    @include card;
+.base {
+    @include card-base;
+}
+
+.interactive {
+    @include card-interactive;
+}
+
+.flat {
+    @include card-flat;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-l);
+    cursor: pointer;
+
+    &.collapsible {
+        justify-content: space-between;
+    }
+
+    .actions {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-s);
+    }
+
+    figure {
+        font-size: var(--font-size-xl);
+        margin: 0;
+        display: inline;
+    }
+}
+
+.collapsable {
+    overflow: hidden;
+    max-height: 2000px;
+    opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+
+    &.collapsed {
+        max-height: 0;
+        opacity: 0;
+    }
+    
+    &.noTransition {
+        transition: none;
+    }
+}
+
+.content {
+    padding: 0 var(--spacing-l) var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
 }

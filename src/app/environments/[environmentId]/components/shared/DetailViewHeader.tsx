@@ -20,7 +20,7 @@ export default function DetailViewHeader({ title, icon, children, subtitle, icon
                 </div>
                 {subtitle && <p>{subtitle}</p>}
             </div>
-            {children}
+            <div className={styles.actions}>{children}</div>
         </header>
     );
 }
