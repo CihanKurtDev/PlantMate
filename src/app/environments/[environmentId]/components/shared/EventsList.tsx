@@ -140,10 +140,7 @@ export default function EventsList<T extends BaseEvent>({
     const groups = groupEventsByDate(events);
 
     return (
-        <Card 
-            collapsible={true}
-            title="Events"
-        > 
+        <>
             {groups.map(([date, groupedEvents]) => (
                 <section className={styles.dateSection} key={date}>
                     <header className={styles.dateHeader}>
@@ -167,6 +164,6 @@ export default function EventsList<T extends BaseEvent>({
                     </ol>
                 </section>
             ))}
-        </Card>
+        </>
     );
 }

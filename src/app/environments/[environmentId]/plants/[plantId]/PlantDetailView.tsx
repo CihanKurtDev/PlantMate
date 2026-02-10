@@ -12,6 +12,7 @@ import DataTab from "../../components/shared/DataTab";
 import Modal from "@/components/Modal/Modal";
 import PlantEventForm from "./components/PlantEventForm";
 import { Button } from "@/components/Button/Button";
+import { Card } from "@/components/Card/Card";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { plants } = usePlantMonitor();
@@ -44,10 +45,12 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </Button>
             </DetailViewHeader>
 
-            <TabContent title="Basisinformationen">
-                <p><strong>Art / Spezies:</strong> {plant.species || '-'}</p>
-                {plant.water?.ph && <p>pH-Wert: {plant.water.ph.value} {plant.water.ph.unit}</p>}
-                {plant.water?.ec && <p>EC: {plant.water.ec.value} {plant.water.ec.unit}</p>}
+            <TabContent id="basicInfo">
+                <Card title="Basisinformationen" collapsible={true}>
+                    <p><strong>Art / Spezies:</strong> {plant.species || '-'}</p>
+                    {plant.water?.ph && <p>pH-Wert: {plant.water.ph.value} {plant.water.ph.unit}</p>}
+                    {plant.water?.ec && <p>EC: {plant.water.ec.value} {plant.water.ec.unit}</p>}
+                </Card>
             </TabContent>
             
             <DataTab 

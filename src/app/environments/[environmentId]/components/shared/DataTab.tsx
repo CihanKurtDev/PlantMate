@@ -31,38 +31,41 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export default function DataTab({ data, metrics } : { data: any[], metrics: MetricConfig[] }) {
   return (
     <TabContent id="Klima">
-      {data.length === 0 ? (
-        <EmptyState message="Keine Klimadaten vorhanden"/>
-        ) : (
-          <Card collapsible={true} title="Klima">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data} margin={{ top: 20, right: 30, left: 50, bottom: 20 }}>
-                <XAxis
-                  dataKey="timestamp"
-                  type="number"
-                  domain={['dataMin', 'dataMax']}
-                  tickFormatter={timestamp => formatDateShort(new Date(timestamp))}
-                />
-                <YAxis
-                  type="number"
-                />
-                {metrics.map(metric => (
-                  <Line
-                    key={metric.key}
-                    type="monotone"
-                    dataKey={metric.key}
-                    stroke={metric.color}
-                    strokeWidth={1}
-                    dot={{ r: 3}}
-                    name={metric.name}
+      <Card title="Klima" collapsible={true}>
+        {data.length === 0 ? (
+          <EmptyState message="Keine Klimadaten vorhanden"/>
+          ) : (
+            <Card collapsible={true} title="Klima">
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={data} margin={{ top: 20, right: 30, left: 50, bottom: 20 }}>
+                  <XAxis
+                    dataKey="timestamp"
+                    type="number"
+                    domain={['dataMin', 'dataMax']}
+                    tickFormatter={timestamp => formatDateShort(new Date(timestamp))}
                   />
-                ))}
-                <Tooltip content={<CustomTooltip />} />
-                <Legend verticalAlign="top" height={36} iconType="circle" />
-              </LineChart>
-            </ResponsiveContainer>
-          </Card>
-        )}
+                  <YAxis
+                    type="number"
+                  />
+                  {metrics.map(metric => (
+                    <Line
+                      key={metric.key}
+                      type="monotone"
+                      dataKey={metric.key}
+                      stroke={metric.color}
+                      strokeWidth={1}
+                      dot={{ r: 3}}
+                      name={metric.name}
+                    />
+                  ))}
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend verticalAlign="top" height={36} iconType="circle" />
+                </LineChart>
+              </ResponsiveContainer>
+            </Card>
+          )
+        }
+      </Card>
     </TabContent>
   );
 }

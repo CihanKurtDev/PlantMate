@@ -6,6 +6,7 @@ import { EnvironmentEvent } from '@/types/environment';
 import EnvironmentEventForm from "./EnvironmentEventForm";
 import TabContent from "./shared/TabContent";
 import EventsList from "./shared/EventsList";
+import { Card } from "@/components/Card/Card";
 
 interface EnvironmentEventTabProps {
     events?: EnvironmentEvent[];
@@ -17,25 +18,27 @@ export default function EnvironmentEventTab({ events, environmentId }: Environme
 
     return (
         <TabContent id="events">
-            {!isAddingEvent ? (
-                <EventsList
-                    events={events ?? []}
-                    emptyMessage="Keine Events vorhanden"
-                    eventMap={ENVIRONMENT_EVENT_MAP}
-                    getTitle={(event) =>
-                        event.climateAdjustment?.setting ??
-                        event.equipmentChange?.equipment ??
-                        ENVIRONMENT_EVENT_MAP[event.type]?.label ??
-                        event.type
-                    }
-                />
-            ) : (
-                <EnvironmentEventForm
-                    environmentId={environmentId}
-                    onCancel={() => setIsAddingEvent(false)}
-                    onSave={() => setIsAddingEvent(false)}
-                />
-            )}
+            <Card title="events">
+                {!isAddingEvent ? (
+                    <EventsList
+                        events={events ?? []}
+                        emptyMessage="Keine Events vorhanden"
+                        eventMap={ENVIRONMENT_EVENT_MAP}
+                        getTitle={(event) =>
+                            event.climateAdjustment?.setting ??
+                            event.equipmentChange?.equipment ??
+                            ENVIRONMENT_EVENT_MAP[event.type]?.label ??
+                            event.type
+                        }
+                    />
+                ) : (
+                    <EnvironmentEventForm
+                        environmentId={environmentId}
+                        onCancel={() => setIsAddingEvent(false)}
+                        onSave={() => setIsAddingEvent(false)}
+                    />
+                )}
+            </Card>
         </TabContent>
     );
 }
