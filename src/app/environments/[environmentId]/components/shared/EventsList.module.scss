@@ -1,19 +1,43 @@
-@use '../../../../../styles/mixins' as *;
+@use "../../../../../styles/mixins" as *;
 
-.sectionHeading {
-    text-align: center;
+.card {
+    @include card-flat;
     padding: var(--spacing-m);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+    transition: box-shadow 0.2s ease;
+}
+
+.eventInfoWrapper {
+    flex: 1;
+    
+    h4 {
+        margin: 0 0 var(--spacing-xs) 0;
+        font-size: var(--font-size-m);
+    }
+}
+
+.eventNotes {
+    margin: 0;
+    font-size: var(--font-size-s);
+    color: var(--color-text-secondary);
+}
+
+.eventTime {
+    font-size: var(--font-size-s);
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
 }
 
 .dateSection {
-display: flex;
-  flex-direction: column;
-  gap: var(--spacing-m);
+    margin-bottom: var(--spacing-l);
 }
 
 .dateHeader {
     padding: var(--spacing-xs) 0;
     border-bottom: 1px solid #cedbce;
+    margin-bottom: var(--spacing-m);
 
     h4 {
         font-size: var(--font-size-s);
@@ -21,111 +45,6 @@ display: flex;
         color: var(--color-text-tertiary);
     }
 }
-
-.card {
-    @include card-flat;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.eventTop {
-    margin-bottom: 4px;
-}
-
-.eventTitleWrapper {
-    display: flex;
-    gap: var(--spacing-m);
-}
-
-.eventTitle {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-s);
-}
-
-.eventTime {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-tertiary);
-}
-
-.eventNotes {
-    font-size: var(--font-size-s);
-    color: var(--color-text-tertiary);
-    height: 25px;
-}
-
-.badge {
-    font-size: var(--font-size-xs);
-    padding: 4px 8px;
-    border-radius: var(--radius-l);
-    font-weight: var(--font-weight-medium);
-    height: fit-content;
-}
-
-.timelineIcon {
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-circle);
-    border: 2px solid var(--color-background-primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.Climate_Adjustment {
-    background: #fff3e0;
-    color: #e65100;
-    border-color: #ffcc80;
-}
-
-.Equipment_Change {
-    background: #e3f2fd;
-    color: #0d47a1;
-    border-color: #90caf9;
-}
-
-.Maintenance {
-    background: #f3e5f5;
-    color: #6a1b9a;
-    border-color: #ce93d8;
-}
-
-.Cleaning {
-    background: #e8f5e9;
-    color: #1b5e20;
-    border-color: #a5d6a7;
-}
-
-.WATERING {
-    background: #e0f7fa;
-    color: #006064;
-    border-color: #4dd0e1;
-}
-
-.FERTILIZING {
-    background: #f1f8e9;
-    color: #33691e;
-    border-color: #aed581;
-}
-
-.REPOTTING {
-    background: #fff3e0;
-    color: #e65100;
-    border-color: #ffcc80;
-}
-
-.PEST_CONTROL {
-    background: #fce4ec;
-    color: #880e4f;
-    border-color: #f8bbd0;
-}
-
-.PRUNING {
-    background: #ede7f6;
-    color: #4a148c;
-    border-color: #b39ddb;
-}
-
 
 .eventsGrid {
     padding: 0;
@@ -141,5 +60,4 @@ display: flex;
         grid-template-columns: repeat(3, 1fr);
         gap: 2rem;
     }
-
 }

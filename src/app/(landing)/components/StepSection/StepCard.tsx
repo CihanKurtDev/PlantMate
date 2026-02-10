@@ -8,7 +8,7 @@ export const StepCard = ({ num, title, desc }: Step) => (
     className={styles.stepCard} 
     headingLevel="h3"
   >
-    <div><span className={styles.num}>{num}</span></div>
+    <div className={styles.numWrapper}><span className={styles.num}>{num}</span></div>
     <p>{desc}</p>
   </Card>
 );

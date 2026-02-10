@@ -7,7 +7,7 @@ interface CardProps {
   className?: string;
   icon?: ReactNode;
   children: ReactNode;
-  variant?: string;
+  variant?: 'elevated' | 'flat' | "interactive";
   title: string;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
@@ -18,7 +18,7 @@ export const Card = ({
   className, 
   icon, 
   children, 
-  variant = "base", 
+  variant = "elevated",
   title,
   collapsible = false,
   defaultCollapsed = false,
@@ -32,7 +32,7 @@ export const Card = ({
   }, []);
 
   return(
-    <section className={`${className} ${styles[variant]}`}>
+    <section className={`${styles[variant]} ${className || ''}`}>
       <CardHeader 
         title={title}
         collapsible={collapsible}

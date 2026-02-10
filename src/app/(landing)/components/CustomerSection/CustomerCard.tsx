@@ -5,6 +5,7 @@ import styles from "./CustomerCard.module.scss";
 export const CustomerCard = ({ icon, title, desc, checkListItems }: Customer) => (
   <Card 
     title={title} 
+    variant="elevated"
     className={styles.customerCard} 
     icon={icon}
     headingLevel="h3"
