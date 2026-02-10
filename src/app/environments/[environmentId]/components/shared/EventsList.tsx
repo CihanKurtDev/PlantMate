@@ -130,11 +130,7 @@ export default function EventsList<T extends BaseEvent>({
     eventMap,
 }: EventsListProps<T>) {
     if (!events || events.length === 0) {
-        return (
-            <TabContent id="events" title="Ereignisse">
-                <EmptyState message={emptyMessage} />
-            </TabContent>
-        );
+        return <EmptyState message={emptyMessage} />
     }
 
     const groups = groupEventsByDate(events);

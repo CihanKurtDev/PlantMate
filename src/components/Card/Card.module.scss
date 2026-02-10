@@ -16,7 +16,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: var(--spacing-s) 0;
+    padding: var(--spacing-l);
     cursor: pointer;
 
     &.collapsible {
@@ -28,19 +28,33 @@
         align-items: center;
         gap: var(--spacing-s);
     }
+
+    figure {
+        font-size: var(--font-size-xl);
+        margin: 0;
+        display: inline;
+    }
 }
 
 .collapsable {
     overflow: hidden;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
-    opacity: 1;
     max-height: 2000px;
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-m);
+    opacity: 1;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
 
     &.collapsed {
         max-height: 0;
         opacity: 0;
     }
+    
+    &.noTransition {
+        transition: none;
+    }
+}
+
+.content {
+    padding: 0 var(--spacing-l) var(--spacing-l);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
 }

@@ -1,5 +1,5 @@
 "use client"
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import styles from "./Card.module.scss"
 import { CardHeader } from "./CardHeader";
 
@@ -8,7 +8,7 @@ interface CardProps {
   icon?: ReactNode;
   children: ReactNode;
   variant?: string;
-  title?: string;
+  title: string;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
   headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'; 
@@ -25,22 +25,27 @@ export const Card = ({
   headingLevel = "h2",
 }: CardProps) => {
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
+  const [isFirstRender, setIsFirstRender] = useState(true);
+
+  useEffect(() => {
+    setIsFirstRender(false);
+  }, []);
 
   return(
     <section className={`${className} ${styles[variant]}`}>
-      {title && (
-        <CardHeader 
-          title={title}
-          collapsible={collapsible}
-          collapsed={collapsed}
-          onToggle={() => setCollapsed((p) => !p)}
-          icon={icon}
-          headingLevel={headingLevel}
-        />
-      )}
-      <div className={`${styles.collapsable} ${collapsed ? styles.collapsed : ''}`}>
-        {children}
+      <CardHeader 
+        title={title}
+        collapsible={collapsible}
+        collapsed={collapsed}
+        onToggle={() => setCollapsed((p) => !p)}
+        icon={icon}
+        headingLevel={headingLevel}
+      />
+      <div className={`${styles.collapsable} ${collapsed ? styles.collapsed : ''} ${isFirstRender ? styles.noTransition : ''}`}>
+        <div className={styles.content}>
+          {children}
+        </div>
       </div>
     </section>
-)};
-
+  );
+};
