@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BaseEvent, EventBadge } from "./EventsList";
+import { BaseEvent } from "./EventsList";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import styles from "./EventForm.module.scss"
@@ -70,17 +70,6 @@ export default function EventForm<T extends string>({
         }
 
         onSubmit(formData);
-    };
-
-    const previewEvent: BaseEvent = {
-        id: "preview",
-        type: formData.customName || "Vorschau",
-        timestamp: formData.timestamp,
-        customIconName: formData.customIconName,
-        customBgColor: formData.customBgColor,
-        customTextColor: formData.customTextColor,
-        customBorderColor: formData.customBorderColor,
-        notes: "",
     };
 
     const PreviewIcon = formData.customIconName ? iconMap[formData.customIconName] : iconMap.Leaf;
@@ -160,7 +149,6 @@ export default function EventForm<T extends string>({
                     </FormField>
 
                     <div className={styles.preview}>
-                        <EventBadge event={previewEvent} />
                         {formData.customIconName && (
                             <TypeIcon 
                                 icon={PreviewIcon} 

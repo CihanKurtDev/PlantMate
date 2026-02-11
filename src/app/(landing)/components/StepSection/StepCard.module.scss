@@ -1,8 +1,14 @@
 @use '../../../../styles/mixins' as *;
 
 .stepCard {
-  @include card-base;
+  @include card-container;
   background-color: var(--color-background-secondary);
+
+
+  .numWrapper {
+    display: flex;
+    justify-content: center;
+  }
 
   .num {
     font-size: var(--font-size-xl);

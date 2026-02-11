@@ -1,12 +1,9 @@
-import TabContent from "./TabContent";
 import EmptyState from "./EmptyState";
 import styles from "./EventsList.module.scss";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
 import { Leaf, Settings, Sparkles, Thermometer, Wrench } from "lucide-react";
 import { iconMap } from "@/types/environment";
-import { Card } from "@/components/Card/Card";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
-
 
 export interface BaseEvent {
     id: string;
@@ -32,60 +29,6 @@ interface EventsListProps<T extends BaseEvent> {
     children?: (event: T) => React.ReactNode;
     eventMap?: Record<string, EventMapItem>;
 }
-
-const getCustomStyle = (event: BaseEvent): React.CSSProperties | undefined => {
-    if (!event.customBgColor) {
-        return;
-    }
-
-    return {
-        backgroundColor: event.customBgColor,
-        color: event.customTextColor,
-        borderColor: event.customBorderColor,
-    };
-};
-
-const joinClassNames = (base: string, extra?: string): string => {
-    if (extra) {
-        return `${base} ${extra}`;
-    }
-
-    return base;
-};
-
-
-const getTypeClass = (event: BaseEvent): string | undefined => {
-    if (event.customBgColor) {
-        return;
-    }
-
-    return styles[event.type];
-};
-
-const getEventLabel = ( event: BaseEvent, eventMap?: Record<string, EventMapItem> ): string => {
-    if (event.customBgColor) {
-        return event.type;
-    }
-
-    if (eventMap && eventMap[event.type]) {
-        return eventMap[event.type].label;
-    }
-
-    return event.type;
-};
-
-export const EventBadge = ({event, eventMap }: { event: BaseEvent; eventMap?: Record<string, EventMapItem> }) => {
-    const style = getCustomStyle(event);
-    const label = getEventLabel(event, eventMap);
-    const typeClass = getTypeClass(event);
-    const className = joinClassNames(styles.badge, typeClass);
-
-    return (
-        <span className={className} style={style}>
-            {label}
-        </span>
-    );
-};
 
 interface EventCardProps {
     event: BaseEvent;

@@ -7,7 +7,7 @@ interface CardHeaderProps {
     collapsible?: boolean;
     collapsed?: boolean;
     onToggle?: () => void;
-    icon: ReactNode;
+    icon?: ReactNode;
     headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
 }
 
@@ -28,7 +28,7 @@ export const CardHeader: React.FC<CardHeaderProps> = ({
         >
             <HeadingTag>{icon && <figure>{icon}</figure>}{title}</HeadingTag>
             {collapsible && <div className={styles.actions}>
-                {collapsible && (collapsed ? <ChevronDown /> : <ChevronUp />)}
+                {collapsed ? <ChevronDown /> : <ChevronUp />}
             </div>}
         </div>
     );

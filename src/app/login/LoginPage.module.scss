@@ -9,7 +9,7 @@
 }
 
 .card {
-    @include card-base;
+    @include card-container;
     width: 100%;
     max-width: 400px;
 }

@@ -1,60 +1,60 @@
 @use "../../styles/mixins" as *;
 
-.base {
-    @include card-base;
-}
-
-.interactive {
-    @include card-interactive;
+.elevated {
+  @include card-elevated;
 }
 
 .flat {
-    @include card-flat;
+  @include card-flat;
+}
+.interactive {
+  @include card-interactive;
 }
 
 .header {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: var(--spacing-l);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-l);
+
+  &.collapsible {
+    justify-content: space-between;
     cursor: pointer;
+    user-select: none;
+  }
 
-    &.collapsible {
-        justify-content: space-between;
-    }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+  }
 
-    .actions {
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-s);
-    }
-
-    figure {
-        font-size: var(--font-size-xl);
-        margin: 0;
-        display: inline;
-    }
+  figure {
+    font-size: var(--font-size-xl);
+    margin: 0;
+    display: inline;
+  }
 }
 
 .collapsable {
-    overflow: hidden;
-    max-height: 2000px;
-    opacity: 1;
-    transition: max-height 0.3s ease, opacity 0.3s ease;
+  overflow: hidden;
+  max-height: 2000px;
+  opacity: 1;
+  transition: max-height 0.3s ease, opacity 0.3s ease;
 
-    &.collapsed {
-        max-height: 0;
-        opacity: 0;
-    }
-    
-    &.noTransition {
-        transition: none;
-    }
+  &.collapsed {
+    max-height: 0;
+    opacity: 0;
+  }
+  
+  &.noTransition {
+    transition: none;
+  }
 }
 
 .content {
-    padding: 0 var(--spacing-l) var(--spacing-l);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-m);
+  padding: 0 var(--spacing-l) var(--spacing-l);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-m);
 }

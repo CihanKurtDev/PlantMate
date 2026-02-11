@@ -1,7 +1,7 @@
 @use '../../../../styles/mixins' as *;
 
 .featureCard {
-  @include card-base;
+  @include card-container;
   background-color: var(--color-background-primary);
 
   .icon {
