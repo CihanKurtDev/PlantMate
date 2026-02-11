@@ -1,68 +1,25 @@
 .iconWrapper {
-    width: 3rem;
-    height: 3rem;
-    border-radius: var(--radius-m);
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &.tent {
-        background-color: var(--color-locations-tent-soft);
-        color: var(--color-locations-tent-base);
-    }
-
-    &.room {
-        background-color: var(--color-locations-room-soft);
-        color: var(--color-locations-room-base);
-    }
-
-    &.greenhouse {
-        background-color: var(--color-locations-greenhouse-soft);
-        color: var(--color-locations-greenhouse-base);
-    }
-
-    &.temp {
-        background-color: var(--color-climate-temp-soft);
-        color: var(--color-climate-temp-base);
-    }
-
-    &.climate_adjustment {
-        background-color: var(--color-climate-temp-soft);
-        color: var(--color-climate-temp-base);
-    }
-
-    &.equipment_change {
-        background-color: var(--color-event-equipment-soft);
-        color: var(--color-event-equipment-base);
-    }
-
-    &.maintenance {
-        background-color: var(--color-event-maintenance-soft);
-        color: var(--color-event-maintenance-base);
-    }
-
-    &.cleaning {
-        background-color: var(--color-event-cleaning-soft);
-        color: var(--color-event-cleaning-base);
-    }
-
-    &.humidity {
-        background-color: var(--color-climate-humidity-soft);
-        color: var(--color-climate-humidity-base);
-    }
-
-    &.vpd {
-        background-color: var(--color-climate-vpd-soft);
-        color: var(--color-climate-vpd-base);
-    }
-
-    &.co2 {
-        background-color: var(--color-climate-co2-soft);
-        color: var(--color-climate-co2-base);
-    }
+    border-radius: var(--radius-m);
+    aspect-ratio: 1 / 1;
+    height: auto; 
+    padding: var(--spacing-s);
 }
 
 .icon {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: auto;
+    max-height: var(--icon-l);
+    min-height: var(--icon-m);
 }
+
+.fixedSize {
+    height: auto;
+    width: auto;
+}
+
+.stretch {
+    height: 100%;
+}
+

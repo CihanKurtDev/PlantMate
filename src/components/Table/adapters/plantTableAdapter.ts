@@ -1,5 +1,4 @@
 import { PlantData, PlantEvent, WaterData } from "@/types/plant";
-import { EnvironmentData } from "@/types/environment";
 
 const getLastEvent = (events?: PlantEvent[]) =>
     events && events.length > 0 ? events[events.length - 1] : undefined;

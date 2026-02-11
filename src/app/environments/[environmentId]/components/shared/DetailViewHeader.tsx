@@ -11,14 +11,14 @@ interface DetailViewHeader {
 }
 
 export default function DetailViewHeader({ title, icon, children, subtitle, iconVariant }: DetailViewHeader ) {
-  return (
+    return (
         <header className={styles.header}>
             <div className={styles.info}>
-                <div className={styles.title}>
                     {icon && <TypeIcon icon={icon} variant={iconVariant || ''} />}
+                <div className={styles.title}>
                     <h1>{title}</h1>
-                </div>
                 {subtitle && <p>{subtitle}</p>}
+                </div>
             </div>
             <div className={styles.actions}>{children}</div>
         </header>

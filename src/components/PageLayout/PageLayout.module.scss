@@ -4,10 +4,6 @@
     @extend .pageContainer;
 }
 
-.content {
-    @extend .contentWrapper;
-}
-
 .header {
     padding: var(--spacing-m);
 

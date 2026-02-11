@@ -1,7 +1,8 @@
-import { Home, Tent, Leaf, Thermometer, Wind, Droplet, LucideIcon, ActivityIcon } from "lucide-react";
-import { EnvironmentType } from "@/types/environment";
+import { Home, Tent, Leaf, LucideIcon } from "lucide-react";
 
-export const ENVIRONMENT_ICONS: Record<EnvironmentType, any> = {
+export type EnvironmentType = 'TENT' | 'ROOM' | 'GREENHOUSE';
+
+export const ENVIRONMENT_ICONS: Record<EnvironmentType, LucideIcon> = {
     TENT: Tent,
     ROOM: Home,
     GREENHOUSE: Leaf,
@@ -13,29 +14,10 @@ export const ENVIRONMENT_LABELS: Record<EnvironmentType, string> = {
     GREENHOUSE: "Gewächshaus",
 };
 
-export const ENVIRONMENT_EVENT_MAP: Record<
-    string,
-    {
-        label: string;
-        icon: LucideIcon;
-    }
-> = {
-    Climate_Adjustment: {
-        label: 'Climate Adjustment',
-        icon: Thermometer,
-    },
-    Equipment_Change: {
-        label: 'Equipment Change',
-        icon: ActivityIcon,
-    },
-    Maintenance: {
-        label: 'Maintenance',
-        icon: Wind,
-    },
-    Cleaning: {
-        label: 'Cleaning',
-        icon: Droplet,
-    },
-} as const;
+export { 
+    ENVIRONMENT_EVENT_CONFIG as ENVIRONMENT_EVENT_MAP,
+    getIconConfig,
+    getEventConfig,
+} from './icons';
 
-export type EnvironmentEventType = keyof typeof ENVIRONMENT_EVENT_MAP;
+export type { EnvironmentEventType } from './icons';

@@ -39,6 +39,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
             <DetailViewHeader
                 title={plant.title}
                 icon={Sprout}
+                iconVariant="sprout"
             >
                 <Button onClick={() => setIsModalOpen(true)}>
                     Ereignis hinzufügen

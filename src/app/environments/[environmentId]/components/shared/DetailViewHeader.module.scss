@@ -13,9 +13,8 @@
 
 .info {
     display: flex;
-    flex-direction: column;
+    flex: 1;
     gap: var(--spacing-m);
-    margin-bottom: var(--spacing-l);
     
     @media (min-width: 1600px) {
         margin-bottom: 0;
@@ -24,6 +23,10 @@
 
 .title {
     display: flex;
+    flex-direction: column;
     gap: var(--spacing-s);
-    align-items: center;
+}
+
+.actions {
+    align-self: center;
 }
