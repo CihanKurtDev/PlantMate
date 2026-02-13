@@ -28,5 +28,15 @@
 }
 
 .actions {
+    display: flex;
     align-self: center;
+    gap: var(--spacing-xs);
+
+    button {
+        span {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-s);
+        }
+    }
 }

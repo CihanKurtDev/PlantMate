@@ -7,7 +7,9 @@ interface PlantMonitorContextType {
     environments: EnvironmentData[];
     plants: PlantData[];
     addEnvironment: (env: EnvironmentData) => void;
+    updateEnvironment: (env: EnvironmentData) => void;
     addPlant: (plant: PlantData) => void;
+    updatePlant: (plant: PlantData) => void;
     getPlantsByEnvironment: (envId: string) => PlantData[];
     addEventToPlant: (plantId: string, event: PlantEvent) => void,
     addEventToEnvironment: (environmentId: string, event: EnvironmentEvent) => void,
@@ -29,7 +31,6 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
                 console.error("Fehler beim Laden der Environments aus localStorage", e);
             }
         }
-
         const storedPlants = localStorage.getItem("plants");
         if (storedPlants) {
             try {
@@ -48,9 +49,25 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
+    const updateEnvironment = (env: EnvironmentData) => {
+        setEnvironments(prev => {
+            const updated = prev.map(e => e.id === env.id ? env : e);
+            localStorage.setItem("environments", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
     const addPlant = (plant: PlantData) => {
         setPlants(prev => {
             const updated = [...prev, plant];
+            localStorage.setItem("plants", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const updatePlant = (plant: PlantData) => {
+        setPlants(prev => {
+            const updated = prev.map(p => p.id === plant.id ? plant : p);
             localStorage.setItem("plants", JSON.stringify(updated));
             return updated;
         });
@@ -68,23 +85,18 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         setPlants(prev =>
             prev.map(plant => {
                 if (plant.id === plantId) {
-                    const updatedPlant = {
-                        ...plant,
-                        events: [...(plant.events || []), event],
-                    };
+                    const updatedPlant = { ...plant, events: [...(plant.events || []), event] };
                     return updatedPlant;
                 }
                 return plant;
             })
         );
-
         const updatedPlants = plants.map(plant => {
             if (plant.id === plantId) {
                 return { ...plant, events: [...(plant.events || []), event] };
             }
             return plant;
         });
-
         localStorage.setItem("plants", JSON.stringify(updatedPlants));
     };
 
@@ -102,13 +114,23 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
-
     const getPlantsByEnvironment = (envId: string) => {
         return plants.filter(plant => plant.environmentId === envId);
     };
 
     return (
-        <PlantMonitorContext.Provider value={{ environments, plants, addEnvironment, getPlantsByEnvironment, addPlant, deletePlants, addEventToPlant, addEventToEnvironment }}>
+        <PlantMonitorContext.Provider value={{
+            environments, 
+            plants,
+            addEnvironment, 
+            updateEnvironment,
+            addPlant, 
+            updatePlant,
+            getPlantsByEnvironment, 
+            deletePlants,
+            addEventToPlant, 
+            addEventToEnvironment,
+        }}>
             {children}
         </PlantMonitorContext.Provider>
     );

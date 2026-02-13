@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab";
@@ -14,6 +15,7 @@ import styles from './EnvironmentDetailView.module.scss';
 import Modal from "@/components/Modal/Modal";
 import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import { Button } from "@/components/Button/Button";
+import { Pencil } from "lucide-react";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -24,9 +26,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const environment = environments.find(e => e.id === environmentId);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const plants = getPlantsByEnvironment(environmentId);
-    
+    const router = useRouter();
+
     if (!environment) return null;
-    
+
     const combinedEnvData = combineEnvironmentData(environment.historical, environment.events);
     const chartData = combinedEnvData.map(entry => ({
         timestamp: entry.timestamp,
@@ -36,11 +39,6 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
         co2: entry.metrics?.co2,
         notes: entry.notes,
     }));
-
-    const handleModalClose = () => setIsModalOpen(false);
-    const handleEventSave = () => {
-        setIsModalOpen(false);
-    };
 
     const headerTitle = `${environment.name} ${capitalize(environment.type)}`
     const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`
@@ -53,6 +51,13 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 icon={ENVIRONMENT_ICONS[environment.type]}
                 iconVariant={environment.type.toLowerCase()}
             >
+                <Button variant="secondary" onClick={() => router.push(`/environments/new?editId=${environmentId}`)}>
+                    <Pencil size={16} />
+                    <span>
+                        <Pencil size={16} />
+                        Bearbeiten
+                    </span>
+                </Button>
                 <Button onClick={() => setIsModalOpen(true)}>
                     Ereignis hinzufügen
                 </Button>
@@ -74,11 +79,11 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
 
-            <Modal isOpen={isModalOpen} onClose={handleModalClose}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <EnvironmentEventForm
                     environmentId={environmentId}
-                    onCancel={handleModalClose}
-                    onSave={handleEventSave}
+                    onCancel={() => setIsModalOpen(false)}
+                    onSave={() => setIsModalOpen(false)}
                 />
             </Modal>
         </PageLayout>
