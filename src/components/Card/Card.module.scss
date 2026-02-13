@@ -7,46 +7,93 @@
 .flat {
   @include card-flat;
 }
+
 .interactive {
   @include card-interactive;
 }
 
 .header {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   padding: var(--spacing-l);
 
   &.collapsible {
-    justify-content: space-between;
     cursor: pointer;
     user-select: none;
   }
 
-  .actions {
+  .icon {
+    margin: 0;
     display: flex;
     align-items: center;
-    gap: var(--spacing-s);
+    justify-content: center;
+    font-size: var(--font-size-xl);
+    flex-shrink: 0;
   }
 
-  figure {
-    font-size: var(--font-size-xl);
-    margin: 0;
-    display: inline;
+  &.inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-m);
+
+    .headerLeft {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-s);
+      min-width: 0
+    }
+
+    .icon {
+      font-size: var(--font-size-l);
+    }
+  }
+
+  &.centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-s);
+
+    .icon {
+      font-size: var(--font-size-xl);
+    }
+  }
+}
+
+
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  flex-shrink: 0;
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  color: var(--text-tertiary);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
+
+  .header.collapsible:hover & {
+    color: var(--text-primary);
+  }
+
+  &.chevronOpen {
+    transform: rotate(180deg);
   }
 }
 
 .collapsable {
   overflow: hidden;
-  max-height: 2000px;
   opacity: 1;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+  overflow-anchor: none;
 
   &.collapsed {
-    max-height: 0;
     opacity: 0;
   }
-  
+
   &.noTransition {
     transition: none;
   }
