@@ -29,22 +29,22 @@ export const Card = ({
   const [collapsed, setCollapsed] = useState(defaultCollapsed);
   const [mounted, setMounted] = useState(false);
   const [bodyHeight, setBodyHeight] = useState<string>('2000px');
-  const bodyRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!bodyRef.current) return;
+    if (!contentRef.current) return;
 
     const ro = new ResizeObserver(() => {
-      if (bodyRef.current) {
-        setBodyHeight(bodyRef.current.scrollHeight + 'px');
+      if (contentRef.current) {
+        setBodyHeight(contentRef.current.scrollHeight + 'px');
       }
     });
 
-    ro.observe(bodyRef.current);
+    ro.observe(contentRef.current);
     return () => ro.disconnect();
   }, []);
 
@@ -64,11 +64,10 @@ export const Card = ({
         headingLevel={headingLevel}
       />
       <div
-        ref={bodyRef}
         style={wrapStyle}
         className={`${styles.collapsable} ${collapsed ? styles.collapsed : ''} ${!mounted ? styles.noTransition : ''}`}
       >
-        <div className={styles.content}>
+        <div ref={contentRef} className={styles.content}>
           {children}
         </div>
       </div>
