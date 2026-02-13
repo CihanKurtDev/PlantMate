@@ -16,13 +16,15 @@ import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
-    const { plants } = usePlantMonitor();
+    const { plants, environments  } = usePlantMonitor();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const router = useRouter();
 
     const plant = plants.find(p => p.id === plantId);
 
     if (!plant) return null;
+
+    const environment = environments.find(e => e.id === plant.environmentId);
 
     const combinedPlantData = combinePlantData(plant.historical, plant.events);
     const chartData = combinedPlantData.map(data => ({
@@ -37,6 +39,10 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 title={plant.title}
                 icon={Sprout}
                 iconVariant="sprout"
+                backLink={{
+                    label: environment?.name ? `Zurück zum Environment: ${environment?.name}`: "Zurück zum Environment",
+                    href: `/environments/${plant.environmentId}`,
+                }}
             >
                 <Button variant="secondary" onClick={() => router.push(`/environments/${plant.environmentId}/plants/new?editId=${plant.id}`)}>
                     <span>

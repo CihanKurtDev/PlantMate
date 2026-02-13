@@ -52,7 +52,6 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 iconVariant={environment.type.toLowerCase()}
             >
                 <Button variant="secondary" onClick={() => router.push(`/environments/new?editId=${environmentId}`)}>
-                    <Pencil size={16} />
                     <span>
                         <Pencil size={16} />
                         Bearbeiten

@@ -40,3 +40,20 @@
         }
     }
 }
+
+.backLink {
+    display: flex;
+    align-items: center;
+    font-size: var(--font-size-s);
+    font-style: italic;
+    color: var(--color-text-primary);
+    transition: color 0.15s ease;
+    
+    svg {
+        font-size: var(--font-size-xs);
+    }
+
+    &:hover {
+        color: var(--text-primary);
+    }
+}
