@@ -26,7 +26,6 @@ export default function EnvironmentEventTab({ events, environmentId }: Environme
                         getTitle={(event) => {
                             const config = getEventConfig(event.type);
                             return (
-                                event.climateAdjustment?.setting ??
                                 event.equipmentChange?.equipment ??
                                 config?.label ??
                                 event.type

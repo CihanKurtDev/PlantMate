@@ -80,10 +80,6 @@ export const EVENT_COLORS = {
         base: '#2d7a3e',
         soft: 'rgba(45, 122, 62, 0.18)',
     },
-    climate_adjustment: {
-        base: '#d05959',
-        soft: 'rgba(208, 89, 89, 0.18)',
-    },
 } as const;
 
 
@@ -127,11 +123,6 @@ export const PLANT_EVENT_CONFIG = {
 export type PlantEventType = keyof typeof PLANT_EVENT_CONFIG;
 
 export const ENVIRONMENT_EVENT_CONFIG = {
-    Climate_Adjustment: {
-        label: 'Climate Adjustment',
-        icon: Thermometer,
-        colors: EVENT_COLORS.climate_adjustment,
-    },
     Equipment_Change: {
         label: 'Equipment Change',
         icon: Settings,
@@ -200,7 +191,6 @@ export const ALL_EVENT_CONFIG: Record<string, IconConfig> = {
     pest_control: PLANT_EVENT_CONFIG.PEST_CONTROL,
     pruning: PLANT_EVENT_CONFIG.PRUNING,
     
-    climate_adjustment: ENVIRONMENT_EVENT_CONFIG.Climate_Adjustment,
     equipment_change: ENVIRONMENT_EVENT_CONFIG.Equipment_Change,
     maintenance: ENVIRONMENT_EVENT_CONFIG.Maintenance,
     cleaning: ENVIRONMENT_EVENT_CONFIG.Cleaning,

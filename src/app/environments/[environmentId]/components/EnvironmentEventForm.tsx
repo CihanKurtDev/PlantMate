@@ -12,7 +12,6 @@ interface EnvironmentEventFormProps {
 }
 
 const environmentEventOptions: EventOption[] = [
-    { value: "Climate_Adjustment", label: "Klimaanpassung" },
     { value: "Equipment_Change", label: "Gerätewechsel" },
     { value: "Maintenance", label: "Wartung" },
     { value: "Cleaning", label: "Reinigung" },
@@ -45,7 +44,7 @@ export default function EnvironmentEventForm({ environmentId, onCancel, onSave }
         <EventForm
             title="Neues Ereignis hinzufügen"
             eventOptions={environmentEventOptions}
-            defaultEventType="Climate_Adjustment"
+            defaultEventType="Equipment_Change"
             onSubmit={handleSubmit}
             onCancel={onCancel}
         />

@@ -4,6 +4,7 @@ import TabContent from "./TabContent";
 import { formatDateShort } from "@/helpers/date";
 import styles from "./DataTab.module.scss";
 import { Card } from "@/components/Card/Card";
+import { EnvironmentTimeSeriesEntry } from "@/types/environment";
 
 export interface MetricConfig {
   key: string;
@@ -28,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export default function DataTab({ data, metrics } : { data: any[], metrics: MetricConfig[] }) {
+export default function DataTab({ data, metrics } : { data: EnvironmentTimeSeriesEntry[], metrics: MetricConfig[] }) {
   return (
     <TabContent id="Klima">
       <Card title="Klima" collapsible={true}>
