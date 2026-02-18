@@ -86,27 +86,32 @@ $buttons-light: (
   primary: (
     bg: #82ac88,
     text: #ffffff,
-    hover: #1F4512
+    hover: #1F4512,
+    active: #163a0d
   ),
   secondary: (
     bg: #d9e7db,
     text: #212121,
-    hover: #a3d0a3
+    hover: #a3d0a3,
+    active: #8bbf8b
   ),
   success: (
     bg: #27ae60,
     text: #ffffff,
-    hover: #1e8449
+    hover: #1e8449,
+    active: #166437
   ),
   alert: (
     bg: #f6e6b0,
     text: #212121,
-    hover: #e6d291
+    hover: #e6d291,
+    active: #d4bc70
   ),
   error: (
     bg: #961817,
     text: #ffffff,
-    hover: #610f0f
+    hover: #610f0f,
+    active: #450a0a
   )
 );
 
@@ -114,27 +119,32 @@ $buttons-dark: (
   primary: (
     bg: #2D651A,
     text: #ffffff,
-    hover: #1F4512
+    hover: #1F4512,
+    active: #163a0d
   ),
   secondary: (
     bg: #5e8e5a,
     text: #ffffff,
-    hover: #4b7248
+    hover: #4b7248,
+    active: #3a5938
   ),
   success: (
     bg: #27ae60,
     text: #ffffff,
-    hover: #1e8449
+    hover: #1e8449,
+    active: #166437
   ),
   alert: (
     bg: #d4c572,
     text: #212121,
-    hover: #bdae53
+    hover: #bdae53,
+    active: #a89840
   ),
   error: (
     bg: #961817,
     text: #ffffff,
-    hover: #610f0f
+    hover: #610f0f,
+    active: #450a0a
   )
 );
 

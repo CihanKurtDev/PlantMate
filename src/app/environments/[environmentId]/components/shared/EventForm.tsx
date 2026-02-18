@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { BaseEvent } from "./EventsList";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import styles from "./EventForm.module.scss"

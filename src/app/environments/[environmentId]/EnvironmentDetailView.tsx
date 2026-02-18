@@ -10,16 +10,48 @@ import PageLayout from "../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
 import ClimateGrid from "@/components/climate/ClimateGrid";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
-import { combineEnvironmentData } from "@/helpers/combineEnvironmentData";
 import styles from './EnvironmentDetailView.module.scss';
 import Modal from "@/components/Modal/Modal";
-import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
+import AddEnvironmentModalContent from "./components/AddEnvrionmentModalContent";
+
+const getLatestHistoricalForToday = <
+  T extends { timestamp: number }
+>(
+  entries?: T[]
+): T | undefined => {
+  if (!entries?.length) return undefined;
+
+  const now = Date.now();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  let latest: T | undefined;
+
+  for (const entry of entries) {
+    if (
+      entry.timestamp >= today.getTime() &&
+      entry.timestamp < tomorrow.getTime() &&
+      entry.timestamp <= now
+    ) {
+      if (!latest || entry.timestamp > latest.timestamp) {
+        latest = entry;
+      }
+    }
+  }
+
+  return latest;
+};
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
+
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
@@ -27,21 +59,25 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const [isModalOpen, setIsModalOpen] = useState(false);
     const plants = getPlantsByEnvironment(environmentId);
     const router = useRouter();
-
+    
     if (!environment) return null;
 
-    const combinedEnvData = combineEnvironmentData(environment.historical, environment.events);
-    const chartData = combinedEnvData.map(entry => ({
-        timestamp: entry.timestamp,
-        temp: entry.metrics?.temp,
-        humidity: entry.metrics?.humidity,
-        vpd: entry.metrics?.vpd,
-        co2: entry.metrics?.co2,
-        notes: entry.notes,
-    }));
+    const latestTodayEntry = getLatestHistoricalForToday(environment.historical);
+    const lastClimateValues = latestTodayEntry?.climate;
 
-    const headerTitle = `${environment.name} ${capitalize(environment.type)}`
-    const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`
+    const chartData =  environment.historical?.map(h => ({
+        timestamp: h.timestamp,
+        entryKind: 'historical',
+        metrics: {
+            temp: h.climate.temp?.value,
+            humidity: h.climate.humidity?.value,
+            vpd: h.climate.vpd?.value,
+            co2: h.climate.co2?.value
+        }
+    })).sort((a, b) => a.timestamp - b.timestamp);
+
+    const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
+    const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
 
     return (
         <PageLayout>
@@ -61,9 +97,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     Ereignis hinzufügen
                 </Button>
             </DetailViewHeader>
-            {environment.climate && (
+            {lastClimateValues && (
                 <div className={styles.climateGridWrapper}>
-                    <ClimateGrid climate={environment.climate} />
+                    <ClimateGrid historical={lastClimateValues} />
                 </div>
             )}
             <PlantsTab plants={plants} />
@@ -79,10 +115,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             />
 
             <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <EnvironmentEventForm
+                <AddEnvironmentModalContent
                     environmentId={environmentId}
-                    onCancel={() => setIsModalOpen(false)}
-                    onSave={() => setIsModalOpen(false)}
+                    onClose={() => setIsModalOpen(false)}
                 />
             </Modal>
         </PageLayout>

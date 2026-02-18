@@ -50,7 +50,7 @@ export default function DataTab({ data, metrics } : { data: any[], metrics: Metr
                   <Line
                     key={metric.key}
                     type="monotone"
-                    dataKey={metric.key}
+                    dataKey={`metrics.${metric.key}`}
                     stroke={metric.color}
                     strokeWidth={1}
                     dot={{ r: 3}}

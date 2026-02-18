@@ -8,7 +8,7 @@ import { EventFormData } from "@/types/events";
 interface EnvironmentEventFormProps {
     environmentId: string;
     onCancel: () => void;
-    onSave: () => void;
+    onSave?: () => void;
 }
 
 const environmentEventOptions: EventOption[] = [
@@ -38,7 +38,7 @@ export default function EnvironmentEventForm({ environmentId, onCancel, onSave }
         };
 
         addEventToEnvironment(environmentId, newEvent);
-        onSave();
+        if(onSave) onSave();
     };
 
     return (

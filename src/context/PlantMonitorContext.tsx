@@ -1,6 +1,6 @@
 "use client"
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import type { EnvironmentData, EnvironmentEvent } from "@/types/environment";
+import type { EnvironmentData, EnvironmentData_Historical, EnvironmentEvent } from "@/types/environment";
 import type { PlantData, PlantEvent } from "@/types/plant";
 
 interface PlantMonitorContextType {
@@ -13,6 +13,7 @@ interface PlantMonitorContextType {
     getPlantsByEnvironment: (envId: string) => PlantData[];
     addEventToPlant: (plantId: string, event: PlantEvent) => void,
     addEventToEnvironment: (environmentId: string, event: EnvironmentEvent) => void,
+    addHistoryData: (environmentId: string, entry: EnvironmentData_Historical) => void,
     deletePlants: (ids: string[]) => void;
 }
 
@@ -82,22 +83,15 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const addEventToPlant = (plantId: string, event: PlantEvent) => {
-        setPlants(prev =>
-            prev.map(plant => {
-                if (plant.id === plantId) {
-                    const updatedPlant = { ...plant, events: [...(plant.events || []), event] };
-                    return updatedPlant;
-                }
-                return plant;
-            })
-        );
-        const updatedPlants = plants.map(plant => {
-            if (plant.id === plantId) {
-                return { ...plant, events: [...(plant.events || []), event] };
-            }
-            return plant;
+        setPlants(prev => {
+            const updated = prev.map(plant =>
+                plant.id === plantId
+                    ? { ...plant, events: [...(plant.events || []), event] }
+                    : plant
+            );
+            localStorage.setItem("plants", JSON.stringify(updated));
+            return updated;
         });
-        localStorage.setItem("plants", JSON.stringify(updatedPlants));
     };
 
     const addEventToEnvironment = (environmentId: string, event: EnvironmentEvent) => {
@@ -111,6 +105,18 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
             localStorage.setItem("environments", JSON.stringify(updated))
 
             return updated
+        });
+    };
+
+    const addHistoryData = (environmentId: string, entry: EnvironmentData_Historical) => {
+        setEnvironments(prev => {
+            const updated = prev.map(env =>
+                env.id === environmentId
+                    ? { ...env, historical: [...(env.historical ?? []), entry] }
+                    : env
+            );
+            localStorage.setItem("environments", JSON.stringify(updated));
+            return updated;
         });
     };
 
@@ -130,6 +136,7 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
             deletePlants,
             addEventToPlant, 
             addEventToEnvironment,
+            addHistoryData
         }}>
             {children}
         </PlantMonitorContext.Provider>
