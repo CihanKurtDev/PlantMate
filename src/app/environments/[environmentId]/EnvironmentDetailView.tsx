@@ -15,6 +15,7 @@ import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
 import AddEnvironmentModalContent from "./components/AddEnvrionmentModalContent";
+import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
 
 const getLatestHistoricalForToday = <
   T extends { timestamp: number }
@@ -52,6 +53,25 @@ export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
 
+function buildEnvironmentChartData(
+  historical?: EnvironmentData_Historical[]
+): EnvironmentTimeSeriesEntry[] {
+  if (!historical?.length) return [];
+
+  return historical
+    .map((entry): EnvironmentTimeSeriesEntry => ({
+      timestamp: entry.timestamp,
+      entryKind: 'historical',
+      metrics: {
+        temp: entry.climate.temp?.value,
+        humidity: entry.climate.humidity?.value,
+        vpd: entry.climate.vpd?.value,
+        co2: entry.climate.co2?.value,
+      },
+    }))
+    .sort((a, b) => a.timestamp - b.timestamp);
+}
+
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
@@ -64,18 +84,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
     const latestTodayEntry = getLatestHistoricalForToday(environment.historical);
     const lastClimateValues = latestTodayEntry?.climate;
-
-    const chartData =  environment.historical?.map(h => ({
-        timestamp: h.timestamp,
-        entryKind: 'historical',
-        metrics: {
-            temp: h.climate.temp?.value,
-            humidity: h.climate.humidity?.value,
-            vpd: h.climate.vpd?.value,
-            co2: h.climate.co2?.value
-        }
-    })).sort((a, b) => a.timestamp - b.timestamp);
-
+    const chartData = buildEnvironmentChartData(environment.historical)
     const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
     const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
 

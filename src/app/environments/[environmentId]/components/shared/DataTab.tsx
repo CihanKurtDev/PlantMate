@@ -29,11 +29,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-export default function DataTab({ data, metrics } : { data: EnvironmentTimeSeriesEntry[], metrics: MetricConfig[] }) {
+export default function DataTab({ data, metrics } : { data: EnvironmentTimeSeriesEntry[] | undefined, metrics: MetricConfig[] }) {
   return (
     <TabContent id="Klima">
       <Card title="Klima" collapsible={true}>
-        {data.length === 0 ? (
+        {data?.length === 0 ? (
           <EmptyState message="Keine Klimadaten vorhanden"/>
           ) : (
             <ResponsiveContainer width="100%" height={300}>
