@@ -19,23 +19,23 @@ interface AddEnvironmentModalContentProps {
 
 function ClimateForm({ environmentId, onClose }: { environmentId: string; onClose: () => void }) {
     const { addHistoryData } = usePlantMonitor();
-    const timestamp = Date.now()
     const { formState, setClimateField } = useEnvironmentForm();
     const { validate } = useEnvironmentValidation();
-
+    
     const validationErrors = validate(formState);
-
+    
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
+        
         const climate = formState.climate;
         if (!climate || Object.values(climate).every(v => !v)) {
             alert("Bitte trage mindestens einen Messwert ein.");
             return;
         }
-
+        
         const climateData = convertClimateInputToData(climate);
-
+        
+        const timestamp = Date.now()
         const entry: EnvironmentData_Historical = {
             id: timestamp.toString(),
             environmentId,

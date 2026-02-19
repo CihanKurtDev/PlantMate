@@ -88,6 +88,8 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
     const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
 
+    const closeModal = () => setModalType("none")
+
     return (
         <PageLayout>
             <DetailViewHeader
@@ -123,15 +125,15 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
 
-            <Modal isOpen={modalType === "event"} onClose={() => setModalType("none")}>
+            <Modal isOpen={modalType === "event"} onClose={closeModal}>
                 <AddEnvironmentEventModalContent
-                  onClose={() => setModalType("none")}
+                  onClose={closeModal}
                   environmentId={environmentId}
                 />
             </Modal>
 
-            <Modal isOpen={modalType === "edit"} onClose={() => setModalType("none")}>
-                <EnvironmentForm environmentId={environmentId} onSaved={() => setModalType("none")} />
+            <Modal isOpen={modalType === "edit"} onClose={closeModal}>
+                <EnvironmentForm environmentId={environmentId} onSaved={closeModal} />
             </Modal>
         </PageLayout>
     );
