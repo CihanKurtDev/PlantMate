@@ -6,7 +6,7 @@ import { Button } from "@/components/Button/Button";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import type { EnvironmentType } from "@/types/environment";
-import { ClimateInputs } from "../../[environmentId]/components/shared/ClimateInputs";
+import { ClimateInputs } from "../../app/environments/[environmentId]/components/shared/ClimateInputs";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";

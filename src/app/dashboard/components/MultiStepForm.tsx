@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { EnvironmentForm } from "./EnvironmentForm";
-import { PlantForm } from "./PlantForm";
+import { EnvironmentForm } from "../../../components/EnvironmentForm/EnvironmentForm";
+import { PlantForm } from "../../../components/PlantForm/PlantForm";
 import styles from "./MultiStepForm.module.scss";
 import { useModal } from "@/context/ModalContext";
 

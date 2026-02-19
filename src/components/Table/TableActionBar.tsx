@@ -12,7 +12,7 @@ interface TableActionBarProps {
     onAddNew?: () => void;
 }
 
-export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode, deleteSelectedRows, hasSelectedRows, environmentId, onAddNew }) => {
+export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode, deleteSelectedRows, hasSelectedRows, onAddNew }) => {
     return (
         <div className={styles.tableActionBar}>
             <div className={styles.leftActions}>

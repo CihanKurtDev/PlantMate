@@ -7,7 +7,7 @@ import { Plus } from "lucide-react";
 import PageLayout from "@/components/PageLayout/PageLayout";
 import Modal from "@/components/Modal/Modal";
 import { useState } from "react";
-import { MultiStepForm } from "../environments/new/components/MultiStepForm";
+import { MultiStepForm } from "./components/MultiStepForm";
 
 const Dashboard = () => {
     const { environments } = usePlantMonitor();

@@ -15,8 +15,8 @@ import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
 import AddEnvironmentEventModalContent from "./components/AddEnvironmentEventModalContent";
 import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
-import { EnvironmentForm } from "../new/components/EnvironmentForm";
-import { PlantForm } from "../new/components/PlantForm";
+import { EnvironmentForm } from "../../../components/EnvironmentForm/EnvironmentForm";
+import { PlantForm } from "../../../components/PlantForm/PlantForm";
 
 const getLatestHistoricalForToday = <T extends { timestamp: number }>( entries?: T[]): T | undefined => {
     if (!entries?.length) return undefined;

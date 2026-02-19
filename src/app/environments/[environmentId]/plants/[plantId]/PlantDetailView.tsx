@@ -13,7 +13,7 @@ import Modal from "@/components/Modal/Modal";
 import PlantEventForm from "./components/PlantEventForm";
 import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
-import { PlantForm } from "@/app/environments/new/components/PlantForm";
+import { PlantForm } from "@/components/PlantForm/PlantForm";
 
 type modalType = "none" | "event" | "edit"
 
@@ -78,7 +78,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
 
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>
                 <PlantForm
-                    environmentId={environment?.id}
+                    plantId={plant.id}
                 />
             </Modal>
             <Modal isOpen={modalType === "event"} onClose={closeModal}>
