@@ -4,11 +4,10 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { EnvironmentEvent } from "@/types/environment";
 import EventForm, { EventOption } from "./shared/EventForm";
 import { EventFormData } from "@/types/events";
+import { useModal } from "@/context/ModalContext";
 
 interface EnvironmentEventFormProps {
     environmentId: string;
-    onCancel: () => void;
-    onSave?: () => void;
 }
 
 const environmentEventOptions: EventOption[] = [
@@ -18,8 +17,9 @@ const environmentEventOptions: EventOption[] = [
     { value: "custom", label: "Eigenes Event" },
 ];
 
-export default function EnvironmentEventForm({ environmentId, onCancel, onSave }: EnvironmentEventFormProps) {
+export default function EnvironmentEventForm({ environmentId }: EnvironmentEventFormProps) {
     const { addEventToEnvironment } = usePlantMonitor();
+    const { closeModal } = useModal()
 
     const handleSubmit = (eventData: EventFormData) => {
         const isCustom = eventData.type === "custom";
@@ -37,7 +37,7 @@ export default function EnvironmentEventForm({ environmentId, onCancel, onSave }
         };
 
         addEventToEnvironment(environmentId, newEvent);
-        if(onSave) onSave();
+        closeModal()
     };
 
     return (
@@ -46,7 +46,7 @@ export default function EnvironmentEventForm({ environmentId, onCancel, onSave }
             eventOptions={environmentEventOptions}
             defaultEventType="Equipment_Change"
             onSubmit={handleSubmit}
-            onCancel={onCancel}
+            onCancel={closeModal}
         />
     );
 }

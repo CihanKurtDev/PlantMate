@@ -1,12 +1,12 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
-import type { EnvironmentData, EnvironmentType } from "@/types/environment";
-import { ClimateInputs } from "../../[environmentId]/components/shared/ClimateInputs";
+import type { EnvironmentType } from "@/types/environment";
+import { ClimateInputs } from "../../app/environments/[environmentId]/components/shared/ClimateInputs";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
@@ -15,14 +15,14 @@ import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
+    environmentId?: string,
 }
 
-export const EnvironmentForm = ({ onSaved }: EnvironmentFormProps) => {
+export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps) => {
     const { environments, addEnvironment, updateEnvironment } = usePlantMonitor();
     const { validate, validateWarnings } = useEnvironmentValidation();
     const searchParams = useSearchParams();
-    const router = useRouter();
-    const editId = searchParams.get("editId");
+    const editId = environmentId ? environmentId : searchParams.get("editId");
 
     const existingEnvironment = editId
         ? environments.find(e => e.id === editId)
@@ -51,13 +51,26 @@ export const EnvironmentForm = ({ onSaved }: EnvironmentFormProps) => {
                 ...formState,
                 climate: climateData,
             });
-            router.push(`/environments/${editId}`);
-        } else {
-            const envId = crypto.randomUUID();
-            addEnvironment({ ...formState, climate: climateData, id: envId });
+
             if (onSaved) {
-                onSaved(envId, nextStep);
+                onSaved(editId, nextStep);
             }
+
+            return;
+        }
+
+        // if there is no existing Environment whe are creating a new one so 
+        // this logic for multistepform
+        const envId = crypto.randomUUID();
+
+        addEnvironment({
+            ...formState,
+            climate: climateData,
+            id: envId,
+        });
+
+        if (onSaved) {
+            onSaved(envId, nextStep);
         }
     };
 

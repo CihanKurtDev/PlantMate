@@ -4,30 +4,26 @@ import type { PlantData } from "@/types/plant";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import { useRouter, useSearchParams } from "next/navigation";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
-import { WaterInputs } from "../../[environmentId]/components/shared/WaterInputs";
+import { WaterInputs } from "../../app/environments/[environmentId]/components/shared/WaterInputs";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
+import { useModal } from "@/context/ModalContext";
 
 interface PlantFormProps {
     environmentId?: string;
+    plantId?: string;
 }
 
-export const PlantForm = ({ environmentId }: PlantFormProps) => {
+export const PlantForm = ({ environmentId, plantId}: PlantFormProps) => {
     const { addPlant, updatePlant, environments, plants } = usePlantMonitor();
     const { validate, validateWarnings } = usePlantValidation();
     const [plantCount, setPlantCount] = useState<number>(1);
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const editId = searchParams.get("editId");
-
-    const existingPlant = editId
-        ? plants.find(p => p.id === editId)
-        : undefined;
+    const existingPlant = plantId ? plants.find(p => p.id === plantId) : undefined;
+    const { closeModal } = useModal();
 
     const { formState, setField, resetForm } = usePlantForm(existingPlant);
 
@@ -40,13 +36,13 @@ export const PlantForm = ({ environmentId }: PlantFormProps) => {
     const validationErrors = validate(formState);
     const validationWarnings = validateWarnings(formState);
 
-    const handleSubmitWithoutNav = (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (Object.keys(validationErrors).length > 0) return;
 
         const waterData = convertWaterInputToData(formState.water);
 
-        if (editId && existingPlant) {
+        if (existingPlant) {
             updatePlant({
                 ...existingPlant,
                 ...formState,
@@ -59,16 +55,9 @@ export const PlantForm = ({ environmentId }: PlantFormProps) => {
             }
             resetForm();
         }
+        closeModal()
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        handleSubmitWithoutNav(e);
-        if (editId && existingPlant) {
-            router.push(`/environments/${existingPlant.environmentId}/plants/${editId}`);
-        } else {
-            router.push("/dashboard");
-        }
-    };
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -104,7 +93,7 @@ export const PlantForm = ({ environmentId }: PlantFormProps) => {
                 </Select>
             </FormField>
 
-            {!editId && (
+            {!plantId && (
                 <Input
                     label="Anzahl Pflanzen"
                     type="number"
@@ -125,17 +114,14 @@ export const PlantForm = ({ environmentId }: PlantFormProps) => {
             />
 
             <div>
-                {editId ? (
+                {plantId ? (
                     <Button type="button" onClick={handleSubmit}>
                         Änderungen speichern
                     </Button>
                 ) : (
                     <>
-                        <Button type="button" variant="secondary" onClick={handleSubmitWithoutNav}>
-                            Speichern & Weiter
-                        </Button>
-                        <Button type="button" onClick={handleSubmit}>
-                            Speichern & Zum Dashboard
+                        <Button type="button" variant="secondary" onClick={handleSubmit}>
+                            Speichern
                         </Button>
                     </>
                 )}

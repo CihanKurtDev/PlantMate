@@ -4,11 +4,10 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { PlantEvent } from "@/types/plant";
 import EventForm, { EventOption } from "../../../components/shared/EventForm";
 import { EventFormData } from "@/types/events";
+import { useModal } from "@/context/ModalContext";
 
 interface PlantEventFormProps {
     plantId: string;
-    onCancel: () => void;
-    onSave: () => void;
 }
 
 const plantEventOptions: EventOption[] = [
@@ -20,8 +19,9 @@ const plantEventOptions: EventOption[] = [
     { value: "custom", label: "Eigenes Event" },
 ];
 
-export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEventFormProps) {
+export default function PlantEventForm({ plantId }: PlantEventFormProps) {
     const { addEventToPlant } = usePlantMonitor();
+    const { closeModal } = useModal();
 
     const handleSubmit = (eventData: EventFormData) => {
         const isCustom = eventData.type === "custom";
@@ -49,7 +49,7 @@ export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEvent
         };
 
         addEventToPlant(plantId, newEvent);
-        onSave();
+        closeModal();
     };
 
     return (
@@ -58,7 +58,7 @@ export default function PlantEventForm({ plantId, onCancel, onSave }: PlantEvent
             eventOptions={plantEventOptions}
             defaultEventType="WATERING"
             onSubmit={handleSubmit}
-            onCancel={onCancel}
+            onCancel={closeModal}
         />
     );
 }

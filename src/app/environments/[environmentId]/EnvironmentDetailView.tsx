@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab";
@@ -14,39 +13,37 @@ import styles from './EnvironmentDetailView.module.scss';
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
-import AddEnvironmentModalContent from "./components/AddEnvrionmentModalContent";
+import AddEnvironmentEventModalContent from "./components/AddEnvironmentEventModalContent";
 import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
+import { EnvironmentForm } from "../../../components/EnvironmentForm/EnvironmentForm";
+import { PlantForm } from "../../../components/PlantForm/PlantForm";
 
-const getLatestHistoricalForToday = <
-  T extends { timestamp: number }
->(
-  entries?: T[]
-): T | undefined => {
-  if (!entries?.length) return undefined;
+const getLatestHistoricalForToday = <T extends { timestamp: number }>( entries?: T[]): T | undefined => {
+    if (!entries?.length) return undefined;
 
-  const now = Date.now();
+    const now = Date.now();
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-  let latest: T | undefined;
+    let latest: T | undefined;
 
-  for (const entry of entries) {
-    if (
-      entry.timestamp >= today.getTime() &&
-      entry.timestamp < tomorrow.getTime() &&
-      entry.timestamp <= now
-    ) {
-      if (!latest || entry.timestamp > latest.timestamp) {
-        latest = entry;
-      }
+    for (const entry of entries) {
+        if (
+            entry.timestamp >= today.getTime() &&
+            entry.timestamp < tomorrow.getTime() &&
+            entry.timestamp <= now
+        ) {
+            if (!latest || entry.timestamp > latest.timestamp) {
+                latest = entry;
+            }
+        }
     }
-  }
 
-  return latest;
+    return latest;
 };
 
 export function capitalize(word: string) {
@@ -54,31 +51,31 @@ export function capitalize(word: string) {
 }
 
 function buildEnvironmentChartData(
-  historical?: EnvironmentData_Historical[]
+    historical?: EnvironmentData_Historical[]
 ): EnvironmentTimeSeriesEntry[] {
-  if (!historical?.length) return [];
+    if (!historical?.length) return [];
 
-  return historical
-    .map((entry): EnvironmentTimeSeriesEntry => ({
-      timestamp: entry.timestamp,
-      entryKind: 'historical',
-      metrics: {
-        temp: entry.climate.temp?.value,
-        humidity: entry.climate.humidity?.value,
-        vpd: entry.climate.vpd?.value,
-        co2: entry.climate.co2?.value,
-      },
-    }))
-    .sort((a, b) => a.timestamp - b.timestamp);
+    return historical
+        .map((entry): EnvironmentTimeSeriesEntry => ({
+            timestamp: entry.timestamp,
+            entryKind: 'historical',
+                metrics: {
+                    temp: entry.climate.temp?.value,
+                    humidity: entry.climate.humidity?.value,
+                    vpd: entry.climate.vpd?.value,
+                    co2: entry.climate.co2?.value,
+                },
+            })
+        ).sort((a, b) => a.timestamp - b.timestamp);
 }
 
+type modalType = "none" | "event" | "edit" | "newPlant"
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<modalType>("none");
     const plants = getPlantsByEnvironment(environmentId);
-    const router = useRouter();
     
     if (!environment) return null;
 
@@ -88,6 +85,8 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
     const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
 
+    const closeModal = () => setModalType("none")
+
     return (
         <PageLayout>
             <DetailViewHeader
@@ -96,13 +95,13 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 icon={ENVIRONMENT_ICONS[environment.type]}
                 iconVariant={environment.type.toLowerCase()}
             >
-                <Button variant="secondary" onClick={() => router.push(`/environments/new?editId=${environmentId}`)}>
+                <Button variant="secondary" onClick={() => setModalType("edit")}>
                     <span>
                         <Pencil size={16} />
                         Bearbeiten
                     </span>
                 </Button>
-                <Button onClick={() => setIsModalOpen(true)}>
+                <Button onClick={() => setModalType("event")}>
                     Ereignis hinzufügen
                 </Button>
             </DetailViewHeader>
@@ -111,7 +110,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     <ClimateGrid historical={lastClimateValues} />
                 </div>
             )}
-            <PlantsTab plants={plants} />
+            <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab environmentId={environmentId} events={environment.events}/>
             <DataTab
                 data={chartData}
@@ -123,11 +122,27 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <AddEnvironmentModalContent
+            <Modal isOpen={modalType === "event"} onClose={closeModal}>
+                <AddEnvironmentEventModalContent
                     environmentId={environmentId}
-                    onClose={() => setIsModalOpen(false)}
                 />
+            </Modal>
+
+            <Modal isOpen={modalType === "newPlant"} onClose={closeModal}>
+                {/*
+                    environmentId direkt mitgeben damit die Pflanze sofort
+                    der richtigen Umgebung zugeordnet wird
+                */}
+                <PlantForm environmentId={environmentId} />
+            </Modal>
+            
+            <Modal isOpen={modalType === "edit"} onClose={closeModal}>
+                {
+                /*  HIer closemodal übergeben anstatt das in der komponente aufzurufen
+                    weil EnvironmentForm auch ohne Modal geöffnet werden kann (MultiStepForm)
+                */
+                }
+                <EnvironmentForm environmentId={environmentId} onSaved={closeModal} />
             </Modal>
         </PageLayout>
     );

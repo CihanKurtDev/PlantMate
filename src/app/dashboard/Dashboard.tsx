@@ -3,13 +3,15 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import EnvironmentCard from "./components/EnvironmentCard";
 import styles from "./Dashboard.module.scss"
 import { Button } from "@/components/Button/Button";
-import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
 import PageLayout from "@/components/PageLayout/PageLayout";
+import Modal from "@/components/Modal/Modal";
+import { useState } from "react";
+import { MultiStepForm } from "./components/MultiStepForm";
 
 const Dashboard = () => {
     const { environments } = usePlantMonitor();
-    const router = useRouter()
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     return (
         <PageLayout
@@ -23,13 +25,16 @@ const Dashboard = () => {
                 ))}
             </div>
             <Button
-                    variant="floating"
-                    size="round"
-                    onClick={() => router.push("/environments/new")}
-                    aria-label="Neue Umgebung hinzufügen"
-                >
-                    <Plus size={32} style={{ display: "block" }} />
-                </Button>
+                variant="floating"
+                size="round"
+                onClick={() => setIsModalOpen(true)}
+                aria-label="Neue Umgebung hinzufügen"
+            >
+                <Plus size={32} style={{ display: "block" }} />
+            </Button>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <MultiStepForm />
+            </Modal>
         </PageLayout>
     );
 }

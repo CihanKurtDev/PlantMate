@@ -7,7 +7,12 @@ import { plantTableConfig } from '@/config/plantTableConfig';
 import { PlantTableCard } from '@/components/Table/TableCard';
 import { useRouter } from 'next/navigation';
 
-export default function PlantsTab({ plants }: {plants: PlantData[]}) {
+interface PlantsTabProps {
+    plants: PlantData[];
+    onAddNew?: () => void;
+}
+
+export default function PlantsTab({ plants, onAddNew }: PlantsTabProps) {
     const { deletePlants } = usePlantMonitor();
     const rows = mapPlantsToTableRows(plants);
     const router = useRouter()
@@ -23,7 +28,8 @@ export default function PlantsTab({ plants }: {plants: PlantData[]}) {
                         onDeleteSelected: (keys: string[]) => deletePlants(keys),
                         onRowClick: (row) => {
                             router.push(`/environments/${row.environmentId}/plants/${row.key}`);
-                        }
+                        },
+                        onAddNew
                     }}
                 />
             )}

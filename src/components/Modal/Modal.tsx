@@ -1,5 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import styles from "./Modal.module.scss";
+import { ModalProvider } from "@/context/ModalContext";
 
 interface ModalProps {
   isOpen: boolean;
@@ -19,16 +20,18 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
     if (!isOpen) return null;
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-                <div className={styles.modalHeader}>
-                    <button className={styles.closeButton} onClick={onClose}>
-                        &times;
-                    </button>
+        <ModalProvider closeModal={onClose}>
+            <div className={styles.overlay} onClick={onClose}>
+                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                    <div className={styles.modalHeader}>
+                        <button className={styles.closeButton} onClick={onClose}>
+                            &times;
+                        </button>
+                    </div>
+                    <div className={styles.content}>{children}</div>
                 </div>
-                <div className={styles.content}>{children}</div>
             </div>
-        </div>
+        </ModalProvider>
     );
 };
 
