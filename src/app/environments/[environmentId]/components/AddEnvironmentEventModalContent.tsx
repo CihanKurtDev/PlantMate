@@ -11,16 +11,17 @@ import { ClimateInputs } from "./shared/ClimateInputs";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 import { convertClimateInputToData } from "@/helpers/climateConverter";
+import { useModal } from "@/context/ModalContext";
 
 interface AddEnvironmentModalContentProps {
     environmentId: string;
-    onClose: () => void;
 }
 
-function ClimateForm({ environmentId, onClose }: { environmentId: string; onClose: () => void }) {
+function ClimateForm({ environmentId}: { environmentId: string }) {
     const { addHistoryData } = usePlantMonitor();
     const { formState, setClimateField } = useEnvironmentForm();
     const { validate } = useEnvironmentValidation();
+    const { closeModal } = useModal();
     
     const validationErrors = validate(formState);
     
@@ -44,7 +45,7 @@ function ClimateForm({ environmentId, onClose }: { environmentId: string; onClos
         };
 
         addHistoryData(environmentId, entry);
-        onClose();
+        closeModal()
     };
 
     return (
@@ -57,13 +58,13 @@ function ClimateForm({ environmentId, onClose }: { environmentId: string; onClos
             />
             <FormField>
                 <Button type="submit">Speichern</Button>
-                <Button variant="secondary" type="button" onClick={onClose}>Abbrechen</Button>
+                <Button variant="secondary" type="button" onClick={closeModal}>Abbrechen</Button>
             </FormField>
         </Form>
     );
 }
 
-export default function AddEnvironmentEventModalContent({ environmentId, onClose }: AddEnvironmentModalContentProps) {
+export default function AddEnvironmentEventModalContent({ environmentId }: AddEnvironmentModalContentProps) {
     const [tab, setTab] = useState<"messung" | "ereignis">("messung");
 
     return (
@@ -86,10 +87,10 @@ export default function AddEnvironmentEventModalContent({ environmentId, onClose
             </div>
 
             {tab === "messung" && (
-                <ClimateForm environmentId={environmentId} onClose={onClose} />
+                <ClimateForm environmentId={environmentId}/>
             )}
             {tab === "ereignis" && (
-                <EnvironmentEventForm environmentId={environmentId} onCancel={onClose} />
+                <EnvironmentEventForm environmentId={environmentId} />
             )}
         </>
     );

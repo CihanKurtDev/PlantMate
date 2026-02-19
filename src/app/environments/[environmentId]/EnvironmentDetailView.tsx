@@ -17,36 +17,32 @@ import AddEnvironmentEventModalContent from "./components/AddEnvironmentEventMod
 import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
 import { EnvironmentForm } from "../new/components/EnvironmentForm";
 
-const getLatestHistoricalForToday = <
-  T extends { timestamp: number }
->(
-  entries?: T[]
-): T | undefined => {
-  if (!entries?.length) return undefined;
+const getLatestHistoricalForToday = <T extends { timestamp: number }>( entries?: T[]): T | undefined => {
+    if (!entries?.length) return undefined;
 
-  const now = Date.now();
+    const now = Date.now();
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
 
-  let latest: T | undefined;
+    let latest: T | undefined;
 
-  for (const entry of entries) {
-    if (
-      entry.timestamp >= today.getTime() &&
-      entry.timestamp < tomorrow.getTime() &&
-      entry.timestamp <= now
-    ) {
-      if (!latest || entry.timestamp > latest.timestamp) {
-        latest = entry;
-      }
+    for (const entry of entries) {
+        if (
+            entry.timestamp >= today.getTime() &&
+            entry.timestamp < tomorrow.getTime() &&
+            entry.timestamp <= now
+        ) {
+            if (!latest || entry.timestamp > latest.timestamp) {
+                latest = entry;
+            }
+        }
     }
-  }
 
-  return latest;
+    return latest;
 };
 
 export function capitalize(word: string) {
@@ -54,22 +50,22 @@ export function capitalize(word: string) {
 }
 
 function buildEnvironmentChartData(
-  historical?: EnvironmentData_Historical[]
+    historical?: EnvironmentData_Historical[]
 ): EnvironmentTimeSeriesEntry[] {
-  if (!historical?.length) return [];
+    if (!historical?.length) return [];
 
-  return historical
-    .map((entry): EnvironmentTimeSeriesEntry => ({
-      timestamp: entry.timestamp,
-      entryKind: 'historical',
-      metrics: {
-        temp: entry.climate.temp?.value,
-        humidity: entry.climate.humidity?.value,
-        vpd: entry.climate.vpd?.value,
-        co2: entry.climate.co2?.value,
-      },
-    }))
-    .sort((a, b) => a.timestamp - b.timestamp);
+    return historical
+        .map((entry): EnvironmentTimeSeriesEntry => ({
+            timestamp: entry.timestamp,
+            entryKind: 'historical',
+                metrics: {
+                    temp: entry.climate.temp?.value,
+                    humidity: entry.climate.humidity?.value,
+                    vpd: entry.climate.vpd?.value,
+                    co2: entry.climate.co2?.value,
+                },
+            })
+        ).sort((a, b) => a.timestamp - b.timestamp);
 }
 
 type modalType = "none" | "event" | "edit"
@@ -93,10 +89,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     return (
         <PageLayout>
             <DetailViewHeader
-              title={headerTitle}
-              subtitle={headerSubtitle}
-              icon={ENVIRONMENT_ICONS[environment.type]}
-              iconVariant={environment.type.toLowerCase()}
+                title={headerTitle}
+                subtitle={headerSubtitle}
+                icon={ENVIRONMENT_ICONS[environment.type]}
+                iconVariant={environment.type.toLowerCase()}
             >
                 <Button variant="secondary" onClick={() => setModalType("edit")}>
                     <span>
@@ -127,12 +123,16 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
             <Modal isOpen={modalType === "event"} onClose={closeModal}>
                 <AddEnvironmentEventModalContent
-                  onClose={closeModal}
-                  environmentId={environmentId}
+                    environmentId={environmentId}
                 />
             </Modal>
-
+            
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>
+                {
+                /*  HIer closemodal übergeben anstatt das in der komponente aufzurufen
+                    weil EnvironmentForm auch ohne Modal geöffnet werden kann (MultiStepForm)
+                */
+                }
                 <EnvironmentForm environmentId={environmentId} onSaved={closeModal} />
             </Modal>
         </PageLayout>
