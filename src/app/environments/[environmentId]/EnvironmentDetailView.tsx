@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab";
@@ -14,8 +13,9 @@ import styles from './EnvironmentDetailView.module.scss';
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
-import AddEnvironmentModalContent from "./components/AddEnvrionmentModalContent";
+import AddEnvironmentEventModalContent from "./components/AddEnvironmentEventModalContent";
 import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
+import { EnvironmentForm } from "../new/components/EnvironmentForm";
 
 const getLatestHistoricalForToday = <
   T extends { timestamp: number }
@@ -72,13 +72,13 @@ function buildEnvironmentChartData(
     .sort((a, b) => a.timestamp - b.timestamp);
 }
 
+type modalType = "none" | "event" | "edit"
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalType, setModalType] = useState<modalType>("none");
     const plants = getPlantsByEnvironment(environmentId);
-    const router = useRouter();
     
     if (!environment) return null;
 
@@ -91,18 +91,18 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     return (
         <PageLayout>
             <DetailViewHeader
-                title={headerTitle}
-                subtitle={headerSubtitle}
-                icon={ENVIRONMENT_ICONS[environment.type]}
-                iconVariant={environment.type.toLowerCase()}
+              title={headerTitle}
+              subtitle={headerSubtitle}
+              icon={ENVIRONMENT_ICONS[environment.type]}
+              iconVariant={environment.type.toLowerCase()}
             >
-                <Button variant="secondary" onClick={() => router.push(`/environments/new?editId=${environmentId}`)}>
+                <Button variant="secondary" onClick={() => setModalType("edit")}>
                     <span>
                         <Pencil size={16} />
                         Bearbeiten
                     </span>
                 </Button>
-                <Button onClick={() => setIsModalOpen(true)}>
+                <Button onClick={() => setModalType("event")}>
                     Ereignis hinzufügen
                 </Button>
             </DetailViewHeader>
@@ -123,11 +123,15 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <AddEnvironmentModalContent
-                    environmentId={environmentId}
-                    onClose={() => setIsModalOpen(false)}
+            <Modal isOpen={modalType === "event"} onClose={() => setModalType("none")}>
+                <AddEnvironmentEventModalContent
+                  onClose={() => setModalType("none")}
+                  environmentId={environmentId}
                 />
+            </Modal>
+
+            <Modal isOpen={modalType === "edit"} onClose={() => setModalType("none")}>
+                <EnvironmentForm environmentId={environmentId} onSaved={() => setModalType("none")} />
             </Modal>
         </PageLayout>
     );
