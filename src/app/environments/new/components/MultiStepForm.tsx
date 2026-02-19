@@ -1,24 +1,25 @@
 "use client"
 
 import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { EnvironmentForm } from "./EnvironmentForm";
 import { PlantForm } from "./PlantForm";
 import styles from "./MultiStepForm.module.scss";
+import { useModal } from "@/context/ModalContext";
 
 export const MultiStepForm = () => {
     const [step, setStep] = useState<"environment" | "plant">("environment");
     const [createdEnvironmentId, setCreatedEnvironmentId] = useState<string>("");
-    const router = useRouter();
     const searchParams = useSearchParams();
     const isEditMode = !!searchParams.get("editId");
+    const { closeModal } = useModal()
 
     const handleEnvironmentSaved = (envId: string, nextStep: "plant" | "dashboard") => {
         if (nextStep === "plant") {
             setCreatedEnvironmentId(envId);
             setStep("plant");
         } else {
-            router.push("/dashboard");
+            closeModal()
         }
     };
 
