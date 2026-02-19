@@ -19,7 +19,7 @@ const PageLayout = ({ title, subtitle, children }: PageLayoutProps)  => {
                 </header>
             )}
 
-            <main className={styles.content}>
+            <main>
                 {children}
             </main>
         </div>

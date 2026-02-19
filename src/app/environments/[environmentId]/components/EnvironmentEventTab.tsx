@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ENVIRONMENT_EVENT_MAP } from '@/config/environment';
 import { EnvironmentEvent } from '@/types/environment';
 import EnvironmentEventForm from "./EnvironmentEventForm";
 import TabContent from "./shared/TabContent";
 import EventsList from "./shared/EventsList";
 import { Card } from "@/components/Card/Card";
+import { getEventConfig } from "@/config/icons";
 
 interface EnvironmentEventTabProps {
     events?: EnvironmentEvent[];
@@ -23,13 +23,14 @@ export default function EnvironmentEventTab({ events, environmentId }: Environme
                     <EventsList
                         events={events ?? []}
                         emptyMessage="Keine Events vorhanden"
-                        eventMap={ENVIRONMENT_EVENT_MAP}
-                        getTitle={(event) =>
-                            event.climateAdjustment?.setting ??
-                            event.equipmentChange?.equipment ??
-                            ENVIRONMENT_EVENT_MAP[event.type]?.label ??
-                            event.type
-                        }
+                        getTitle={(event) => {
+                            const config = getEventConfig(event.type);
+                            return (
+                                event.equipmentChange?.equipment ??
+                                config?.label ??
+                                event.type
+                            );
+                        }}
                     />
                 ) : (
                     <EnvironmentEventForm

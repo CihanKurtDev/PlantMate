@@ -1,32 +1,7 @@
-import { Sprout, Droplets, Activity, Leaf, LucideIcon } from 'lucide-react';
+export { 
+    PLANT_EVENT_CONFIG as PLANT_EVENT_MAP,
+    getEventConfig,
+    getIconConfig,
+} from './icons';
 
-export const PLANT_EVENT_MAP: Record<
-    string,
-    {
-        label: string;
-        icon: LucideIcon;
-    }
-> = {
-    WATERING: {
-        label: 'Bewässerung',
-        icon: Droplets,
-    },
-    FERTILIZING: {
-        label: 'Düngen',
-        icon: Leaf,
-    },
-    REPOTTING: {
-        label: 'Umtopfen',
-        icon: Sprout,
-    },
-    PEST_CONTROL: {
-        label: 'Schädlingsbekämpfung',
-        icon: Activity,
-    },
-    PRUNING: {
-        label: 'Rückschnitt',
-        icon: Activity,
-    },
-} as const;
-
-export type PlantEventType = keyof typeof PLANT_EVENT_MAP;
+export type { PlantEventType } from './icons';

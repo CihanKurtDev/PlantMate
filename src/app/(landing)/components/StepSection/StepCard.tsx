@@ -7,6 +7,7 @@ export const StepCard = ({ num, title, desc }: Step) => (
     title={title} 
     className={styles.stepCard} 
     headingLevel="h3"
+    headerLayout="centered"
   >
     <div className={styles.numWrapper}><span className={styles.num}>{num}</span></div>
     <p>{desc}</p>

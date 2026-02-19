@@ -52,7 +52,6 @@ export interface EnvironmentData_Historical {
 }
 
 export type EnvironmentEventType = 
-  "Climate_Adjustment" 
   | "Equipment_Change" 
   | "Cleaning" 
   | "Maintenance"
@@ -60,11 +59,6 @@ export type EnvironmentEventType =
 
 export interface EnvironmentEvent extends BaseEvent {
   environmentId: string;
-
-  climateAdjustment?: {
-    setting: string;
-    target: MeasuredValue<TempUnit | PercentUnit | KPaUnit | PPMUnit>;
-  }
 
   equipmentChange?: {
     equipment: string;

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PageLayout from "../../../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
-import { Sprout } from "lucide-react";
+import { Pencil, Sprout } from "lucide-react";
 import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
 import { combinePlantData } from "@/helpers/combinePlantData";
@@ -15,12 +16,15 @@ import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
-    const { plants } = usePlantMonitor();
+    const { plants, environments  } = usePlantMonitor();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    
-    const plant = plants.find(plant => plant.id === plantId);
+    const router = useRouter();
+
+    const plant = plants.find(p => p.id === plantId);
 
     if (!plant) return null;
+
+    const environment = environments.find(e => e.id === plant.environmentId);
 
     const combinedPlantData = combinePlantData(plant.historical, plant.events);
     const chartData = combinedPlantData.map(data => ({
@@ -29,17 +33,23 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
         ec: data.metrics?.ec
     }));
 
-    const handleModalClose = () => setIsModalOpen(false);
-    const handleEventSave = () => {
-        setIsModalOpen(false);
-    };
-
     return (
         <PageLayout>
             <DetailViewHeader
                 title={plant.title}
                 icon={Sprout}
+                iconVariant="sprout"
+                backLink={{
+                    label: environment?.name ? `Zurück zum Environment: ${environment?.name}`: "Zurück zum Environment",
+                    href: `/environments/${plant.environmentId}`,
+                }}
             >
+                <Button variant="secondary" onClick={() => router.push(`/environments/${plant.environmentId}/plants/new?editId=${plant.id}`)}>
+                    <span>
+                        <Pencil size={16} />
+                        Bearbeiten
+                    </span>
+                </Button>
                 <Button onClick={() => setIsModalOpen(true)}>
                     Ereignis hinzufügen
                 </Button>
@@ -63,11 +73,11 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
             
             <PlantEventsTab plantId={plantId} events={plant.events} />
 
-            <Modal isOpen={isModalOpen} onClose={handleModalClose}>
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
                 <PlantEventForm
                     plantId={plantId}
-                    onCancel={handleModalClose}
-                    onSave={handleEventSave}
+                    onCancel={() => setIsModalOpen(false)}
+                    onSave={() => setIsModalOpen(false)}
                 />
             </Modal>
         </PageLayout>

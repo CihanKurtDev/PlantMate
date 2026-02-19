@@ -2,14 +2,24 @@
 
 .primary {
   @include button(primary);
+
+  &.isActive {
+    background-color: var(--button-primary-active);
+  }
 }
 
 .secondary {
   @include button(secondary);
+  &.isActive {
+    background-color: var(--button-secondary-active);
+  }
 }
 
 .error {
   @include button(error);
+  &.isActive {
+    background-color: var(--button-error-active);
+  }
 }
 
 .floating {
@@ -24,7 +34,7 @@
   justify-content: center;
   align-items: center;
   padding: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 
   svg {
     width: 24px !important;

@@ -36,6 +36,7 @@ body {
   @include generate-vars(v.$buttons-light, "button");
   @include generate-vars(v.$radii, "radius");
   @include generate-vars(v.$spacings, "spacing");
+  @include generate-vars(v.$icon-sizes, "icon");
 }
 
 :root[data-theme="dark"] {

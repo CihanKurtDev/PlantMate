@@ -4,7 +4,7 @@ import type { PlantData } from "@/types/plant";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
@@ -14,23 +14,28 @@ import { useEffect, useState } from "react";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
 
 interface PlantFormProps {
-    initialData?: PlantData; 
     environmentId?: string;
 }
 
-export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
-    const { addPlant, environments } = usePlantMonitor();
+export const PlantForm = ({ environmentId }: PlantFormProps) => {
+    const { addPlant, updatePlant, environments, plants } = usePlantMonitor();
     const { validate, validateWarnings } = usePlantValidation();
-    const [plantCount, setPlantCount] = useState<number>(1)
+    const [plantCount, setPlantCount] = useState<number>(1);
+    const searchParams = useSearchParams();
     const router = useRouter();
+    const editId = searchParams.get("editId");
 
-    const { formState, setField, resetForm } = usePlantForm(initialData)
+    const existingPlant = editId
+        ? plants.find(p => p.id === editId)
+        : undefined;
+
+    const { formState, setField, resetForm } = usePlantForm(existingPlant);
 
     useEffect(() => {
-        if (!initialData && environmentId) {
+        if (!existingPlant && environmentId) {
             setField("environmentId", environmentId);
         }
-    }, [environmentId, initialData]);
+    }, [environmentId, existingPlant]);
 
     const validationErrors = validate(formState);
     const validationWarnings = validateWarnings(formState);
@@ -41,21 +46,28 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
 
         const waterData = convertWaterInputToData(formState.water);
 
-        const plantData: PlantData = {
-            ...formState,
-            water: waterData,
-        };
-
-        for (let i = 0; i < plantCount; i++) {
-            addPlant({ ...plantData, id: crypto.randomUUID() });
+        if (editId && existingPlant) {
+            updatePlant({
+                ...existingPlant,
+                ...formState,
+                water: waterData,
+            });
+        } else {
+            const plantData: PlantData = { ...formState, water: waterData };
+            for (let i = 0; i < plantCount; i++) {
+                addPlant({ ...plantData, id: crypto.randomUUID() });
+            }
+            resetForm();
         }
-
-        resetForm();
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         handleSubmitWithoutNav(e);
-        router.push("/dashboard");
+        if (editId && existingPlant) {
+            router.push(`/environments/${existingPlant.environmentId}/plants/${editId}`);
+        } else {
+            router.push("/dashboard");
+        }
     };
 
     return (
@@ -92,13 +104,15 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
                 </Select>
             </FormField>
 
-            <Input
-                label="Anzahl Pflanzen"
-                type="number"
-                value={plantCount}
-                onChange={(e) => setPlantCount(Math.max(1, parseInt(e.target.value) || 1))}
-                min={1}
-            />
+            {!editId && (
+                <Input
+                    label="Anzahl Pflanzen"
+                    type="number"
+                    value={plantCount}
+                    onChange={(e) => setPlantCount(Math.max(1, parseInt(e.target.value) || 1))}
+                    min={1}
+                />
+            )}
 
             <FormSectionTitle>Wasserwerte</FormSectionTitle>
 
@@ -111,12 +125,20 @@ export const PlantForm = ({ initialData, environmentId }: PlantFormProps) => {
             />
 
             <div>
-                <Button type="button" variant="secondary" onClick={handleSubmitWithoutNav}>
-                    Speichern & Weiter
-                </Button>
-                <Button type="button" onClick={handleSubmit}>
-                    Speichern & Zum Dashboard
-                </Button>
+                {editId ? (
+                    <Button type="button" onClick={handleSubmit}>
+                        Änderungen speichern
+                    </Button>
+                ) : (
+                    <>
+                        <Button type="button" variant="secondary" onClick={handleSubmitWithoutNav}>
+                            Speichern & Weiter
+                        </Button>
+                        <Button type="button" onClick={handleSubmit}>
+                            Speichern & Zum Dashboard
+                        </Button>
+                    </>
+                )}
             </div>
         </Form>
     );

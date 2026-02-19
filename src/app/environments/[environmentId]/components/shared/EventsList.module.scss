@@ -21,7 +21,7 @@
 .eventNotes {
     margin: 0;
     font-size: var(--font-size-s);
-    color: var(--color-text-secondary);
+    color: var(--color-text-tertiary);
 }
 
 .eventTime {
@@ -30,34 +30,38 @@
     white-space: nowrap;
 }
 
-.dateSection {
-    margin-bottom: var(--spacing-l);
+.dateHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+    margin-bottom: 1rem;
 }
 
-.dateHeader {
-    padding: var(--spacing-xs) 0;
-    border-bottom: 1px solid #cedbce;
-    margin-bottom: var(--spacing-m);
+.dateTitle {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    white-space: nowrap;
+}
 
-    h4 {
-        font-size: var(--font-size-s);
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-tertiary);
-    }
+.dateLine {
+    flex: 1;
+    height: 1px;
+    background-color: #e5e7eb;
 }
 
 .eventsGrid {
+    display: grid;
     padding: 0;
     list-style-type: none;
-
+    gap: var(--spacing-m);
+    
     @media (min-width: 768px) {
-        display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 1.5rem;
     }
   
     @media (min-width: 1200px) {
         grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
     }
 }

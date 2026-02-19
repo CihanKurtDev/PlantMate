@@ -8,11 +8,10 @@ import { EventFormData } from "@/types/events";
 interface EnvironmentEventFormProps {
     environmentId: string;
     onCancel: () => void;
-    onSave: () => void;
+    onSave?: () => void;
 }
 
 const environmentEventOptions: EventOption[] = [
-    { value: "Climate_Adjustment", label: "Klimaanpassung" },
     { value: "Equipment_Change", label: "Gerätewechsel" },
     { value: "Maintenance", label: "Wartung" },
     { value: "Cleaning", label: "Reinigung" },
@@ -38,14 +37,14 @@ export default function EnvironmentEventForm({ environmentId, onCancel, onSave }
         };
 
         addEventToEnvironment(environmentId, newEvent);
-        onSave();
+        if(onSave) onSave();
     };
 
     return (
         <EventForm
             title="Neues Ereignis hinzufügen"
             eventOptions={environmentEventOptions}
-            defaultEventType="Climate_Adjustment"
+            defaultEventType="Equipment_Change"
             onSubmit={handleSubmit}
             onCancel={onCancel}
         />

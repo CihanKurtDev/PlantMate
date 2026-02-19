@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab";
@@ -8,61 +9,106 @@ import { ENVIRONMENT_ICONS } from "@/config/environment";
 import PageLayout from "../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "./components/shared/DetailViewHeader";
 import ClimateGrid from "@/components/climate/ClimateGrid";
-import { ActivityIcon, Droplets, Sprout } from "lucide-react";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
-import { combineEnvironmentData } from "@/helpers/combineEnvironmentData";
 import styles from './EnvironmentDetailView.module.scss';
 import Modal from "@/components/Modal/Modal";
-import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import { Button } from "@/components/Button/Button";
+import { Pencil } from "lucide-react";
+import AddEnvironmentModalContent from "./components/AddEnvrionmentModalContent";
+import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
 
-export type TabVariant = 'plants' | 'climate' | 'events'
+const getLatestHistoricalForToday = <
+  T extends { timestamp: number }
+>(
+  entries?: T[]
+): T | undefined => {
+  if (!entries?.length) return undefined;
+
+  const now = Date.now();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  let latest: T | undefined;
+
+  for (const entry of entries) {
+    if (
+      entry.timestamp >= today.getTime() &&
+      entry.timestamp < tomorrow.getTime() &&
+      entry.timestamp <= now
+    ) {
+      if (!latest || entry.timestamp > latest.timestamp) {
+        latest = entry;
+      }
+    }
+  }
+
+  return latest;
+};
+
+export function capitalize(word: string) {
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
+function buildEnvironmentChartData(
+  historical?: EnvironmentData_Historical[]
+): EnvironmentTimeSeriesEntry[] {
+  if (!historical?.length) return [];
+
+  return historical
+    .map((entry): EnvironmentTimeSeriesEntry => ({
+      timestamp: entry.timestamp,
+      entryKind: 'historical',
+      metrics: {
+        temp: entry.climate.temp?.value,
+        humidity: entry.climate.humidity?.value,
+        vpd: entry.climate.vpd?.value,
+        co2: entry.climate.co2?.value,
+      },
+    }))
+    .sort((a, b) => a.timestamp - b.timestamp);
+}
+
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
     const environment = environments.find(e => e.id === environmentId);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const plants = getPlantsByEnvironment(environmentId);
-    // tbh not really necessary i will look into how i memoize later or to be more specific i want to see the problems and then handle them instead of throwing around memoization
-    // why? according to Josh W. Comeau you should only implement memoization if you need it since the memoization itself can apparently be more ressource heavy then rerendering small arrrays
-    const tabs = useMemo(() => [
-        { id: 'plants' as const, label: `Pflanzen (${plants.length})`, icon: <Sprout /> },
-        { id: 'climate' as const, label: 'Klima-Verlauf', icon: <ActivityIcon /> },
-        { id: 'events' as const, label: 'Ereignisse', icon: <Droplets /> }
-    ], [plants.length, environment?.id]);
-
-    if (!environment) return null;
+    const router = useRouter();
     
-    const combinedEnvData = combineEnvironmentData(environment.historical, environment.events);
-    const chartData = combinedEnvData.map(entry => ({
-        timestamp: entry.timestamp,
-        temp: entry.metrics?.temp,
-        humidity: entry.metrics?.humidity,
-        vpd: entry.metrics?.vpd,
-        co2: entry.metrics?.co2,
-        notes: entry.notes,
-    }));
+    if (!environment) return null;
 
-    const handleModalClose = () => setIsModalOpen(false);
-    const handleEventSave = () => {
-        setIsModalOpen(false);
-    };
+    const latestTodayEntry = getLatestHistoricalForToday(environment.historical);
+    const lastClimateValues = latestTodayEntry?.climate;
+    const chartData = buildEnvironmentChartData(environment.historical)
+    const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
+    const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
 
     return (
         <PageLayout>
             <DetailViewHeader
-                title={environment.name}
-                subtitle={environment.location}
+                title={headerTitle}
+                subtitle={headerSubtitle}
                 icon={ENVIRONMENT_ICONS[environment.type]}
                 iconVariant={environment.type.toLowerCase()}
             >
+                <Button variant="secondary" onClick={() => router.push(`/environments/new?editId=${environmentId}`)}>
+                    <span>
+                        <Pencil size={16} />
+                        Bearbeiten
+                    </span>
+                </Button>
                 <Button onClick={() => setIsModalOpen(true)}>
                     Ereignis hinzufügen
                 </Button>
             </DetailViewHeader>
-            {environment.climate && (
+            {lastClimateValues && (
                 <div className={styles.climateGridWrapper}>
-                    <ClimateGrid climate={environment.climate} />
+                    <ClimateGrid historical={lastClimateValues} />
                 </div>
             )}
             <PlantsTab plants={plants} />
@@ -77,11 +123,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 ]}
             />
 
-            <Modal isOpen={isModalOpen} onClose={handleModalClose}>
-                <EnvironmentEventForm
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <AddEnvironmentModalContent
                     environmentId={environmentId}
-                    onCancel={handleModalClose}
-                    onSave={handleEventSave}
+                    onClose={() => setIsModalOpen(false)}
                 />
             </Modal>
         </PageLayout>

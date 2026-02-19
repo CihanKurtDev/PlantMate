@@ -33,52 +33,6 @@ $colors-light: (
     alert: #fff3cd,
     error: #f8d7da
   ),
-  locations: (
-    greenhouse: (
-      base: #2d7a3e,
-      soft: rgba(#2d7a3e, 0.18)
-    ),
-    tent: (
-      base: #c77d00,
-      soft: rgba(#c77d00, 0.18)
-    ),
-    room: (
-      base: #82ac88,
-      soft: rgba(#82ac88, 0.18)
-    )
-  ),
-  climate: (
-    temp: (
-      base: #d05959,
-      soft: rgba(#d05959, 0.18)
-    ),
-    humidity: (
-      base: #087a6d,
-      soft: rgba(#087a6d, 0.18)
-    ),
-    vpd: (
-      base: #d3893e,
-      soft: rgba(#d3893e, 0.18)
-    ),
-    co2: (
-      base: #555252,
-      soft: rgba(#555252, 0.18)
-    )
-  ),
-  event: (
-    equipment: (
-      base: #5a6d5a,
-      soft: rgba(#5a6d5a, 0.18)
-    ),
-    maintenance: (
-      base: #c77d00,
-      soft: rgba(#c77d00, 0.18)
-    ),
-    cleaning: (
-      base: #2d7a3e,
-      soft: rgba(#2d7a3e, 0.18)
-    )
-  )
 );
 
 $colors-dark: (
@@ -109,52 +63,6 @@ $colors-dark: (
     alert: #4a3d1a,
     error: #4a1a1a
   ),
-  locations: (
-    greenhouse: (
-      base: #2d4a2d,
-      soft: rgba(#2d4a2d, 0.18)
-    ),
-    tent: (
-      base: #4a3d1a,
-      soft: rgba(#4a3d1a, 0.18)
-    ),
-    room: (
-      base: #3d5a3d,
-      soft: rgba(#3d5a3d, 0.18)
-    )
-  ),
-  climate: (
-    temp: (
-      base: #ff8a80,
-      soft: rgba(#ff8a80, 0.18)
-    ),
-    humidity: (
-      base: #4db6ac,
-      soft: rgba(#4db6ac, 0.18)
-    ),
-    vpd: (
-      base: #ffb74d,
-      soft: rgba(#ffb74d, 0.18)
-    ),
-    co2: (
-      base: #b0bec5,
-      soft: rgba(#b0bec5, 0.18)
-    )
-  ),
-  event: (
-    equipment: (
-      base: #4b7248,
-      soft: rgba(#4b7248, 0.18)
-    ),
-    maintenance: (
-      base: #4a3d1a,
-      soft: rgba(#4a3d1a, 0.18)
-    ),
-    cleaning: (
-      base: #2d4a2d,
-      soft: rgba(#2d4a2d, 0.18)
-    )
-  )
 );
 
 $fonts: (
@@ -178,27 +86,32 @@ $buttons-light: (
   primary: (
     bg: #82ac88,
     text: #ffffff,
-    hover: #1F4512
+    hover: #1F4512,
+    active: #163a0d
   ),
   secondary: (
     bg: #d9e7db,
     text: #212121,
-    hover: #a3d0a3
+    hover: #a3d0a3,
+    active: #8bbf8b
   ),
   success: (
     bg: #27ae60,
     text: #ffffff,
-    hover: #1e8449
+    hover: #1e8449,
+    active: #166437
   ),
   alert: (
     bg: #f6e6b0,
     text: #212121,
-    hover: #e6d291
+    hover: #e6d291,
+    active: #d4bc70
   ),
   error: (
     bg: #961817,
     text: #ffffff,
-    hover: #610f0f
+    hover: #610f0f,
+    active: #450a0a
   )
 );
 
@@ -206,27 +119,32 @@ $buttons-dark: (
   primary: (
     bg: #2D651A,
     text: #ffffff,
-    hover: #1F4512
+    hover: #1F4512,
+    active: #163a0d
   ),
   secondary: (
     bg: #5e8e5a,
     text: #ffffff,
-    hover: #4b7248
+    hover: #4b7248,
+    active: #3a5938
   ),
   success: (
     bg: #27ae60,
     text: #ffffff,
-    hover: #1e8449
+    hover: #1e8449,
+    active: #166437
   ),
   alert: (
     bg: #d4c572,
     text: #212121,
-    hover: #bdae53
+    hover: #bdae53,
+    active: #a89840
   ),
   error: (
     bg: #961817,
     text: #ffffff,
-    hover: #610f0f
+    hover: #610f0f,
+    active: #450a0a
   )
 );
 
@@ -248,4 +166,13 @@ $radii: (
   l: 12px,
   xl: 16px,
   circle: 50%
+);
+
+$icon-sizes: (
+  xs: 16px,
+  s: 24px,
+  m: 32px,
+  l: 40px,
+  xl: 48px,
+  xxl: 64px
 );

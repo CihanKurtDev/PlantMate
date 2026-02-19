@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams, useRouter } from "next/navigation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
@@ -13,16 +14,23 @@ import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 
 interface EnvironmentFormProps {
-    initialData?: EnvironmentData;
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
 }
 
-export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) => {
-    const { formState, setField, setClimateField } = useEnvironmentForm(initialData)
+export const EnvironmentForm = ({ onSaved }: EnvironmentFormProps) => {
+    const { environments, addEnvironment, updateEnvironment } = usePlantMonitor();
     const { validate, validateWarnings } = useEnvironmentValidation();
-    const { addEnvironment } = usePlantMonitor();
-    
-     const validationErrors = validate(formState);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const editId = searchParams.get("editId");
+
+    const existingEnvironment = editId
+        ? environments.find(e => e.id === editId)
+        : undefined;
+
+    const { formState, setField, setClimateField } = useEnvironmentForm(existingEnvironment);
+
+    const validationErrors = validate(formState);
     const validationWarnings = validateWarnings(formState);
 
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
@@ -36,12 +44,20 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
         }
 
         const climateData = convertClimateInputToData(formState.climate);
-        const envId = crypto.randomUUID();
 
-        addEnvironment({ ...formState, climate: climateData, id: envId });
-
-        if (onSaved) {
-            onSaved(envId, nextStep);
+        if (editId && existingEnvironment) {
+            updateEnvironment({
+                ...existingEnvironment,
+                ...formState,
+                climate: climateData,
+            });
+            router.push(`/environments/${editId}`);
+        } else {
+            const envId = crypto.randomUUID();
+            addEnvironment({ ...formState, climate: climateData, id: envId });
+            if (onSaved) {
+                onSaved(envId, nextStep);
+            }
         }
     };
 
@@ -83,12 +99,20 @@ export const EnvironmentForm = ({ initialData, onSaved }: EnvironmentFormProps) 
             />
 
             <div className={styles.buttonRow}>
-                <Button type="button" variant="primary" onClick={(e) => handleSubmit(e, "plant")}>
-                    Weiter zu Pflanzen
-                </Button>
-                <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, "dashboard")}>
-                    Zum Dashboard
-                </Button>
+                {editId ? (
+                    <Button type="button" variant="primary" onClick={(e) => handleSubmit(e, "dashboard")}>
+                        Änderungen speichern
+                    </Button>
+                ) : (
+                    <>
+                        <Button type="button" variant="primary" onClick={(e) => handleSubmit(e, "plant")}>
+                            Weiter zu Pflanzen
+                        </Button>
+                        <Button type="button" variant="secondary" onClick={(e) => handleSubmit(e, "dashboard")}>
+                            Zum Dashboard
+                        </Button>
+                    </>
+                )}
             </div>
         </Form>
     );

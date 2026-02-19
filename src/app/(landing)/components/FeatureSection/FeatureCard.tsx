@@ -8,6 +8,7 @@ export const FeatureCard = ({ icon, title, desc }: Feature) => (
     className={styles.featureCard} 
     icon={icon}
     headingLevel="h3"
+    headerLayout="centered"
   >
     <p>{desc}</p>
   </Card>

@@ -6,6 +6,7 @@ export const CustomerCard = ({ icon, title, desc, checkListItems }: Customer) =>
   <Card 
     title={title} 
     variant="elevated"
+    headerLayout="centered"
     className={styles.customerCard} 
     icon={icon}
     headingLevel="h3"
