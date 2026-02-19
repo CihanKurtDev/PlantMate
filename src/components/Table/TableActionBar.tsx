@@ -1,7 +1,6 @@
 import React, { memo } from "react";
 import styles from './TableActionBar.module.scss';
 import { Button } from "../Button/Button";
-import { useRouter } from "next/navigation";
 
 interface TableActionBarProps {
     onSearch: (newSearch: string) => void;
@@ -10,10 +9,10 @@ interface TableActionBarProps {
     deleteSelectedRows: () => void;
     hasSelectedRows: boolean;
     environmentId?: string;
+    onAddNew?: () => void;
 }
 
-export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode, deleteSelectedRows, hasSelectedRows, environmentId }) => {
-    const router = useRouter();
+export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, isEditing, toggleEditMode, deleteSelectedRows, hasSelectedRows, environmentId, onAddNew }) => {
     return (
         <div className={styles.tableActionBar}>
             <div className={styles.leftActions}>
@@ -24,7 +23,7 @@ export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, i
                     {isEditing ? "Bearbeitung beenden" : "Bearbeiten"}
                 </Button>
                 <Button
-                    onClick={() => router.push(`/environments/${environmentId}/plants/new`)}
+                    onClick={onAddNew}
                     variant="rounded"
                 >
                     Neu

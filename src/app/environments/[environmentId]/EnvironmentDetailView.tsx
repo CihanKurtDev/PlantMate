@@ -16,6 +16,7 @@ import { Pencil } from "lucide-react";
 import AddEnvironmentEventModalContent from "./components/AddEnvironmentEventModalContent";
 import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
 import { EnvironmentForm } from "../new/components/EnvironmentForm";
+import { PlantForm } from "../new/components/PlantForm";
 
 const getLatestHistoricalForToday = <T extends { timestamp: number }>( entries?: T[]): T | undefined => {
     if (!entries?.length) return undefined;
@@ -68,7 +69,7 @@ function buildEnvironmentChartData(
         ).sort((a, b) => a.timestamp - b.timestamp);
 }
 
-type modalType = "none" | "event" | "edit"
+type modalType = "none" | "event" | "edit" | "newPlant"
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments, getPlantsByEnvironment } = usePlantMonitor();
@@ -109,7 +110,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     <ClimateGrid historical={lastClimateValues} />
                 </div>
             )}
-            <PlantsTab plants={plants} />
+            <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab environmentId={environmentId} events={environment.events}/>
             <DataTab
                 data={chartData}
@@ -125,6 +126,14 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 <AddEnvironmentEventModalContent
                     environmentId={environmentId}
                 />
+            </Modal>
+
+            <Modal isOpen={modalType === "newPlant"} onClose={closeModal}>
+                {/*
+                    environmentId direkt mitgeben damit die Pflanze sofort
+                    der richtigen Umgebung zugeordnet wird
+                */}
+                <PlantForm environmentId={environmentId} />
             </Modal>
             
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>

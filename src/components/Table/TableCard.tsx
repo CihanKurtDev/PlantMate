@@ -15,6 +15,7 @@ interface TableCardProps<RowType extends { key: string }> {
     tableConfig: TableConfig<RowType> & {
         onDeleteSelected?: (keys: string[]) => void;
         onRowClick?: (row: RowType) => void;
+        onAddNew?: () => void;
     };
 }
 
@@ -73,7 +74,7 @@ function createTableCard<RowType extends { key: string }>() {
                         toggleEditMode={toggleEditMode}
                         deleteSelectedRows={deleteSelectedRows}
                         hasSelectedRows={selectedRows.length > 0}
-                        environmentId={(data[0] as any)?.environmentId}
+                        onAddNew={tableConfig.onAddNew}
                     />
                 </div>
                 <Table 
@@ -96,7 +97,6 @@ function createTableCard<RowType extends { key: string }>() {
             </Card>
         );
     };
-
     return memo(TableCardComponent);
 }
 
