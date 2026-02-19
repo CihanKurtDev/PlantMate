@@ -12,6 +12,7 @@ import { WaterInputs } from "../../[environmentId]/components/shared/WaterInputs
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
+import { useModal } from "@/context/ModalContext";
 
 interface PlantFormProps {
     environmentId?: string;
@@ -23,10 +24,11 @@ export const PlantForm = ({ environmentId }: PlantFormProps) => {
     const [plantCount, setPlantCount] = useState<number>(1);
     const searchParams = useSearchParams();
     const router = useRouter();
-    const editId = searchParams.get("editId");
+    const editId = environmentId ? environmentId : searchParams.get("editId");
+    const { closeModal } = useModal();
 
     const existingPlant = editId
-        ? plants.find(p => p.id === editId)
+        ? plants.find(p => p.environmentId === editId)
         : undefined;
 
     const { formState, setField, resetForm } = usePlantForm(existingPlant);
@@ -63,11 +65,8 @@ export const PlantForm = ({ environmentId }: PlantFormProps) => {
 
     const handleSubmit = (e: React.FormEvent) => {
         handleSubmitWithoutNav(e);
-        if (editId && existingPlant) {
-            router.push(`/environments/${existingPlant.environmentId}/plants/${editId}`);
-        } else {
-            router.push("/dashboard");
-        }
+        if (!editId && existingPlant) router.push("/dashboard");
+        closeModal()
     };
 
     return (

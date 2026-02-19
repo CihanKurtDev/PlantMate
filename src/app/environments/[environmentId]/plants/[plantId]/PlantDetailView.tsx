@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PageLayout from "../../../../../components/PageLayout/PageLayout";
 import DetailViewHeader from "../../components/shared/DetailViewHeader";
@@ -14,11 +13,13 @@ import Modal from "@/components/Modal/Modal";
 import PlantEventForm from "./components/PlantEventForm";
 import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
+import { PlantForm } from "@/app/environments/new/components/PlantForm";
+
+type modalType = "none" | "event" | "edit"
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { plants, environments  } = usePlantMonitor();
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const router = useRouter();
+    const [modalType, setModalType] = useState<modalType>("none");
 
     const plant = plants.find(p => p.id === plantId);
 
@@ -33,6 +34,8 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
         ec: data.metrics?.ec
     }));
 
+    const closeModal = () => setModalType("none")
+
     return (
         <PageLayout>
             <DetailViewHeader
@@ -44,13 +47,13 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                     href: `/environments/${plant.environmentId}`,
                 }}
             >
-                <Button variant="secondary" onClick={() => router.push(`/environments/${plant.environmentId}/plants/new?editId=${plant.id}`)}>
+                <Button variant="secondary" onClick={() => setModalType("edit")}>
                     <span>
                         <Pencil size={16} />
                         Bearbeiten
                     </span>
                 </Button>
-                <Button onClick={() => setIsModalOpen(true)}>
+                <Button onClick={() => setModalType("event")}>
                     Ereignis hinzufügen
                 </Button>
             </DetailViewHeader>
@@ -73,11 +76,14 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
             
             <PlantEventsTab plantId={plantId} events={plant.events} />
 
-            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+            <Modal isOpen={modalType === "edit"} onClose={closeModal}>
+                <PlantForm
+                    environmentId={environment?.id}
+                />
+            </Modal>
+            <Modal isOpen={modalType === "event"} onClose={closeModal}>
                 <PlantEventForm
                     plantId={plantId}
-                    onCancel={() => setIsModalOpen(false)}
-                    onSave={() => setIsModalOpen(false)}
                 />
             </Modal>
         </PageLayout>
