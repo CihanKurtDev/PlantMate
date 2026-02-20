@@ -17,26 +17,26 @@ interface AddEnvironmentModalContentProps {
     environmentId: string;
 }
 
-function ClimateForm({ environmentId}: { environmentId: string }) {
+function ClimateForm({ environmentId } : { environmentId: string }) {
     const { addHistoryData } = usePlantMonitor();
-    const { formState, setClimateField } = useEnvironmentForm();
-    const { validate } = useEnvironmentValidation();
+    const { formState, climateInput, setClimateInput } = useEnvironmentForm();
+    const { validate, validateWarnings } = useEnvironmentValidation();
     const { closeModal } = useModal();
-    
-    const validationErrors = validate(formState);
-    
+
+    const validationErrors = validate(formState, climateInput);
+    const validationWarnings = validateWarnings(formState, climateInput);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        
-        const climate = formState.climate;
-        if (!climate || Object.values(climate).every(v => !v)) {
+
+        if (!climateInput || Object.values(climateInput).every(v => !v)) {
             alert("Bitte trage mindestens einen Messwert ein.");
             return;
         }
-        
-        const climateData = convertClimateInputToData(climate);
-        
-        const timestamp = Date.now()
+
+        const climateData = convertClimateInputToData(climateInput);
+
+        const timestamp = Date.now();
         const entry: EnvironmentData_Historical = {
             id: timestamp.toString(),
             environmentId,
@@ -52,9 +52,10 @@ function ClimateForm({ environmentId}: { environmentId: string }) {
         <Form onSubmit={handleSubmit}>
             <FormSectionTitle>Klimamessung eintragen</FormSectionTitle>
             <ClimateInputs
-                climate={formState.climate}
-                onChange={setClimateField}
+                climate={climateInput}
+                onChange={setClimateInput}
                 errors={validationErrors.climate}
+                warnings={validationWarnings.climate}
             />
             <FormField>
                 <Button type="submit">Speichern</Button>

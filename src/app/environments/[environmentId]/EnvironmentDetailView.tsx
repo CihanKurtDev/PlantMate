@@ -18,7 +18,7 @@ import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/
 import { EnvironmentForm } from "../../../components/EnvironmentForm/EnvironmentForm";
 import { PlantForm } from "../../../components/PlantForm/PlantForm";
 
-const getLatestHistoricalForToday = <T extends { timestamp: number }>( entries?: T[]): T | undefined => {
+export const getLatestHistoricalForToday = <T extends { timestamp: number }>( entries?: T[]): T | undefined => {
     if (!entries?.length) return undefined;
 
     const now = Date.now();
@@ -107,7 +107,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             </DetailViewHeader>
             {lastClimateValues && (
                 <div className={styles.climateGridWrapper}>
-                    <ClimateGrid historical={lastClimateValues} />
+                    <ClimateGrid climate={lastClimateValues} />
                 </div>
             )}
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />

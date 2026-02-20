@@ -14,7 +14,7 @@ export interface EnvironmentFormWarnings {
 }
 
 export const useEnvironmentValidation = () => {
-    const validate = (env: EnvironmentFormData): EnvironmentFormErrors => {
+    const validate = (env: EnvironmentFormData, climateInput?: ClimateDataInput): EnvironmentFormErrors => {
         const errors: EnvironmentFormErrors = {};
 
         if (!env.name || env.name.trim() === "") errors.name = "Name erforderlich";
@@ -23,8 +23,8 @@ export const useEnvironmentValidation = () => {
         if (!env.type) errors.type = "Typ erforderlich";
         if (env.location && env.location.length > 50) errors.location = "Location zu lang (max. 50 Zeichen)";
 
-        if (env.climate) {
-            const climateValidation = validateClimate(env.climate as ClimateDataInput);
+        if (climateInput) {
+            const climateValidation = validateClimate(climateInput);
             if (Object.keys(climateValidation.errors).length > 0) {
                 errors.climate = climateValidation.errors;
             }
@@ -33,14 +33,16 @@ export const useEnvironmentValidation = () => {
         return errors;
     };
 
-    const validateWarnings = (env: EnvironmentFormData): EnvironmentFormWarnings => {
+    const validateWarnings = (env: EnvironmentFormData, climateInput?: ClimateDataInput): EnvironmentFormWarnings => {
         const warnings: EnvironmentFormWarnings = {};
-        if (env.climate) {
-            const climateValidation = validateClimate(env.climate as ClimateDataInput);
+
+        if (climateInput) {
+            const climateValidation = validateClimate(climateInput);
             if (Object.keys(climateValidation.warnings).length > 0) {
                 warnings.climate = climateValidation.warnings;
             }
         }
+
         return warnings;
     };
 

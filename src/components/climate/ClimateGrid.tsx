@@ -21,22 +21,22 @@ const LABELS: Record<string, string> = {
     co2: "CO₂",
 };
 
-const ClimateGrid = ({ historical }: ClimateGridProps) => {
-    if (!historical || Object.keys(historical).length === 0) return null;
+interface ClimateGridProps {
+    climate: EnvironmentData_Historical["climate"];
+}
+
+const ClimateGrid = ({ climate }: ClimateGridProps) => {
+    if (!climate || Object.keys(climate).length === 0) return null;
 
     return (
         <div className={styles.climateGrid}>
-            {Object.entries(historical).map(([key, value]) =>
+            {Object.entries(climate).map(([key, value]) =>
                 value ? (
                     <ClimateMetric
                         key={key}
-                        climateKey={key} 
+                        climateKey={key}
                         icon={ICONS[key]}
-                        value={
-                            key === "co2"
-                                ? `${value.value}${value.unit}`
-                                : `${value.value}${value.unit}`
-                        }
+                        value={`${value.value}${value.unit}`}
                         label={LABELS[key]}
                     />
                 ) : null

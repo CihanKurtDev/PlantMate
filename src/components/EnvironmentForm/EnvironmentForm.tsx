@@ -12,6 +12,7 @@ import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
+import { isSameDay } from "@/helpers/date";
 
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
@@ -28,47 +29,58 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
         ? environments.find(e => e.id === editId)
         : undefined;
 
-    const { formState, setField, setClimateField } = useEnvironmentForm(existingEnvironment);
-
-    const validationErrors = validate(formState);
-    const validationWarnings = validateWarnings(formState);
+    const { formState, climateInput, setField, setClimateInput } = useEnvironmentForm(existingEnvironment);
+    
+    const validationErrors = validate(formState, climateInput);
+    const validationWarnings = validateWarnings(formState, climateInput);
 
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
 
         const hasErrors = Object.keys(validationErrors).length > 0;
-        
         if (hasErrors) {
             console.warn("Form has validation errors:", validationErrors);
             return;
         }
 
-        const climateData = convertClimateInputToData(formState.climate);
+        const climateData = convertClimateInputToData(climateInput);
 
         if (editId && existingEnvironment) {
-            updateEnvironment({
-                ...existingEnvironment,
-                ...formState,
-                climate: climateData,
-            });
+            const historical = [...(existingEnvironment.historical ?? [])];
 
+            if (climateData) {
+                const now = new Date();
+                const todayEntry = historical.find(entry => isSameDay(new Date(entry.timestamp), now));
+
+                if (todayEntry) {
+                    todayEntry.timestamp = Date.now();
+                    todayEntry.climate = climateData;
+                } else {
+                    historical.push({
+                        id: crypto.randomUUID(),
+                        environmentId: editId,
+                        timestamp: Date.now(),
+                        climate: climateData,
+                    });
+                }
+            }
+
+            updateEnvironment({ ...existingEnvironment, ...formState, historical });
             if (onSaved) {
                 onSaved(editId, nextStep);
             }
-
             return;
         }
 
-        // if there is no existing Environment whe are creating a new one so 
-        // this logic for multistepform
         const envId = crypto.randomUUID();
-
-        addEnvironment({
-            ...formState,
+        const historical = climateData ? [{
+            id: crypto.randomUUID(),
+            environmentId: envId,
+            timestamp: Date.now(),
             climate: climateData,
-            id: envId,
-        });
+        }] : undefined;
 
+        addEnvironment({ ...formState, id: envId, historical });
         if (onSaved) {
             onSaved(envId, nextStep);
         }
@@ -105,8 +117,8 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
             <FormSectionTitle>Klimadaten</FormSectionTitle>
 
             <ClimateInputs
-                climate={formState.climate}
-                onChange={setClimateField}
+                climate={climateInput}
+                onChange={setClimateInput}
                 errors={validationErrors.climate}
                 warnings={validationWarnings.climate}
             />
