@@ -3,12 +3,6 @@ import { PlantData, PlantEvent, WaterData } from "@/types/plant";
 const getLastEvent = (events?: PlantEvent[]) =>
     events && events.length > 0 ? events[events.length - 1] : undefined;
 
-const getLastWatering = (events?: PlantEvent[]) =>
-    events
-        ?.slice()
-        .reverse()
-        .find((e) => e.type === "WATERING");
-
 const daysSince = (timestamp: number): number => {
     return Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
 };
@@ -26,60 +20,52 @@ export interface PlantTableRow {
     title: string;
     species: string;
     environmentId: string;
-    
-    water?: WaterData;
-    events?: PlantEvent[];
-    
+
     phValue: number | null;
     phUnit: string | null;
-    
+
     ecValue: number | null;
     ecUnit: string | null;
-    
+
     lastEventType: string | null;
     lastEventTimestamp: number;
     lastEventFormatted: string | null;
-    
+
     lastWateringTimestamp: number;
     lastWateringDate: string | null;
     daysSinceWatering: number;
 }
 
-export const mapPlantsToTableRows = (
-    plants: PlantData[],
-): PlantTableRow[] => {
+export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
     return plants.map(plant => {
+        const lastHistorical = plant.historical?.at(-1);
         const lastEvent = getLastEvent(plant.events);
-        const lastWatering = getLastWatering(plant.events);
-        
+
         return {
             key: plant.id ?? '',
             title: plant.title,
             species: plant.species,
             environmentId: plant.environmentId,
-            
-            water: plant.water,
-            events: plant.events,
-            
-            phValue: plant.water?.ph?.value ?? null,
-            phUnit: plant.water?.ph?.unit ?? null,
-            
-            ecValue: plant.water?.ec?.value ?? null,
-            ecUnit: plant.water?.ec?.unit ?? null,
-            
+
+            phValue: lastHistorical?.water?.ph?.value ?? null,
+            phUnit: lastHistorical?.water?.ph?.unit ?? null,
+
+            ecValue: lastHistorical?.water?.ec?.value ?? null,
+            ecUnit: lastHistorical?.water?.ec?.unit ?? null,
+
             lastEventType: lastEvent?.type ?? null,
             lastEventTimestamp: lastEvent?.timestamp ?? 0,
-            lastEventFormatted: lastEvent 
+            lastEventFormatted: lastEvent
                 ? `${lastEvent.type.charAt(0).toUpperCase()}${lastEvent.type.slice(1).toLowerCase()}`
                 : null,
-            
-            lastWateringTimestamp: lastWatering?.timestamp ?? 0,
-            lastWateringDate: lastWatering 
-                ? formatDateShort(new Date(lastWatering.timestamp)) 
+
+            lastWateringTimestamp: lastHistorical?.timestamp ?? 0,
+            lastWateringDate: lastHistorical
+                ? formatDateShort(new Date(lastHistorical.timestamp))
                 : null,
-            daysSinceWatering: lastWatering 
-                ? daysSince(lastWatering.timestamp) 
-                : 999
+            daysSinceWatering: lastHistorical
+                ? daysSince(lastHistorical.timestamp)
+                : 999,
         };
     });
 };

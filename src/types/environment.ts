@@ -31,7 +31,7 @@ export interface EnvironmentFormData {
   name: string;
   type: EnvironmentType;
   location?: string;
-  climate?: ClimateDataInput;
+  historical?: EnvironmentData_Historical[];
 }
 
 export interface EnvironmentData {
@@ -39,7 +39,6 @@ export interface EnvironmentData {
   name: string;
   type: EnvironmentType;
   location?: string;
-  climate?: ClimateData;
   historical?: EnvironmentData_Historical[];
   events?: EnvironmentEvent[]
 }

@@ -7,11 +7,13 @@ import ClimateGrid from "@/components/climate/ClimateGrid";
 import { useRouter } from "next/navigation";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
+import { getLatestHistoricalForToday } from "@/app/environments/[environmentId]/EnvironmentDetailView";
 
 const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
     const { getPlantsByEnvironment } = usePlantMonitor();
     const plantCount = getPlantsByEnvironment(environment.id).length;
-    const climate = environment.climate;
+    const latestTodayEntry = getLatestHistoricalForToday(environment.historical);
+    const lastClimateValues = latestTodayEntry?.climate;
     const router = useRouter()
 
     return (
@@ -30,7 +32,7 @@ const EnvironmentCard = ({ environment }: { environment: EnvironmentData }) => {
                     </div>
                 </div>
             </div>
-            {climate &&  <ClimateGrid climate={climate} />}
+            {lastClimateValues &&  <ClimateGrid climate={lastClimateValues} />}
             <div className={styles.footer}>
                 <Sprout/>
                 <span>

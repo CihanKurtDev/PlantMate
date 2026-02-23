@@ -1,6 +1,5 @@
 "use client"
 
-import type { PlantData } from "@/types/plant";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
@@ -12,20 +11,20 @@ import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
 import { useModal } from "@/context/ModalContext";
+import { isSameDay } from "@/helpers/date";
 
 interface PlantFormProps {
     environmentId?: string;
     plantId?: string;
 }
 
-export const PlantForm = ({ environmentId, plantId}: PlantFormProps) => {
+export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
     const { addPlant, updatePlant, environments, plants } = usePlantMonitor();
     const { validate, validateWarnings } = usePlantValidation();
     const [plantCount, setPlantCount] = useState<number>(1);
     const existingPlant = plantId ? plants.find(p => p.id === plantId) : undefined;
     const { closeModal } = useModal();
-
-    const { formState, setField, resetForm } = usePlantForm(existingPlant);
+    const { formState, waterInput, setField, setWaterInput, resetForm } = usePlantForm(existingPlant);
 
     useEffect(() => {
         if (!existingPlant && environmentId) {
@@ -33,31 +32,56 @@ export const PlantForm = ({ environmentId, plantId}: PlantFormProps) => {
         }
     }, [environmentId, existingPlant]);
 
-    const validationErrors = validate(formState);
-    const validationWarnings = validateWarnings(formState);
+    const validationErrors = validate(formState, waterInput);
+    const validationWarnings = validateWarnings(formState, waterInput);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (Object.keys(validationErrors).length > 0) return;
 
-        const waterData = convertWaterInputToData(formState.water);
+        const waterData = convertWaterInputToData(waterInput);
 
         if (existingPlant) {
-            updatePlant({
-                ...existingPlant,
-                ...formState,
-                water: waterData,
-            });
+            const historical = [...(existingPlant.historical ?? [])];
+
+            if (waterData) {
+                const now = new Date();
+                const todayEntry = historical.find(entry =>
+                    isSameDay(new Date(entry.timestamp), now)
+                );
+
+                if (todayEntry) {
+                    todayEntry.timestamp = Date.now();
+                    todayEntry.water = waterData;
+                } else {
+                    historical.push({
+                        id: crypto.randomUUID(),
+                        plantId: existingPlant.id!,
+                        timestamp: Date.now(),
+                        water: waterData,
+                    });
+                }
+            }
+
+            updatePlant({ ...existingPlant, ...formState, historical });
+
         } else {
-            const plantData: PlantData = { ...formState, water: waterData };
             for (let i = 0; i < plantCount; i++) {
-                addPlant({ ...plantData, id: crypto.randomUUID() });
+                const id = crypto.randomUUID();
+                const historical = waterData ? [{
+                    id: crypto.randomUUID(),
+                    plantId: id,
+                    timestamp: Date.now(),
+                    water: waterData,
+                }] : undefined;
+
+                addPlant({ ...formState, id, historical });
             }
             resetForm();
         }
-        closeModal()
-    };
 
+        closeModal();
+    };
 
     return (
         <Form onSubmit={handleSubmit}>
@@ -106,8 +130,8 @@ export const PlantForm = ({ environmentId, plantId}: PlantFormProps) => {
             <FormSectionTitle>Wasserwerte</FormSectionTitle>
 
             <WaterInputs
-                water={formState.water}
-                onChange={(water) => setField("water", water)}
+                water={waterInput}
+                onChange={setWaterInput}
                 errors={validationErrors.water}
                 warnings={validationWarnings.water}
                 hideAmountInput={true}
@@ -119,11 +143,9 @@ export const PlantForm = ({ environmentId, plantId}: PlantFormProps) => {
                         Änderungen speichern
                     </Button>
                 ) : (
-                    <>
-                        <Button type="button" variant="secondary" onClick={handleSubmit}>
-                            Speichern
-                        </Button>
-                    </>
+                    <Button type="button" variant="secondary" onClick={handleSubmit}>
+                        Speichern
+                    </Button>
                 )}
             </div>
         </Form>

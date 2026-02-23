@@ -1,28 +1,24 @@
 import { useState } from "react";
-import type { EnvironmentData, EnvironmentFormData} from "@/types/environment";
+import type { ClimateDataInput, EnvironmentData, EnvironmentFormData} from "@/types/environment";
 import { convertClimateDataToInput } from "@/helpers/climateConverter";
 
 export const useEnvironmentForm = (initialData?: EnvironmentData) => {
+    const historical = initialData?.historical;
+    const latestClimate = historical?.at(-1)?.climate;
     const [formState, setFormState] = useState<EnvironmentFormData>({
         id: initialData?.id ?? crypto.randomUUID(),
         name: initialData?.name ?? "",
         type: initialData?.type ?? "ROOM",
         location: initialData?.location,
-        climate: convertClimateDataToInput(initialData?.climate),
+        historical: initialData?.historical,
     });
 
-    const setField = <K extends keyof EnvironmentData>(
-        field: K,
-        value: EnvironmentData[K]
-    ) => {
-        setFormState((prev) => ({ ...prev, [field]: value }));
-    };
+    const [climateInput, setClimateInput] = useState<ClimateDataInput | undefined>(
+        convertClimateDataToInput(latestClimate)
+    );
 
-    const setClimateField = (climateInput: EnvironmentFormData["climate"]) => {
-        setFormState((prev) => ({
-            ...prev,
-            climate: climateInput,
-        }));
+    const setField = <K extends keyof EnvironmentFormData>( field: K, value: EnvironmentFormData[K] ) => {
+        setFormState((prev) => ({ ...prev, [field]: value }));
     };
 
     const resetForm = () => {
@@ -31,9 +27,10 @@ export const useEnvironmentForm = (initialData?: EnvironmentData) => {
             name: "",
             type: "ROOM",
             location: "",
-            climate: undefined,
+            historical: undefined,
         });
+        setClimateInput(undefined);
     };
 
-    return { formState, setField, setClimateField, resetForm };
+    return { formState, climateInput, setField, setClimateInput, resetForm };
 };

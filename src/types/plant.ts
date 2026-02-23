@@ -23,11 +23,10 @@ export interface WaterData {
 
 export interface PlantFormData {
   id: string;
-  plantId?: string;
   title: string;
   species: string;
   environmentId: string;
-  water?: WaterDataInput;
+  historical?: PlantData_Historical[];
 }
 
 export interface PlantData {
@@ -35,7 +34,6 @@ export interface PlantData {
   title: string;
   species: string;
   environmentId: string;
-  water?: WaterData;
   historical?: PlantData_Historical[];
   events?: PlantEvent[];
 }
@@ -44,22 +42,20 @@ export interface PlantData_Historical {
   id: string;
   plantId: string;
   timestamp: number;
-  water?: WaterData
+  water?: WaterData;
   height?: MeasuredValue<'cm'>;
   notes?: string;
 }
 
 export type PlantEventType = 
-  'WATERING' 
   | 'REPOTTING' 
   | 'PEST_CONTROL'
   | 'FERTILIZING'
   | 'PRUNING'
-  |  string
+  | string
 
 export interface PlantEvent extends BaseEvent {
   plantId: string;
-  watering?: WaterData
 
   repotting?: {
     oldPotSize?: MeasuredValue<'L'>;
@@ -71,4 +67,4 @@ export interface PlantEvent extends BaseEvent {
   fertilizing?: { fertilizer: string; amount?: MeasuredValue<'ml' | 'g'> };
 }
 
-export type PlantTimeSeriesEntry  = TimeSeriesEntry<PlantEvent>
+export type PlantTimeSeriesEntry = TimeSeriesEntry<PlantEvent>

@@ -1,7 +1,7 @@
 "use client"
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import type { EnvironmentData, EnvironmentData_Historical, EnvironmentEvent } from "@/types/environment";
-import type { PlantData, PlantEvent } from "@/types/plant";
+import type { PlantData, PlantData_Historical, PlantEvent } from "@/types/plant";
 
 interface PlantMonitorContextType {
     environments: EnvironmentData[];
@@ -14,6 +14,7 @@ interface PlantMonitorContextType {
     addEventToPlant: (plantId: string, event: PlantEvent) => void,
     addEventToEnvironment: (environmentId: string, event: EnvironmentEvent) => void,
     addHistoryData: (environmentId: string, entry: EnvironmentData_Historical) => void,
+    addPlantHistoryData: (plantId: string, entry: PlantData_Historical) => void,
     deletePlants: (ids: string[]) => void;
 }
 
@@ -120,6 +121,18 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
+    const addPlantHistoryData = (plantId: string, entry: PlantData_Historical) => {
+        setPlants(prev => {
+            const updated = prev.map(plant =>
+                plant.id === plantId
+                    ? { ...plant, historical: [...(plant.historical ?? []), entry] }
+                    : plant
+            );
+            localStorage.setItem("plants", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
     const getPlantsByEnvironment = (envId: string) => {
         return plants.filter(plant => plant.environmentId === envId);
     };
@@ -136,7 +149,8 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
             deletePlants,
             addEventToPlant, 
             addEventToEnvironment,
-            addHistoryData
+            addHistoryData,
+            addPlantHistoryData
         }}>
             {children}
         </PlantMonitorContext.Provider>

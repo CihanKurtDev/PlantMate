@@ -1,22 +1,159 @@
 .customTooltip {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-l);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  background: var(--color-background-primary);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-m);
   padding: var(--spacing-s) var(--spacing-m);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .tooltipLabel {
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-xs);
   font-size: var(--font-size-s);
+  color: var(--color-text-tertiary);
+  margin: 0 0 var(--spacing-xs);
 }
 
 .tooltipItem {
-  font-weight: var(--font-weight-medium);
   font-size: var(--font-size-s);
-  margin: 2px 0;
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+}
+
+.metricList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-m);
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.metricRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  padding: var(--spacing-m);
+  background-color: var(--color-background-secondary);
+  border-radius: var(--radius-s);
+  
+  @media (min-width: 768px) {
+    gap: var(--spacing-xl);
+    display: grid;
+    grid-template-columns: minmax(180px, 20%) 1fr;
+    align-items: stretch;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.metricLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+}
+
+.metricIconWrap {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-m);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.metricLabel {
+  flex: 1;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-l);
+}
+
+.metricBadge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  padding: var(--spacing-xs) var(--spacing-s);
+  border-radius: var(--radius-xl);
+}
+
+.metricValueRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spacing-s);
+}
+
+.metricValue {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+
+  @media (min-width: 768px) {
+    font-size: var(--font-size-xxl);
+  }
+}
+
+.metricTrend {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: var(--font-size-s);
+  font-weight: var(--font-weight-bold);
+  padding-bottom: 2px;
+}
+
+.metricSparkline {
+  height: 120px;
+
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.rangeBar {
+  position: relative;
+  height: 6px;
+  background: var(--color-border-secondary);
+  border-radius: var(--radius-s);
+}
+
+.rangeIdeal {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: var(--radius-s);
+}
+
+.rangeMarker {
+  position: absolute;
+  top: -3px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-circle);
+  border: 2px solid var(--color-background-primary);
+}
+
+.rangeLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-s);
+}
+
+.metricChart {
+  display: none;
+
+  @media (min-width: 768px) {
+    display: block;
+    height: 100%;
+    min-height: 120px;
+  }
 }

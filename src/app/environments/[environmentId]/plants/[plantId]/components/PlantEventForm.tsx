@@ -11,7 +11,6 @@ interface PlantEventFormProps {
 }
 
 const plantEventOptions: EventOption[] = [
-    { value: "WATERING", label: "Wässern" },
     { value: "REPOTTING", label: "Umtopfen" },
     { value: "FERTILIZING", label: "Düngen" },
     { value: "PEST_CONTROL", label: "Schädlingsbekämpfung" },
@@ -25,7 +24,6 @@ export default function PlantEventForm({ plantId }: PlantEventFormProps) {
 
     const handleSubmit = (eventData: EventFormData) => {
         const isCustom = eventData.type === "custom";
-        const isWatering = eventData.type === "WATERING";
 
         const newEvent: PlantEvent = {
             id: Date.now().toString(),
@@ -37,15 +35,6 @@ export default function PlantEventForm({ plantId }: PlantEventFormProps) {
             customBgColor: isCustom ? eventData.customBgColor : undefined,
             customTextColor: isCustom ? eventData.customTextColor : undefined,
             customBorderColor: isCustom ? eventData.customBorderColor : undefined,
-            ...(isWatering && eventData.watering?.amount !== undefined && (
-                {
-                    watering: {
-                        amount: eventData.watering.amount,
-                        ph: eventData.watering.ph,
-                        ec: eventData.watering.ec
-                    }
-                }
-            ))
         };
 
         addEventToPlant(plantId, newEvent);
@@ -56,7 +45,7 @@ export default function PlantEventForm({ plantId }: PlantEventFormProps) {
         <EventForm
             title="Neues Ereignis hinzufügen"
             eventOptions={plantEventOptions}
-            defaultEventType="WATERING"
+            defaultEventType="REPOTTING"
             onSubmit={handleSubmit}
             onCancel={closeModal}
         />

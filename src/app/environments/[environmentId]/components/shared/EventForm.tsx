@@ -5,9 +5,6 @@ import styles from "./EventForm.module.scss"
 import DatePicker from "./DatePicker";
 import { EventFormData } from "@/types/events";
 import { iconMap } from "@/types/environment";
-import { WaterInputs } from "./WaterInputs";
-import { WaterData } from "@/types/plant";
-import { useWaterValidation } from "@/hooks/useWaterValidation";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
 
 
@@ -40,21 +37,14 @@ export default function EventForm<T extends string>({
         customBorderColor: "#bdbdbd",
         notes: "",
         timestamp: Date.now(),
-        watering: { ph: undefined, ec: undefined },
     });
     
     const isCustom = formData.type === "custom";
-    const isWatering = formData.type === "WATERING";
     
     const handleChange = (field: keyof EventFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
-    const handleWaterChange = (water: WaterData) => {
-        setFormData(prev => ({ ...prev, watering: water }));
-    };
-
-    const { errors: waterErrors, warnings: waterWarnings } = useWaterValidation(formData.watering);
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -63,11 +53,6 @@ export default function EventForm<T extends string>({
             return;
         }
         
-        if (isWatering && Object.values(waterErrors).some(Boolean)) {
-            alert("Bitte korrigiere die Wasserwerte!");
-            return;
-        }
-
         onSubmit(formData);
     };
 
@@ -158,15 +143,6 @@ export default function EventForm<T extends string>({
                         )}
                     </div>
                 </>
-            )}
-
-            {isWatering && (
-                <WaterInputs
-                    water={formData.watering}
-                    onChange={handleWaterChange}
-                    errors={waterErrors}
-                    warnings={waterWarnings}
-                />
             )}
 
             <FormField>
