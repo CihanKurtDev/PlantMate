@@ -12,7 +12,7 @@ import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Droplets, Leaf, Pencil, Thermometer, Wind } from "lucide-react";
-import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
+import { EnvironmentTimeSeriesEntry } from "@/types/environment";
 import { EnvironmentForm } from "@/components/EnvironmentForm/EnvironmentForm";
 import { PlantForm } from "@/components/PlantForm/PlantForm";
 import styles from './EnvironmentDetailView.module.scss';
@@ -43,22 +43,6 @@ export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
 }
 
-function buildEnvironmentChartData(historical?: EnvironmentData_Historical[]): EnvironmentTimeSeriesEntry[] {
-    if (!historical?.length) return []
-    return historical
-        .map((entry): EnvironmentTimeSeriesEntry => ({
-            timestamp: entry.timestamp,
-            entryKind: 'historical',
-            metrics: {
-                temp: entry.climate.temp?.value,
-                humidity: entry.climate.humidity?.value,
-                vpd: entry.climate.vpd?.value,
-                co2: entry.climate.co2?.value,
-            },
-        }))
-        .sort((a, b) => a.timestamp - b.timestamp);
-}
-
 type modalType = "none" | "event" | "edit" | "newPlant"
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
@@ -71,7 +55,16 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
     const latestTodayEntry = getLatestHistoricalForToday(environment.historical);
     const lastClimateValues = latestTodayEntry?.climate;
-    const chartData = buildEnvironmentChartData(environment.historical)
+    const chartData: EnvironmentTimeSeriesEntry[] = (environment.historical ?? []).map(entry => ({
+        timestamp: entry.timestamp,
+        entryKind: 'historical' as const,
+        metrics: {
+            temp: entry.climate.temp?.value,
+            humidity: entry.climate.humidity?.value,
+            vpd: entry.climate.vpd?.value,
+            co2: entry.climate.co2?.value,
+        },
+    })).sort((a, b) => a.timestamp - b.timestamp);
     const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
     const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
 
@@ -103,7 +96,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             )}
 
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
-            <EnvironmentEventTab environmentId={environmentId} events={environment.events} />
+            <EnvironmentEventTab events={environment.events} />
 
             <DataTab data={chartData} metrics={metrics} />
 

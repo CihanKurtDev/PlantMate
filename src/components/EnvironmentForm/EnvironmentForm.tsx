@@ -6,7 +6,6 @@ import { Button } from "@/components/Button/Button";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import type { EnvironmentType } from "@/types/environment";
-import { ClimateInputs } from "../../app/environments/[environmentId]/components/shared/ClimateInputs";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
@@ -21,7 +20,7 @@ interface EnvironmentFormProps {
 
 export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps) => {
     const { environments, addEnvironment, updateEnvironment } = usePlantMonitor();
-    const { validate, validateWarnings } = useEnvironmentValidation();
+    const { validate } = useEnvironmentValidation();
     const searchParams = useSearchParams();
     const editId = environmentId ? environmentId : searchParams.get("editId");
 
@@ -29,10 +28,9 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
         ? environments.find(e => e.id === editId)
         : undefined;
 
-    const { formState, climateInput, setField, setClimateInput } = useEnvironmentForm(existingEnvironment);
+    const { formState, climateInput, setField } = useEnvironmentForm(existingEnvironment);
     
     const validationErrors = validate(formState, climateInput);
-    const validationWarnings = validateWarnings(formState, climateInput);
 
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
@@ -112,15 +110,6 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
                 value={formState.location ?? ""}
                 onChange={(e) => setField("location", e.target.value)}
                 error={validationErrors.location}
-            />
-
-            <FormSectionTitle>Klimadaten</FormSectionTitle>
-
-            <ClimateInputs
-                climate={climateInput}
-                onChange={setClimateInput}
-                errors={validationErrors.climate}
-                warnings={validationWarnings.climate}
             />
 
             <div className={styles.buttonRow}>

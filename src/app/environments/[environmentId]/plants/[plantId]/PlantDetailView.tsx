@@ -72,7 +72,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
 
             <DataTab data={chartData} metrics={metrics} />
 
-            <PlantEventsTab plantId={plantId} events={plant.events} />
+            <PlantEventsTab events={plant.events} />
 
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>
                 <PlantForm plantId={plant.id} />

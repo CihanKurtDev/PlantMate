@@ -4,9 +4,8 @@ import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
-import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
+import Form, { FormField } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
-import { WaterInputs } from "../../app/environments/[environmentId]/components/shared/WaterInputs";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
@@ -20,7 +19,7 @@ interface PlantFormProps {
 
 export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
     const { addPlant, updatePlant, environments, plants } = usePlantMonitor();
-    const { validate, validateWarnings } = usePlantValidation();
+    const { validate } = usePlantValidation();
     const [plantCount, setPlantCount] = useState<number>(1);
     const existingPlant = plantId ? plants.find(p => p.id === plantId) : undefined;
     const { closeModal } = useModal();
@@ -33,7 +32,6 @@ export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
     }, [environmentId, existingPlant]);
 
     const validationErrors = validate(formState, waterInput);
-    const validationWarnings = validateWarnings(formState, waterInput);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -126,16 +124,6 @@ export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
                     min={1}
                 />
             )}
-
-            <FormSectionTitle>Wasserwerte</FormSectionTitle>
-
-            <WaterInputs
-                water={waterInput}
-                onChange={setWaterInput}
-                errors={validationErrors.water}
-                warnings={validationWarnings.water}
-                hideAmountInput={true}
-            />
 
             <div>
                 {plantId ? (
