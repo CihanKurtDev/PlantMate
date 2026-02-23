@@ -49,6 +49,13 @@
   }
 }
 
+.tabs {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: rgba(0, 0, 0, 0.05);
+  margin: 0 var(--spacing-l);
+}
+
 .content {
   flex: 1;
   min-height: 0;

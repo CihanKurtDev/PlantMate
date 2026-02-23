@@ -1,4 +1,4 @@
-import { PlantFormData } from "@/types/plant";
+import { PlantFormData, WaterDataInput } from "@/types/plant";
 import { useWaterValidation } from "./useWaterValidation";
 import { validateWater } from "@/helpers/validaionUtils";
 
@@ -14,7 +14,7 @@ export interface PlantFormWarnings {
 } 
 
 export const usePlantValidation = () => {
-    const validate = (plant: PlantFormData): PlantFormErrors => {
+    const validate = (plant: PlantFormData, waterInput?: WaterDataInput): PlantFormErrors => {
         const errors: PlantFormErrors = {};
 
         if (!plant.title || plant.title.trim() === "") errors.title = "Name erforderlich";
@@ -26,8 +26,8 @@ export const usePlantValidation = () => {
             errors.environmentId = "Environment erforderlich";
         }
 
-        if (plant.water) {
-            const waterValidation = validateWater(plant.water);
+        if (waterInput) {
+            const waterValidation = validateWater(waterInput);
             if (Object.keys(waterValidation.errors).length > 0) {
                 errors.water = waterValidation.errors;
             }
@@ -36,11 +36,11 @@ export const usePlantValidation = () => {
         return errors;
     };
 
-    const validateWarnings = (plant: PlantFormData): PlantFormWarnings => {
+    const validateWarnings = (plant: PlantFormData, waterInput?: WaterDataInput): PlantFormWarnings => {
         const warnings: PlantFormWarnings = {};
 
-        if (plant.water) {
-            const waterValidation = validateWater(plant.water);
+        if (waterInput) {
+            const waterValidation = validateWater(waterInput);
             if (Object.keys(waterValidation.warnings).length > 0) {
                 warnings.water = waterValidation.warnings;
             }

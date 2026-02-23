@@ -1,14 +1,24 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import styles from "./Modal.module.scss";
 import { ModalProvider } from "@/context/ModalContext";
+import { Button } from "@/components/Button/Button";
 
-interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: ReactNode;
+export interface ModalTab {
+    key: string;
+    label: ReactNode;
+    content: ReactNode;
 }
 
-const Modal = ({ isOpen, onClose, children }: ModalProps) => {
+interface ModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    children?: ReactNode;
+    tabs?: ModalTab[];
+}
+
+const Modal = ({ isOpen, onClose, children, tabs }: ModalProps) => {
+    const [activeTab, setActiveTab] = useState(tabs?.[0]?.key);
+
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
@@ -28,7 +38,25 @@ const Modal = ({ isOpen, onClose, children }: ModalProps) => {
                             &times;
                         </button>
                     </div>
-                    <div className={styles.content}>{children}</div>
+
+                    {tabs && (
+                        <div className={styles.tabs}>
+                            {tabs.map((tab, i) => (
+                                <Button
+                                    key={tab.key}
+                                    style={{ width: "100%", ...(i === 0 ? { border: "none" } : {}) }}
+                                    isActive={activeTab === tab.key}
+                                    onClick={() => setActiveTab(tab.key)}
+                                >
+                                    {tab.label}
+                                </Button>
+                            ))}
+                        </div>
+                    )}
+
+                    <div className={styles.content}>
+                        {tabs ? tabs.find(t => t.key === activeTab)?.content : children}
+                    </div>
                 </div>
             </div>
         </ModalProvider>

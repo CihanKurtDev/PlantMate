@@ -48,10 +48,6 @@ export const CLIMATE_COLORS = {
 } as const;
 
 export const EVENT_COLORS = {
-    watering: {
-        base: '#597fd0',
-        soft: 'rgba(89, 127, 208, 0.18)',
-    },
     fertilizing: {
         base: '#4e9a3d',
         soft: 'rgba(78, 154, 61, 0.18)',
@@ -93,11 +89,6 @@ export interface IconConfig {
 }
 
 export const PLANT_EVENT_CONFIG = {
-    WATERING: {
-        label: 'Bewässerung',
-        icon: Droplets,
-        colors: EVENT_COLORS.watering,
-    },
     FERTILIZING: {
         label: 'Düngen',
         icon: Leaf,
@@ -185,7 +176,6 @@ export const CLIMATE_CONFIG = {
 
 
 export const ALL_EVENT_CONFIG: Record<string, IconConfig> = {
-    watering: PLANT_EVENT_CONFIG.WATERING,
     fertilizing: PLANT_EVENT_CONFIG.FERTILIZING,
     repotting: PLANT_EVENT_CONFIG.REPOTTING,
     pest_control: PLANT_EVENT_CONFIG.PEST_CONTROL,
