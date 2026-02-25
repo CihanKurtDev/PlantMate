@@ -18,7 +18,7 @@ import EmptyState from "./EmptyState";
 import TabContent from "./TabContent";
 import styles from "./DataTab.module.scss";
 import { Card } from "@/components/Card/Card";
-import { formatDateShort } from "@/helpers/date";
+import { formatDate, formatDateShort } from "@/helpers/date";
 import { TimeSeriesEntry } from "@/types/events";
 
 export interface MetricConfig {
@@ -194,7 +194,11 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                             </defs>
                             <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#grad-${metric.key})`} dot={false} isAnimationActive={false} />
                             <YAxis domain={["auto", "auto"]} hide />
-                            <XAxis dataKey="t" hide={false} />
+                            <XAxis
+                                dataKey="t"
+                                hide={false}
+                                tickFormatter={(value) => formatDate(value)}
+                            />
                             <Tooltip content={(props) => <AreaTooltip {...props} metric={metric} />} />
                         </AreaChart>
                     </ResponsiveContainer>

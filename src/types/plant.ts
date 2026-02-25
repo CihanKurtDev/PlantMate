@@ -1,5 +1,4 @@
-import { BaseEvent } from "@/app/environments/[environmentId]/components/shared/EventsList";
-import { TimeSeriesEntry } from "./events";
+import { BaseEvent, TimeSeriesEntry } from "./events";
 
 export type ECUnit = 'mS/cm';
 export type PHUnit = 'pH';
@@ -61,10 +60,17 @@ export interface PlantEvent extends BaseEvent {
     oldPotSize?: MeasuredValue<'L'>;
     newPotSize: MeasuredValue<'L'>;
     substrate?: string;
-  }
+  };
 
-  pestControl?: { pest: string; treatment: string };
-  fertilizing?: { fertilizer: string; amount?: MeasuredValue<'ml' | 'g'> };
+  pestControl?: {
+    pest: string;
+    treatment: string;
+  };
+
+  fertilizing?: {
+    fertilizer: string;
+    amount?: MeasuredValue<"ml" | "g">;
+  };
 }
 
-export type PlantTimeSeriesEntry = TimeSeriesEntry<PlantEvent>
+export type PlantTimeSeriesEntry = TimeSeriesEntry<PlantEvent>;
