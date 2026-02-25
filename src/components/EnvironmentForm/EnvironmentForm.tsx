@@ -3,15 +3,13 @@
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
-import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
+import Form, { FormField } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import type { EnvironmentType } from "@/types/environment";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
-import { isSameDay } from "@/helpers/date";
 
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
@@ -28,9 +26,9 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
         ? environments.find(e => e.id === editId)
         : undefined;
 
-    const { formState, climateInput, setField } = useEnvironmentForm(existingEnvironment);
+    const { formState, setField } = useEnvironmentForm(existingEnvironment);
     
-    const validationErrors = validate(formState, climateInput);
+    const validationErrors = validate(formState);
 
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
@@ -41,27 +39,9 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
             return;
         }
 
-        const climateData = convertClimateInputToData(climateInput);
 
         if (editId && existingEnvironment) {
             const historical = [...(existingEnvironment.historical ?? [])];
-
-            if (climateData) {
-                const now = new Date();
-                const todayEntry = historical.find(entry => isSameDay(new Date(entry.timestamp), now));
-
-                if (todayEntry) {
-                    todayEntry.timestamp = Date.now();
-                    todayEntry.climate = climateData;
-                } else {
-                    historical.push({
-                        id: crypto.randomUUID(),
-                        environmentId: editId,
-                        timestamp: Date.now(),
-                        climate: climateData,
-                    });
-                }
-            }
 
             updateEnvironment({ ...existingEnvironment, ...formState, historical });
             if (onSaved) {
@@ -71,14 +51,9 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
         }
 
         const envId = crypto.randomUUID();
-        const historical = climateData ? [{
-            id: crypto.randomUUID(),
-            environmentId: envId,
-            timestamp: Date.now(),
-            climate: climateData,
-        }] : undefined;
+       
 
-        addEnvironment({ ...formState, id: envId, historical });
+        addEnvironment({ ...formState, id: envId });
         if (onSaved) {
             onSaved(envId, nextStep);
         }

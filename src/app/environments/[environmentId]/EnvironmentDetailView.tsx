@@ -77,6 +77,8 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
         { key: 'co2', label: 'CO₂', color: '#e53935', icon: Leaf, min: 300, max: 2000, idealMin: 400, idealMax: 800, unit: 'ppm', format: (v) => `${v.toFixed(0)} ppm` },
     ];
 
+    const hasEnoughDataForCharts = chartData.length > 1
+
     return (
         <PageLayout>
             <DetailViewHeader title={headerTitle} subtitle={headerSubtitle} icon={ENVIRONMENT_ICONS[environment.type]} iconVariant={environment.type.toLowerCase()}>
@@ -98,7 +100,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab events={environment.events} />
 
-            <DataTab data={chartData} metrics={metrics} />
+            {hasEnoughDataForCharts && <DataTab data={chartData} metrics={metrics} />}
 
             <Modal
                 isOpen={modalType === "event"}

@@ -6,24 +6,25 @@ import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import { ClimateInputs } from "./shared/ClimateInputs";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
-import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useModal } from "@/context/ModalContext";
+import { useClimateValidation } from "@/hooks/useClimateValidation";
 
 export default function ClimateForm({ environmentId } : { environmentId: string }) {
     const { addHistoryData } = usePlantMonitor();
-    const { formState, climateInput, setClimateInput } = useEnvironmentForm();
-    const { validate, validateWarnings } = useEnvironmentValidation();
+    const { climateInput, setClimateInput } = useEnvironmentForm();
+    const { errors, warnings } = useClimateValidation(climateInput);
     const { closeModal } = useModal();
 
-    const validationErrors = validate(formState, climateInput);
-    const validationWarnings = validateWarnings(formState, climateInput);
+    const validationErrors = errors;
+    const validationWarnings = warnings;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!climateInput || Object.values(climateInput).every(v => !v)) {
-            alert("Bitte trage mindestens einen Messwert ein.");
+        const hasErrors = Object.keys(validationErrors).length > 0;
+        if (hasErrors) {
+            console.warn("Form has validation errors:", validationErrors);
             return;
         }
 
@@ -47,8 +48,8 @@ export default function ClimateForm({ environmentId } : { environmentId: string 
             <ClimateInputs
                 climate={climateInput}
                 onChange={setClimateInput}
-                errors={validationErrors.climate}
-                warnings={validationWarnings.climate}
+                errors={validationErrors}
+                warnings={validationWarnings}
             />
             <FormField>
                 <Button type="submit">Speichern</Button>
