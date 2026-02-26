@@ -1,20 +1,19 @@
-import { validateClimate } from "@/helpers/validaionUtils";
-import { ClimateDataInput, EnvironmentFormData } from "@/types/environment";
-import { useClimateValidation } from "./useClimateValidation";
+import { EnvironmentFormData } from "@/types/environment";
 
 export interface EnvironmentFormErrors {
     name?: string;
     type?: string;
     location?: string;
-    climate?: ReturnType<typeof useClimateValidation>["errors"];
 }
 
-export interface EnvironmentFormWarnings {
-    climate?: ReturnType<typeof useClimateValidation>["warnings"];
+interface EnvironmentFormWarnings {
+    name?: string;
+    type?: string;
+    location?: string;
 }
 
 export const useEnvironmentValidation = () => {
-    const validate = (env: EnvironmentFormData, climateInput?: ClimateDataInput): EnvironmentFormErrors => {
+    const validate = (env: EnvironmentFormData): EnvironmentFormErrors => {
         const errors: EnvironmentFormErrors = {};
 
         if (!env.name || env.name.trim() === "") errors.name = "Name erforderlich";
@@ -23,26 +22,12 @@ export const useEnvironmentValidation = () => {
         if (!env.type) errors.type = "Typ erforderlich";
         if (env.location && env.location.length > 50) errors.location = "Location zu lang (max. 50 Zeichen)";
 
-        if (climateInput) {
-            const climateValidation = validateClimate(climateInput);
-            if (Object.keys(climateValidation.errors).length > 0) {
-                errors.climate = climateValidation.errors;
-            }
-        }
-
         return errors;
     };
 
-    const validateWarnings = (env: EnvironmentFormData, climateInput?: ClimateDataInput): EnvironmentFormWarnings => {
+    const validateWarnings = (env: EnvironmentFormData): EnvironmentFormWarnings => {
         const warnings: EnvironmentFormWarnings = {};
-
-        if (climateInput) {
-            const climateValidation = validateClimate(climateInput);
-            if (Object.keys(climateValidation.warnings).length > 0) {
-                warnings.climate = climateValidation.warnings;
-            }
-        }
-
+        if (env.name && env.name.length > 30) warnings.name = "Name ist ziemlich lang, kürzer könnte besser sein";
         return warnings;
     };
 

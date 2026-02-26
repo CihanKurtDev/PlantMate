@@ -5,14 +5,14 @@ import { EnvironmentData_Historical } from "@/types/environment";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import { ClimateInputs } from "./shared/ClimateInputs";
-import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useModal } from "@/context/ModalContext";
 import { useClimateValidation } from "@/hooks/useClimateValidation";
+import { useClimateForm } from "@/hooks/useClimateForm";
 
 export default function ClimateForm({ environmentId } : { environmentId: string }) {
     const { addHistoryData } = usePlantMonitor();
-    const { climateInput, setClimateInput } = useEnvironmentForm();
+    const { climateInput, setClimateInput } = useClimateForm();
     const { errors, warnings } = useClimateValidation(climateInput);
     const { closeModal } = useModal();
 
