@@ -10,41 +10,59 @@ import { useModal } from "@/context/ModalContext";
 import { useClimateValidation } from "@/hooks/useClimateValidation";
 import { useClimateForm } from "@/hooks/useClimateForm";
 
-export default function ClimateForm({ environmentId } : { environmentId: string }) {
-    const { addHistoryData } = usePlantMonitor();
-    const { climateInput, setClimateInput } = useClimateForm();
-    const { errors, warnings } = useClimateValidation(climateInput);
+interface ClimateFormProps {
+    environmentId: string;
+    entryId?: string;
+}
+
+export default function ClimateForm({ environmentId, entryId }: ClimateFormProps) {
+    const { environments, addHistoryData, updateHistoryData } = usePlantMonitor();
     const { closeModal } = useModal();
 
-    const validationErrors = errors;
-    const validationWarnings = warnings;
+    const existingEntry = entryId
+        ? environments.find(e => e.id === environmentId)?.historical?.find(h => h.id === entryId)
+        : undefined;
+
+    const { climateInput, setClimateInput } = useClimateForm(existingEntry);
+    const { errors: validationErrors, warnings: validationWarnings } = useClimateValidation(climateInput);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const hasErrors = Object.keys(validationErrors).length > 0;
-        if (hasErrors) {
+        if (Object.keys(validationErrors).length > 0) {
             console.warn("Form has validation errors:", validationErrors);
             return;
         }
 
         const climateData = convertClimateInputToData(climateInput);
+        
+        if (!climateData) {
+            console.warn("Keine Klimadaten eingegeben.");
+            return;
+        }
 
         const timestamp = Date.now();
         const entry: EnvironmentData_Historical = {
-            id: timestamp.toString(),
+            id: existingEntry?.id ?? timestamp.toString(),
             environmentId,
-            timestamp,
+            timestamp: existingEntry?.timestamp ?? timestamp,
             climate: climateData || {},
         };
 
-        addHistoryData(environmentId, entry);
-        closeModal()
+        if (existingEntry) {
+            updateHistoryData(environmentId, entry)
+        } else {
+            addHistoryData(environmentId, entry)
+        }
+
+        closeModal();
     };
 
     return (
         <Form onSubmit={handleSubmit}>
-            <FormSectionTitle>Klimamessung eintragen</FormSectionTitle>
+            <FormSectionTitle>
+                {existingEntry ? "Klimamessung bearbeiten" : "Klimamessung eintragen"}
+            </FormSectionTitle>
             <ClimateInputs
                 climate={climateInput}
                 onChange={setClimateInput}

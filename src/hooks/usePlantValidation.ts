@@ -1,53 +1,7 @@
-import { PlantFormData, WaterDataInput } from "@/types/plant";
-import { useWaterValidation } from "./useWaterValidation";
-import { validateWater } from "@/helpers/validaionUtils";
+import { validatePlant, PlantErrors } from "@/helpers/validationUtils";
 
-export interface PlantFormErrors {
-    title?: string;
-    species?: string;
-    environmentId?: string;
-    water?: ReturnType<typeof useWaterValidation>["errors"];
-}
-
-export interface PlantFormWarnings { 
-    water?: ReturnType<typeof useWaterValidation>["warnings"];
-} 
+export type { PlantErrors };
 
 export const usePlantValidation = () => {
-    const validate = (plant: PlantFormData, waterInput?: WaterDataInput): PlantFormErrors => {
-        const errors: PlantFormErrors = {};
-
-        if (!plant.title || plant.title.trim() === "") errors.title = "Name erforderlich";
-        else if (plant.title.length < 2) errors.title = "Name muss mindestens 2 Zeichen lang sein";
-
-        if (plant.species && plant.species.length > 100) errors.species = "Art zu lang (max. 100 Zeichen)";
-
-        if (!plant.environmentId || plant.environmentId.trim() === "") {
-            errors.environmentId = "Environment erforderlich";
-        }
-
-        if (waterInput) {
-            const waterValidation = validateWater(waterInput);
-            if (Object.keys(waterValidation.errors).length > 0) {
-                errors.water = waterValidation.errors;
-            }
-        }
-
-        return errors;
-    };
-
-    const validateWarnings = (plant: PlantFormData, waterInput?: WaterDataInput): PlantFormWarnings => {
-        const warnings: PlantFormWarnings = {};
-
-        if (waterInput) {
-            const waterValidation = validateWater(waterInput);
-            if (Object.keys(waterValidation.warnings).length > 0) {
-                warnings.water = waterValidation.warnings;
-            }
-        }
-
-        return warnings;
-    };
-
-    return { validate, validateWarnings };
+    return { validate: validatePlant };
 };

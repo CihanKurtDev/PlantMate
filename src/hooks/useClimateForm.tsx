@@ -1,13 +1,18 @@
 import { useState } from "react";
-import type { ClimateDataInput, ClimateData } from "@/types/environment";
+import { ClimateDataInput, EnvironmentData_Historical } from "@/types/environment";
 import { convertClimateDataToInput } from "@/helpers/climateConverter";
 
-export const useClimateForm = (initialClimate?: ClimateData) => {
-    const [climateInput, setClimateInput] = useState<ClimateDataInput | undefined>(
-        convertClimateDataToInput(initialClimate)
+const EMPTY_CLIMATE_INPUT: ClimateDataInput = {
+    temp: { value: "", unit: "°C" },
+    humidity: "",
+    vpd: "",
+    co2: "",
+};
+
+export function useClimateForm(existingEntry?: EnvironmentData_Historical) {
+    const [climateInput, setClimateInput] = useState<ClimateDataInput>(
+        convertClimateDataToInput(existingEntry?.climate) ?? EMPTY_CLIMATE_INPUT
     );
 
-    const resetClimateInput = () => setClimateInput(undefined);
-
-    return { climateInput, setClimateInput, resetClimateInput };
-};
+    return { climateInput, setClimateInput };
+}

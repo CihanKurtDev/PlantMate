@@ -10,53 +10,40 @@ import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
+import { hasValidationErrors } from "@/helpers/validationUtils";
 
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
-    environmentId?: string,
+    environmentId?: string;
 }
 
 export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps) => {
     const { environments, addEnvironment, updateEnvironment } = usePlantMonitor();
     const { validate } = useEnvironmentValidation();
     const searchParams = useSearchParams();
-    const editId = environmentId ? environmentId : searchParams.get("editId");
+    const editId = environmentId ?? searchParams.get("editId");
 
     const existingEnvironment = editId
         ? environments.find(e => e.id === editId)
         : undefined;
 
     const { formState, setField } = useEnvironmentForm(existingEnvironment);
-    
-    const validationErrors = validate(formState);
+    const { errors: validationErrors } = validate(formState);
 
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
 
-        const hasErrors = Object.keys(validationErrors).length > 0;
-        if (hasErrors) {
-            console.warn("Form has validation errors:", validationErrors);
-            return;
-        }
-
+        if (hasValidationErrors(validationErrors)) return;
 
         if (editId && existingEnvironment) {
-            const historical = [...(existingEnvironment.historical ?? [])];
-
-            updateEnvironment({ ...existingEnvironment, ...formState, historical });
-            if (onSaved) {
-                onSaved(editId, nextStep);
-            }
+            updateEnvironment({ ...existingEnvironment, ...formState, historical: existingEnvironment.historical ?? [] });
+            onSaved?.(editId, nextStep);
             return;
         }
 
         const envId = crypto.randomUUID();
-       
-
         addEnvironment({ ...formState, id: envId });
-        if (onSaved) {
-            onSaved(envId, nextStep);
-        }
+        onSaved?.(envId, nextStep);
     };
 
     return (
