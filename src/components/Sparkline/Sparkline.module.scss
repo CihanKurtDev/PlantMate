@@ -1,0 +1,21 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding:  0 2px;
+    margin-bottom: var(--spacing-xs);
+
+    .value {
+        font-family: var(--font-mono, monospace);
+    }
+}
+
+.label {
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+}
+
+.emptyValue {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
