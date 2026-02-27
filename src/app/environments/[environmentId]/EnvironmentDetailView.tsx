@@ -5,8 +5,6 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab, { MetricConfig } from "./components/shared/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
-import PageLayout from "@/components/PageLayout/PageLayout";
-import DetailViewHeader from "./components/shared/DetailViewHeader";
 import ClimateGrid from "@/components/climate/ClimateGrid";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
@@ -18,6 +16,7 @@ import { PlantForm } from "@/components/PlantForm/PlantForm";
 import styles from './EnvironmentDetailView.module.scss';
 import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import ClimateForm from "./components/ClimateForm";
+import { PageLayout } from "@/components/PageLayout/PageLayout";
 
 export const getLatestHistoricalForToday = <T extends { timestamp: number }>(
     entries?: T[]
@@ -80,23 +79,25 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const hasEnoughDataForCharts = chartData.length > 1
 
     return (
-        <PageLayout>
-            <DetailViewHeader title={headerTitle} subtitle={headerSubtitle} icon={ENVIRONMENT_ICONS[environment.type]} iconVariant={environment.type.toLowerCase()}>
-                <Button variant="secondary" onClick={() => setModalType("edit")}>
-                    <span>
-                        <Pencil size={16} />
-                        Bearbeiten
-                    </span>
-                </Button>
-                <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
-            </DetailViewHeader>
-
+        <PageLayout
+            title={headerTitle}
+            subtitle={headerSubtitle}
+            icon={ENVIRONMENT_ICONS[environment.type]}
+            iconVariant={environment.type.toLowerCase()}
+            actions={
+                <>
+                    <Button variant="secondary" onClick={() => setModalType("edit")}>
+                        <span><Pencil size={16} />Bearbeiten</span>
+                    </Button>
+                    <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
+                </>
+            }
+        >
             {lastClimateValues && (
                 <div className={styles.climateGridWrapper}>
                     <ClimateGrid climate={lastClimateValues} />
                 </div>
             )}
-
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab events={environment.events} />
 

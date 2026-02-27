@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import PageLayout from "@/components/PageLayout/PageLayout";
-import DetailViewHeader from "../../components/shared/DetailViewHeader";
 import { Pencil, Sprout } from "lucide-react";
 import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
@@ -15,6 +13,7 @@ import { PlantForm } from "@/components/PlantForm/PlantForm";
 import WaterForm from "./components/WaterForm";
 import PlantEventForm from "./components/PlantEventForm";
 import { PlantTimeSeriesEntry } from "@/types/plant";
+import { PageLayout } from "@/components/PageLayout/PageLayout";
 
 type modalType = "none" | "event" | "edit";
 
@@ -45,24 +44,23 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     ];
 
     return (
-        <PageLayout>
-            <DetailViewHeader
-                title={plant.title}
-                icon={Sprout}
-                iconVariant="sprout"
-                backLink={{
-                    label: environment?.name ? `Zurück zum Environment: ${environment?.name}` : "Zurück zum Environment",
-                    href: `/environments/${plant.environmentId}`,
-                }}
-            >
-                <Button variant="secondary" onClick={() => setModalType("edit")}>
-                    <span>
-                        <Pencil size={16} />
-                        Bearbeiten
-                    </span>
-                </Button>
-                <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
-            </DetailViewHeader>
+        <PageLayout
+            title={plant.title}
+            icon={Sprout}
+            iconVariant="sprout"
+            backLink={{
+                label: environment?.name ? `Zurück zum Environment: ${environment?.name}` : "Zurück zum Environment",
+                href: `/environments/${plant.environmentId}`,
+            }}
+            actions={
+                <>
+                    <Button variant="secondary" onClick={() => setModalType("edit")}>
+                        <span><Pencil size={16} />Bearbeiten</span>
+                    </Button>
+                    <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
+                </>
+            }
+        >
 
             <TabContent id="basicInfo">
                 <Card title="Basisinformationen" collapsible>
