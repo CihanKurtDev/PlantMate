@@ -2,48 +2,47 @@
 
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { EnvironmentEvent } from "@/types/environment";
-import EventForm, { EventOption } from "./shared/EventForm";
-import { EventFormData } from "@/types/events";
+import EventForm from "./shared/EventForm";
+import { EventFormData, extractCustomFields } from "@/types/events";
 import { useModal } from "@/context/ModalContext";
+import { ENVIRONMENT_EVENT_FORM_CONFIG } from "@/config/environment";
 
 interface EnvironmentEventFormProps {
     environmentId: string;
 }
 
-const environmentEventOptions: EventOption[] = [
-    { value: "Equipment_Change", label: "Gerätewechsel" },
-    { value: "Maintenance", label: "Wartung" },
-    { value: "Cleaning", label: "Reinigung" },
-    { value: "custom", label: "Eigenes Event" },
-];
-
 export default function EnvironmentEventForm({ environmentId }: EnvironmentEventFormProps) {
     const { addEventToEnvironment } = usePlantMonitor();
-    const { closeModal } = useModal()
+    const { closeModal } = useModal();
 
     const handleSubmit = (eventData: EventFormData) => {
-        const isCustom = eventData.type === "custom";
-        
+        const { type, timestamp, notes, extra } = eventData;
+        const { resolvedType, ...customFields } = extractCustomFields(type, extra);
+
         const newEvent: EnvironmentEvent = {
             id: Date.now().toString(),
             environmentId,
-            timestamp: Date.now(),
-            type: isCustom ? eventData.customName! : eventData.type,
-            notes: eventData.notes || undefined,
-            customIconName: isCustom ? eventData.customIconName : undefined,
-            customBgColor: isCustom ? eventData.customBgColor : undefined,
-            customTextColor: isCustom ? eventData.customTextColor : undefined,
-            customBorderColor: isCustom ? eventData.customBorderColor : undefined,
+            timestamp,
+            notes: notes || undefined,
+            type: resolvedType,
+            ...customFields,
+            equipmentChange:
+                type === "Equipment_Change" && extra.equipment
+                    ? {
+                        equipment: extra.equipment as string,
+                        action: extra.action as "ADDED" | "REMOVED" | "REPLACED",
+                      }
+                    : undefined,
         };
 
         addEventToEnvironment(environmentId, newEvent);
-        closeModal()
+        closeModal();
     };
 
     return (
         <EventForm
             title="Neues Ereignis hinzufügen"
-            eventOptions={environmentEventOptions}
+            eventFormConfig={ENVIRONMENT_EVENT_FORM_CONFIG}
             defaultEventType="Equipment_Change"
             onSubmit={handleSubmit}
             onCancel={closeModal}

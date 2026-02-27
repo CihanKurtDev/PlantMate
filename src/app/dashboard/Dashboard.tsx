@@ -1,13 +1,12 @@
 "use client"
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
-import EnvironmentCard from "./components/EnvironmentCard";
-import styles from "./Dashboard.module.scss"
 import { Button } from "@/components/Button/Button";
 import { Plus } from "lucide-react";
-import PageLayout from "@/components/PageLayout/PageLayout";
 import Modal from "@/components/Modal/Modal";
 import { useState } from "react";
 import { MultiStepForm } from "./components/MultiStepForm";
+import EnvironmentTab from "./components/EnvironmentTab";
+import { PageLayout } from "@/components/PageLayout/PageLayout";
 
 const Dashboard = () => {
     const { environments } = usePlantMonitor();
@@ -18,12 +17,7 @@ const Dashboard = () => {
             title="Dashboard"
             subtitle="Übersicht deiner Pflanzenumgebungen"
         >
-
-            <div className={styles.grid}>
-                {environments.map(environment => (
-                    <EnvironmentCard key={environment.id} environment={environment}/>
-                ))}
-            </div>
+            <EnvironmentTab environments={environments} onAddNew={() => setIsModalOpen(true)} />
             <Button
                 variant="floating"
                 size="round"

@@ -5,26 +5,27 @@ import { PlantData_Historical } from "@/types/plant";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import { usePlantForm } from "@/hooks/usePlantForm";
-import { usePlantValidation } from "@/hooks/usePlantValidation";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
 import { useModal } from "@/context/ModalContext";
 import { WaterInputs } from "../../../components/shared/WaterInputs";
+import { useWaterValidation } from "@/hooks/useWaterValidation";
 
 
 export default function WaterForm({ plantId }: { plantId: string }) {
     const { addPlantHistoryData } = usePlantMonitor();
-    const { formState, waterInput, setWaterInput } = usePlantForm();
-    const { validate, validateWarnings } = usePlantValidation();
+    const { waterInput, setWaterInput } = usePlantForm();
+    const { errors, warnings } = useWaterValidation(waterInput);
     const { closeModal } = useModal();
 
-    const validationErrors = validate(formState, waterInput);
-    const validationWarnings = validateWarnings(formState, waterInput);
+    const validationErrors = errors;
+    const validationWarnings = warnings;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!waterInput || Object.values(waterInput).every(v => !v)) {
-            alert("Bitte trage mindestens einen Messwert ein.");
+        const hasErrors = Object.keys(validationErrors).length > 0;
+        if (hasErrors) {
+            console.warn("Form has validation errors:", validationErrors);
             return;
         }
 
@@ -48,8 +49,8 @@ export default function WaterForm({ plantId }: { plantId: string }) {
             <WaterInputs
                 water={waterInput}
                 onChange={setWaterInput}
-                errors={validationErrors.water}
-                warnings={validationWarnings.water}
+                errors={validationErrors}
+                warnings={validationWarnings}
             />
             <FormField>
                 <Button type="submit">Speichern</Button>

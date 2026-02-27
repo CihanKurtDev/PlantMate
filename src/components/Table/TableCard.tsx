@@ -9,6 +9,7 @@ import { Pagination } from "./Pagination";
 import styles from './TableCard.module.scss';
 import { PlantTableRow } from "./adapters/plantTableAdapter";
 import { Card } from "../Card/Card";
+import { EnvironmentTableRow } from "./adapters/environmentTableAdapter";
 
 interface TableCardProps<RowType extends { key: string }> {
     data: RowType[];
@@ -101,3 +102,4 @@ function createTableCard<RowType extends { key: string }>() {
 }
 
 export const PlantTableCard = createTableCard<PlantTableRow>();
+export const EnvironmentTableCard = createTableCard<EnvironmentTableRow>();

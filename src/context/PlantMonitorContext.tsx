@@ -14,6 +14,7 @@ interface PlantMonitorContextType {
     addEventToPlant: (plantId: string, event: PlantEvent) => void,
     addEventToEnvironment: (environmentId: string, event: EnvironmentEvent) => void,
     addHistoryData: (environmentId: string, entry: EnvironmentData_Historical) => void,
+    updateHistoryData: (environmentId: string, entry: EnvironmentData_Historical) => void,
     addPlantHistoryData: (plantId: string, entry: PlantData_Historical) => void,
     deletePlants: (ids: string[]) => void;
 }
@@ -121,6 +122,23 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         });
     };
 
+    const updateHistoryData = (environmentId: string, entry: EnvironmentData_Historical) => {
+        setEnvironments(prev => {
+            const updated = prev.map(env =>
+                env.id === environmentId
+                    ? {
+                          ...env,
+                          historical: (env.historical ?? []).map(h =>
+                              h.id === entry.id ? entry : h
+                          ),
+                      }
+                    : env
+            );
+            localStorage.setItem("environments", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
     const addPlantHistoryData = (plantId: string, entry: PlantData_Historical) => {
         setPlants(prev => {
             const updated = prev.map(plant =>
@@ -150,6 +168,7 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
             addEventToPlant, 
             addEventToEnvironment,
             addHistoryData,
+            updateHistoryData,
             addPlantHistoryData
         }}>
             {children}

@@ -1,9 +1,12 @@
 "use client"
-import { LoginFormData, LoginFormErrors, LoginStatus } from "@/types/auth"
+
+import { LoginFormData, LoginStatus } from "@/types/auth"
 import { useState } from "react"
 import styles from "./LoginForm.module.scss"
 import { useLoginValidation } from "@/hooks/useLoginValidation"
+import { hasValidationErrors } from "@/helpers/validationUtils"
 import { useRouter } from "next/navigation"
+import Form from "@/components/Form/Form"
 import { Input } from "@/components/Form/Input"
 import Checkbox from "@/components/Form/Checkbox"
 import { Button } from "@/components/Button/Button"
@@ -22,29 +25,29 @@ const LoginForm = () => {
         rememberMe: false,
     })
     const [status, setStatus] = useState<LoginStatus>("idle")
-    const [error, setError] = useState<string | undefined>()
+    const [serverError, setServerError] = useState<string | undefined>()
 
     const { validate } = useLoginValidation()
     const router = useRouter()
+
     const validationErrors = validate(form)
-    const hasInvalidValues = Object.values(validationErrors).some(Boolean)
-    const isDisabled = status === "loading" || hasInvalidValues
+    const isDisabled = status === "loading" || hasValidationErrors(validationErrors)
 
     const handleChange = (field: "email" | "password", value: string) => {
         setForm(prev => ({ ...prev, [field]: value }))
     }
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setError(undefined)
-        if (hasInvalidValues) return
+        setServerError(undefined)
+        if (hasValidationErrors(validationErrors)) return
+
         setStatus("loading")
         const res = await fakeLoginRequest(form)
 
         if (!res.success) {
             setStatus("error")
-            setError(res.error ?? "Login fehlgeschlagen")
+            setServerError(res.error ?? "Login fehlgeschlagen")
             return
         }
 
@@ -52,10 +55,10 @@ const LoginForm = () => {
         router.push("/dashboard")
     }
 
-
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
-            {error && <p className={styles.errorMessage}>{error}</p>}
+        <Form onSubmit={handleSubmit}>
+            {serverError && <p className={styles.errorMessage}>{serverError}</p>}
+
             <Input
                 id="email"
                 type="email"
@@ -91,7 +94,7 @@ const LoginForm = () => {
             </div>
 
             <p>test@test.de, 1234</p>
-        </form>
+        </Form>
     )
 }
 

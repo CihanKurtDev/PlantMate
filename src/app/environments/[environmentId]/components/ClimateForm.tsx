@@ -5,50 +5,69 @@ import { EnvironmentData_Historical } from "@/types/environment";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
 import { ClimateInputs } from "./shared/ClimateInputs";
-import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
-import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useModal } from "@/context/ModalContext";
+import { useClimateValidation } from "@/hooks/useClimateValidation";
+import { useClimateForm } from "@/hooks/useClimateForm";
 
-export default function ClimateForm({ environmentId } : { environmentId: string }) {
-    const { addHistoryData } = usePlantMonitor();
-    const { formState, climateInput, setClimateInput } = useEnvironmentForm();
-    const { validate, validateWarnings } = useEnvironmentValidation();
+interface ClimateFormProps {
+    environmentId: string;
+    entryId?: string;
+}
+
+export default function ClimateForm({ environmentId, entryId }: ClimateFormProps) {
+    const { environments, addHistoryData, updateHistoryData } = usePlantMonitor();
     const { closeModal } = useModal();
 
-    const validationErrors = validate(formState, climateInput);
-    const validationWarnings = validateWarnings(formState, climateInput);
+    const existingEntry = entryId
+        ? environments.find(e => e.id === environmentId)?.historical?.find(h => h.id === entryId)
+        : undefined;
+
+    const { climateInput, setClimateInput } = useClimateForm(existingEntry);
+    const { errors: validationErrors, warnings: validationWarnings } = useClimateValidation(climateInput);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!climateInput || Object.values(climateInput).every(v => !v)) {
-            alert("Bitte trage mindestens einen Messwert ein.");
+        if (Object.keys(validationErrors).length > 0) {
+            console.warn("Form has validation errors:", validationErrors);
             return;
         }
 
         const climateData = convertClimateInputToData(climateInput);
+        
+        if (!climateData) {
+            console.warn("Keine Klimadaten eingegeben.");
+            return;
+        }
 
         const timestamp = Date.now();
         const entry: EnvironmentData_Historical = {
-            id: timestamp.toString(),
+            id: existingEntry?.id ?? timestamp.toString(),
             environmentId,
-            timestamp,
+            timestamp: existingEntry?.timestamp ?? timestamp,
             climate: climateData || {},
         };
 
-        addHistoryData(environmentId, entry);
-        closeModal()
+        if (existingEntry) {
+            updateHistoryData(environmentId, entry)
+        } else {
+            addHistoryData(environmentId, entry)
+        }
+
+        closeModal();
     };
 
     return (
         <Form onSubmit={handleSubmit}>
-            <FormSectionTitle>Klimamessung eintragen</FormSectionTitle>
+            <FormSectionTitle>
+                {existingEntry ? "Klimamessung bearbeiten" : "Klimamessung eintragen"}
+            </FormSectionTitle>
             <ClimateInputs
                 climate={climateInput}
                 onChange={setClimateInput}
-                errors={validationErrors.climate}
-                warnings={validationWarnings.climate}
+                errors={validationErrors}
+                warnings={validationWarnings}
             />
             <FormField>
                 <Button type="submit">Speichern</Button>

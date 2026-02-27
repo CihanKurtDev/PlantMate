@@ -1,5 +1,5 @@
 import type { MeasuredValue } from "./plant";
-import { BaseEvent, TimeSeriesEntry } from "./events";
+import { BaseEvent, EventTypeConfig, TimeSeriesEntry, CUSTOM_EVENT_EXTRA_FIELDS } from "./events";
 import { ActivityIcon, Droplet, Leaf, Thermometer, Wind } from "lucide-react";
 
 export type PercentUnit = '%';
@@ -16,6 +16,7 @@ export interface ClimateData {
   vpd?: MeasuredValue<KPaUnit>;
   co2?: MeasuredValue<PPMUnit>;
 }
+
 export interface ClimateDataInput {
   temp?: {
     value?: string;
@@ -50,11 +51,11 @@ export interface EnvironmentData_Historical {
   climate: ClimateData
 }
 
-export type EnvironmentEventType = 
-  | "Equipment_Change" 
-  | "Cleaning" 
+export type EnvironmentEventType =
+  | "Equipment_Change"
+  | "Cleaning"
   | "Maintenance"
-  | string
+  | string;
 
 export interface EnvironmentEvent extends BaseEvent {
   environmentId: string;
@@ -65,4 +66,4 @@ export interface EnvironmentEvent extends BaseEvent {
   }
 }
 
-export type EnvironmentTimeSeriesEntry  = TimeSeriesEntry<EnvironmentEvent>
+export type EnvironmentTimeSeriesEntry = TimeSeriesEntry<EnvironmentEvent>;
