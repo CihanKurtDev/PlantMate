@@ -67,6 +67,11 @@
     color: var(--text-tertiary);
 }
 
+.numeric {
+    font-family: monospace;
+    font-size: var(--font-size-s, 12px);
+}
+
 .flag {
     font-size: var(--font-size-xs);
     font-weight: bold;

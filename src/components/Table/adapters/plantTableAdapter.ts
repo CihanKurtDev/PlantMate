@@ -1,19 +1,6 @@
-import { PlantData, PlantEvent, WaterData } from "@/types/plant";
-
-const getLastEvent = (events?: PlantEvent[]) =>
-    events && events.length > 0 ? events[events.length - 1] : undefined;
-
-const daysSince = (timestamp: number): number => {
-    return Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
-};
-
-const formatDateShort = (date: Date): string => {
-    return new Intl.DateTimeFormat('de-DE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    }).format(date);
-};
+import { daysSince, formatDateShort } from "@/helpers/date";
+import { PlantData, PlantEvent } from "@/types/plant";
+import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
 
 export interface PlantTableRow {
     key: string;
@@ -34,6 +21,11 @@ export interface PlantTableRow {
     lastWateringTimestamp: number;
     lastWateringDate: string | null;
     daysSinceWatering: number;
+
+    events?: PlantEvent[];
+
+    phHistory: number[];
+    ecHistory: number[];
 }
 
 export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
@@ -55,9 +47,7 @@ export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
 
             lastEventType: lastEvent?.type ?? null,
             lastEventTimestamp: lastEvent?.timestamp ?? 0,
-            lastEventFormatted: lastEvent
-                ? `${lastEvent.type.charAt(0).toUpperCase()}${lastEvent.type.slice(1).toLowerCase()}`
-                : null,
+            lastEventFormatted: lastEvent?.type ?? null,
 
             lastWateringTimestamp: lastHistorical?.timestamp ?? 0,
             lastWateringDate: lastHistorical
@@ -66,6 +56,11 @@ export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
             daysSinceWatering: lastHistorical
                 ? daysSince(lastHistorical.timestamp)
                 : 999,
+
+            events: plant.events,
+
+            phHistory: buildHistory(plant.historical, h => h.water?.ph?.value),
+            ecHistory: buildHistory(plant.historical, h => h.water?.ec?.value),
         };
     });
 };

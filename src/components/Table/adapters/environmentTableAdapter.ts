@@ -1,12 +1,6 @@
-import { formatDateShort } from "@/helpers/date";
+import { daysSince, formatDateShort } from "@/helpers/date";
 import { EnvironmentData, EnvironmentEvent } from "@/types/environment";
-
-const getLastEvent = (events?: EnvironmentEvent[]) =>
-    events && events.length > 0 ? events[events.length - 1] : undefined;
-
-const daysSince = (timestamp: number): number => {
-    return Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
-};
+import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
 
 export interface EnvironmentTableRow {
     key: string;
@@ -32,6 +26,11 @@ export interface EnvironmentTableRow {
     lastEventFormatted: string | null;
 
     events?: EnvironmentEvent[];
+
+    tempHistory: number[];
+    humidityHistory: number[];
+    vpdHistory: number[];
+    co2History: number[];
 }
 
 export const mapEnvironmentsToTableRows = (environments: EnvironmentData[]): EnvironmentTableRow[] => {
@@ -64,11 +63,14 @@ export const mapEnvironmentsToTableRows = (environments: EnvironmentData[]): Env
 
             lastEventType: lastEvent?.type ?? null,
             lastEventTimestamp: lastEvent?.timestamp ?? 0,
-            lastEventFormatted: lastEvent
-                ? `${lastEvent.type.charAt(0).toUpperCase()}${lastEvent.type.slice(1).toLowerCase()}`
-                : null,
+            lastEventFormatted: lastEvent?.type ?? null,
 
             events: env.events,
+
+            tempHistory: buildHistory(env.historical, h => h.climate?.temp?.value),
+            humidityHistory: buildHistory(env.historical, h => h.climate?.humidity?.value),
+            vpdHistory: buildHistory(env.historical, h => h.climate?.vpd?.value),
+            co2History: buildHistory(env.historical, h => h.climate?.co2?.value),
         };
     });
 };
