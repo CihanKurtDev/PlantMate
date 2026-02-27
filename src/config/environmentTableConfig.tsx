@@ -1,7 +1,11 @@
 import { EnvironmentTableRow } from "@/components/Table/adapters/environmentTableAdapter";
 import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
-import { ActivityIcon, AlertCircle, CalendarClock, Inbox, Thermometer, Wind } from "lucide-react";
+import { CLIMATE_COLORS, getEventConfig } from "./icons";
+import { ENVIRONMENT_LABELS } from "./environment";
+import { TableSparkline } from "@/helpers/tableUtils";
+import { ActivityIcon, AlertCircle, CalendarClock, Inbox } from "lucide-react";
+import styles from "@/components/Table/Table.module.scss";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -10,12 +14,6 @@ const dangerColor = "#b91c1c";
 
 const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
-
-const ENV_TYPE_LABELS: Record<string, string> = {
-    ROOM: "Raum",
-    TENT: "Zelt",
-    GREENHOUSE: "Gewächshaus",
-};
 
 export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
     title: "Environments",
@@ -46,11 +44,10 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             displayText: "Ungesund",
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
-                const tempBad = row.lastTemp !== null && row.lastTemp > 30;
+                const tempBad     = row.lastTemp !== null && row.lastTemp > 30;
                 const humidityBad = row.lastHumidity !== null && row.lastHumidity > 70;
-                const stale = row.daysSinceLastMeasurement > 7;
-                const noEvents = !row.events || row.events.length === 0;
-
+                const stale       = row.daysSinceLastMeasurement > 7;
+                const noEvents    = !row.events || row.events.length === 0;
                 return tempBad || humidityBad || stale || noEvents;
             },
         },
@@ -69,7 +66,9 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             displayText: "Typ",
             sortable: true,
             render: (value: string) =>
-                value ? <span>{ENV_TYPE_LABELS[value] ?? value}</span> : EMPTY,
+                value
+                    ? <span>{ENVIRONMENT_LABELS[value as keyof typeof ENVIRONMENT_LABELS] ?? value}</span>
+                    : EMPTY,
         },
         {
             key: "location",
@@ -84,21 +83,24 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             sortable: true,
             render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
-
                 return (
-                    <span
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 4,
-                            ...getWarnStyle(value > 30),
-                        }}
-                    >
-                        <Thermometer size={16} />
+                    <span className={styles.numeric} style={getWarnStyle(value > 30)}>
                         {value} {row?.lastTempUnit ?? "°C"}
                     </span>
                 );
             },
+        },
+        {
+            key: "tempHistory",
+            displayText: "Trend 30d",
+            sortable: false,
+            render: (_value, row) => (
+                <TableSparkline
+                    data={row?.tempHistory ?? []}
+                    color={CLIMATE_COLORS.temp.base}
+                    id={`temp_${row?.key}`}
+                />
+            ),
         },
         {
             key: "lastHumidity",
@@ -106,9 +108,8 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             sortable: true,
             render: (value: number | null) => {
                 if (value === null) return EMPTY;
-
                 return (
-                    <span style={getWarnStyle(value > 70)}>
+                    <span className={styles.numeric} style={getWarnStyle(value > 70)}>
                         {value} %
                     </span>
                 );
@@ -120,9 +121,8 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             sortable: true,
             render: (value: number | null) => {
                 if (value === null) return EMPTY;
-
                 return (
-                    <span style={getWarnStyle(value < 0.4 || value > 1.6)}>
+                    <span className={styles.numeric} style={getWarnStyle(value < 0.4 || value > 1.6)}>
                         {value} kPa
                     </span>
                 );
@@ -134,10 +134,8 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             sortable: true,
             render: (value: number | null) => {
                 if (value === null) return EMPTY;
-
                 return (
-                    <span style={getWarnStyle(value > 1500)}>
-                        <Wind size={14} style={{ marginRight: 4, verticalAlign: "middle" }} />
+                    <span className={styles.numeric} style={getWarnStyle(value > 1500)}>
                         {value} ppm
                     </span>
                 );
@@ -145,16 +143,35 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
         },
         {
             key: "lastEventTimestamp",
-            displayText: "Letztes Event",
+            displayText: "Event",
             sortable: true,
             render: (value: number, row) => {
                 if (!value || !row?.lastEventFormatted) return EMPTY;
 
+                const eventCfg = getEventConfig(row.lastEventFormatted);
+
                 return (
-                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <CalendarClock size={18} />
-                        <span style={{ fontSize: "0.95em", color: "#333" }}>
-                            {row.lastEventFormatted} · {formatDateShort(new Date(value))}
+                    <span
+                        style={{ display: "flex", alignItems: "center", gap: 6 }}
+                        title={eventCfg?.label ?? row.lastEventFormatted}
+                    >
+                        {eventCfg && (
+                            <span style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: 26,
+                                height: 26,
+                                borderRadius: 6,
+                                background: eventCfg.colors.soft,
+                                color: eventCfg.colors.base,
+                                flexShrink: 0,
+                            }}>
+                                <eventCfg.icon size={14} />
+                            </span>
+                        )}
+                        <span style={{ fontSize: "11px", color: "#6b7280" }}>
+                            {formatDateShort(new Date(value))}
                         </span>
                     </span>
                 );
@@ -166,11 +183,8 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             sortable: true,
             render: (value: number, row) => {
                 if (!value || !row?.lastMeasurementDate) return EMPTY;
-
-                const days = row.daysSinceLastMeasurement;
-
                 return (
-                    <span style={{ color: days > 7 ? dangerColor : undefined }}>
+                    <span className={styles.numeric} style={{ color: row.daysSinceLastMeasurement > 7 ? dangerColor : undefined }}>
                         {row.lastMeasurementDate}
                     </span>
                 );
