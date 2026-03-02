@@ -51,7 +51,7 @@ function EnvironmentMobileCard({ row }: EnvironmentMobileCardProps) {
 
     const metrics = [
         { label: 'TEMP', value: row.lastTemp, key: 'temp', display: row.lastTemp !== null ? `${row.lastTemp}°` : '—' },
-        { label: 'FEUCHTE', value: row.lastHumidity, key: 'humidity', display: row.lastHumidity !== null ? `${row.lastHumidity}%`    : '—' },
+        { label: 'RLF', value: row.lastHumidity, key: 'humidity', display: row.lastHumidity !== null ? `${row.lastHumidity}%`    : '—' },
         { label: 'VPD', value: row.lastVpd, key: 'vpd', display: row.lastVpd !== null ? `${row.lastVpd}` : '—' },
         { label: 'CO₂', value: row.lastCo2, key: 'co2', display: row.lastCo2 !== null ? `${row.lastCo2}` : '—' },
     ];

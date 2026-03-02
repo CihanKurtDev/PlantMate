@@ -21,14 +21,6 @@ export default function EnvironmentTab({ environments, onAddNew }: EnvironmentTa
     const isMobile = useIsMobile();
     const rows = mapEnvironmentsToTableRows(environments);
 
-    if (environments.length === 0) {
-        return (
-            <TabContent id="environments">
-                <EmptyState message='Keine Environments vorhanden' />
-            </TabContent>
-        );
-    }
-
     return (
         <TabContent id="environments">
             {isMobile ? (
