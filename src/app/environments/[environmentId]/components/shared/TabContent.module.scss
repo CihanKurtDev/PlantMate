@@ -1,7 +1,11 @@
 .container {
-    padding: var(--spacing-s) var(--spacing-xl);
+    padding: var(--spacing-s) var(--spacing-l);
     background: var(--color-background-secondary);
     border-radius: var(--radius-m);
+    
+    @media (min-width: 768px) {
+        padding: var(--spacing-s) var(--spacing-xl);
+    }
 }
 
 .header {
