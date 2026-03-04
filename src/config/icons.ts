@@ -47,6 +47,17 @@ export const CLIMATE_COLORS = {
     },
 } as const;
 
+export const WATER_COLORS = {
+    ph: {
+        base: '#d05959',
+        soft: 'rgba(208, 89, 89, 0.18)',
+    },
+    ec: {
+        base: '#087a6d',
+        soft: 'rgba(8, 122, 109, 0.18)',
+    },
+} as const;
+
 export const EVENT_COLORS = {
     fertilizing: {
         base: '#4e9a3d',
