@@ -1,0 +1,197 @@
+.toolbar {
+    display: flex;
+    gap: var(--spacing-s);
+    overflow: hidden;
+}
+
+.search {
+    flex: 1;
+    min-width: 0;
+    padding: var(--spacing-m);
+    font-size: var(--font-size-m);
+    font-family: inherit;
+    color: var(--color-text-primary);
+    background: var(--color-background-primary);
+    border: 2px solid var(--color-border-primary);
+    border-radius: var(--radius-m);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &::placeholder { color: var(--color-text-tertiary); }
+
+    &:focus {
+        border-color: var(--color-background-tertiary);
+        box-shadow: 0 0 0 3px rgba(45, 101, 26, 0.1);
+    }
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-s);
+}
+
+.card {
+    border-radius: var(--radius-m);
+    border: 1px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
+
+    &:focus-visible {
+        outline: 2px solid var(--color-background-tertiary);
+        outline-offset: 2px;
+    }
+
+    &:active {
+        transform: scale(0.99);
+        box-shadow: 0 0 0 2.5px var(--color-border-primary);
+    }
+}
+
+.cardBody {
+    padding: var(--spacing-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+}
+
+
+.cardTop {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-s);
+}
+
+.cardName {
+    font-size: var(--font-size-m);
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+}
+
+.cardMeta {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+    margin-top: 3px;
+}
+
+
+.badge {
+    flex-shrink: 0;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    padding: var(--spacing-xs) var(--spacing-m);
+    border-radius: var(--radius-m);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.badge_ok     { background: var(--color-flag-success); color: var(--color-text-success); }
+.badge_warn   { background: var(--color-flag-alert);   color: var(--color-text-alert); }
+.badge_danger { background: var(--color-flag-error);   color: var(--color-text-error); }
+
+
+.metrics {
+    display: flex;
+    border: 1px solid var(--color-border-secondary);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+}
+
+.metric {
+    flex: 1;
+    min-width: 0;
+    padding: var(--spacing-s) 0 var(--spacing-s) var(--spacing-m);
+    border-right: 1px solid var(--color-border-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+
+    &:last-child { border-right: none; }
+}
+
+.metricLabel {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+    line-height: 1;
+}
+
+.metricVal {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--font-size-s);
+    font-weight: 500;
+    line-height: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: var(--spacing-s);
+}
+
+.ok     { color: var(--color-text-primary); }
+.warn   { color: var(--color-text-alert); }
+.danger { color: var(--color-text-error); }
+.muted  { color: var(--color-text-tertiary); }
+
+
+.sparkWrap {
+    border: 1px solid var(--color-border-secondary);
+    border-radius: var(--radius-m);
+    overflow: hidden;
+}
+
+.sparkHead {
+    padding: var(--spacing-s) var(--spacing-m) 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sparkTitle {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    color: var(--color-text-tertiary);
+}
+
+.sparkVal {
+    font-family: var(--font-mono, monospace);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-text-primary);
+}
+
+.sparkChart {
+    height: 42px;
+    margin-top: var(--spacing-xs);
+}
+
+.noData {
+    font-size: var(--font-size-s);
+    color: var(--color-text-tertiary);
+    border: 1px dashed var(--color-border-primary);
+    border-radius: var(--radius-m);
+    padding: var(--spacing-m);
+    text-align: center;
+    background: var(--color-background-secondary);
+}
+
+.cardFooter {
+    display: flex;
+    align-items: center;
+    padding-top: var(--spacing-xs);
+    border-top: 1px solid var(--color-border-secondary);
+}
+
+.measureLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}

@@ -2,9 +2,9 @@ import { PlantTableRow } from "@/components/Table/adapters/plantTableAdapter";
 import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
 import { getEventConfig } from "./icons";
-import { TableSparkline } from "@/helpers/tableUtils";
 import { ActivityIcon, AlertCircle, Droplet, Inbox } from "lucide-react";
 import styles from "@/components/Table/Table.module.scss";
+import Sparkline from "@/components/Sparkline/Sparkline";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -89,7 +89,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             displayText: "pH Trend 30d",
             sortable: false,
             render: (_value, row) => (
-                <TableSparkline
+                <Sparkline
                     data={row?.phHistory ?? []}
                     color={PH_COLOR}
                     id={`ph_${row?.key}`}
@@ -114,7 +114,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             displayText: "EC Trend 30d",
             sortable: false,
             render: (_value, row) => (
-                <TableSparkline
+                <Sparkline
                     data={row?.ecHistory ?? []}
                     color={EC_COLOR}
                     id={`ec_${row?.key}`}

@@ -43,6 +43,8 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
         { key: 'ec', label: 'EC', unit: 'mS/cm', color: '#43a047', icon: Sprout, min: 0, max: 5, idealMin: 1, idealMax: 2, format: v => v.toFixed(2) }
     ];
 
+    const hasEnoughDataForCharts = chartData.length > 1
+
     return (
         <PageLayout
             title={plant.title}
@@ -68,7 +70,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </Card>
             </TabContent>
 
-            <DataTab data={chartData} metrics={metrics} />
+            {hasEnoughDataForCharts && <DataTab data={chartData} metrics={metrics} />}
 
             <PlantEventsTab events={plant.events} />
 

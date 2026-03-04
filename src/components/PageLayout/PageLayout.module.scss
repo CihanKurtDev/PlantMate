@@ -1,9 +1,11 @@
 .header {
-    padding: var(--spacing-xl);
+    padding: var(--spacing-l);
     display: flex;
     flex-direction: column;
+    gap: var(--spacing-m);
     
     @media (min-width: 768px) {
+        padding: var(--spacing-xl);
         margin-bottom: 0;
         flex-direction: row;
         justify-content: space-between;
@@ -15,7 +17,7 @@
     display: flex;
     flex: 1;
     gap: var(--spacing-m);
-    
+
     @media (min-width: 1600px) {
         margin-bottom: 0;
     }
@@ -28,14 +30,23 @@
 
 .actions {
     display: flex;
+    flex-direction: column;
     align-self: center;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-xs);;
+    width: 100%;
+    
+    @media (min-width: 768px) {
+        flex-direction: row;
+        gap: var(--spacing-xs);
+        width: auto;
+    }
 
     button {
         span {
             display: flex;
             align-items: center;
             gap: var(--spacing-s);
+            justify-content: center;
         }
     }
 }

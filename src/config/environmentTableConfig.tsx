@@ -3,9 +3,9 @@ import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
 import { CLIMATE_COLORS, getEventConfig } from "./icons";
 import { ENVIRONMENT_LABELS } from "./environment";
-import { TableSparkline } from "@/helpers/tableUtils";
 import { ActivityIcon, AlertCircle, CalendarClock, Inbox } from "lucide-react";
 import styles from "@/components/Table/Table.module.scss";
+import Sparkline from "@/components/Sparkline/Sparkline";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -95,7 +95,7 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             displayText: "Trend 30d",
             sortable: false,
             render: (_value, row) => (
-                <TableSparkline
+                <Sparkline
                     data={row?.tempHistory ?? []}
                     color={CLIMATE_COLORS.temp.base}
                     id={`temp_${row?.key}`}

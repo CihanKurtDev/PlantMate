@@ -8,6 +8,7 @@ interface PlantMonitorContextType {
     plants: PlantData[];
     addEnvironment: (env: EnvironmentData) => void;
     updateEnvironment: (env: EnvironmentData) => void;
+    deleteEnvironments: (ids: string[]) => void;
     addPlant: (plant: PlantData) => void;
     updatePlant: (plant: PlantData) => void;
     getPlantsByEnvironment: (envId: string) => PlantData[];
@@ -56,6 +57,19 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
         setEnvironments(prev => {
             const updated = prev.map(e => e.id === env.id ? env : e);
             localStorage.setItem("environments", JSON.stringify(updated));
+            return updated;
+        });
+    };
+
+    const deleteEnvironments = (ids: string[]) => {
+        setEnvironments(prev => {
+            const updated = prev.filter(env => !ids.includes(env.id!));
+            localStorage.setItem("environments", JSON.stringify(updated));
+            return updated;
+        });
+        setPlants(prev => {
+            const updated = prev.filter(plant => !ids.includes(plant.environmentId!));
+            localStorage.setItem("plants", JSON.stringify(updated));
             return updated;
         });
     };
@@ -161,6 +175,7 @@ export const PlantMonitorProvider = ({ children }: { children: ReactNode }) => {
             plants,
             addEnvironment, 
             updateEnvironment,
+            deleteEnvironments,
             addPlant, 
             updatePlant,
             getPlantsByEnvironment, 
