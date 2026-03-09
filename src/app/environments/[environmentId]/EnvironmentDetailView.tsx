@@ -5,7 +5,7 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab, { MetricConfig } from "./components/shared/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
-import ClimateGrid from "@/components/climate/ClimateGrid";
+import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
@@ -17,26 +17,6 @@ import styles from './EnvironmentDetailView.module.scss';
 import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import ClimateForm from "./components/ClimateForm";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
-
-export const getLatestHistoricalForToday = <T extends { timestamp: number }>(
-    entries?: T[]
-): T | undefined => {
-    if (!entries?.length) return undefined;
-    const now = Date.now();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    let latest: T | undefined;
-    for (const entry of entries) {
-        if (entry.timestamp >= today.getTime() && entry.timestamp < tomorrow.getTime() && entry.timestamp <= now) {
-            if (!latest || entry.timestamp > latest.timestamp) {
-                latest = entry;
-            }
-        }
-    }
-    return latest;
-};
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -52,8 +32,16 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     
     if (!environment) return null;
 
-    const latestTodayEntry = getLatestHistoricalForToday(environment.historical);
-    const lastClimateValues = latestTodayEntry?.climate;
+    const latestEntry = environment.historical?.at(-1);
+    const lastClimateValues = latestEntry?.climate;
+
+    const climateEntries = Object.entries(lastClimateValues ?? {});
+    const validClimateEntries = climateEntries.filter(([key, value]) => value != null);
+    const climateItems: MetricItem[] = validClimateEntries.map(([key, value]) => ({
+        key: key,
+        value: `${value!.value}${value!.unit}`,
+    }));
+
     const chartData: EnvironmentTimeSeriesEntry[] = (environment.historical ?? []).map(entry => ({
         timestamp: entry.timestamp,
         entryKind: 'historical' as const,
@@ -93,9 +81,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 </>
             }
         >
-            {lastClimateValues && (
+            {climateItems.length > 0 && (
                 <div className={styles.climateGridWrapper}>
-                    <ClimateGrid climate={lastClimateValues} />
+                    <MetricGrid items={climateItems} />
                 </div>
             )}
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />

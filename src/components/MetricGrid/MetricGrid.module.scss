@@ -1,3 +1,9 @@
+.metricGrid {
+    display: grid;
+    padding: var(--spacing-xl);
+    gap: 0.75rem;
+}
+
 .metric {
     font-size: var(--font-size-s);
     border-radius: var(--radius-m);
@@ -26,4 +32,10 @@
 .value {
     font-weight: bold;
     font-size: var(--font-size-xl);
+}
+
+.subValue {
+    font-size: 0.75rem;
+    color: gray;
+    margin-top: 2px;
 }

@@ -14,6 +14,7 @@ import WaterForm from "./components/WaterForm";
 import PlantEventForm from "./components/PlantEventForm";
 import { PlantTimeSeriesEntry } from "@/types/plant";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
+import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
 
 type modalType = "none" | "event" | "edit";
 
@@ -24,6 +25,17 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     const plant = plants.find(p => p.id === plantId);
     if (!plant) return null;
     const environment = environments.find(e => e.id === plant.environmentId);
+    const latestHistorical = plant.historical?.at(-1);
+
+    const phItem: MetricItem | null = latestHistorical?.water?.ph
+        ? { key: 'ph', value: `${latestHistorical.water.ph.value} pH` }
+        : null;
+
+    const ecItem: MetricItem | null = latestHistorical?.water?.ec
+        ? { key: 'ec', value: `${latestHistorical.water.ec.value} mS/cm` }
+        : null;
+
+    const waterItems: MetricItem[] = [phItem, ecItem].filter((item) => item !== null);
 
     const chartData: PlantTimeSeriesEntry[] = (plant.historical ?? []).map(h => ({
         timestamp: h.timestamp,
@@ -63,6 +75,9 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </>
             }
         >
+            {waterItems.length > 0 && (
+                <MetricGrid items={waterItems} />
+            )}
 
             <TabContent id="basicInfo">
                 <Card title="Basisinformationen" collapsible>

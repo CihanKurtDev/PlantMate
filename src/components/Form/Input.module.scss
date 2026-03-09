@@ -32,3 +32,9 @@
     align-items: center;
     gap: 0.25rem;
 }
+
+.inputReadOnly {
+    background-color: lightgray;
+    border-color: gray;
+    cursor: not-allowed;
+}

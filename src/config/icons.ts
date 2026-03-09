@@ -11,6 +11,10 @@ import {
     Tent,
     Wind,
     type LucideIcon,
+    FlaskConical,
+    Zap,
+    Clock,
+    TriangleAlert,
 } from 'lucide-react';
 
 export const LOCATION_COLORS = {
@@ -89,6 +93,24 @@ export const EVENT_COLORS = {
     },
 } as const;
 
+export const DASHBOARD_COLORS = {
+    environments: {
+        base: '#82ac88',
+        soft: 'rgba(130, 172, 136, 0.18)',
+    },
+    plants: {
+        base: '#4e9a3d',
+        soft: 'rgba(78, 154, 61, 0.18)',
+    },
+    warnings: {
+        base: '#d05959',
+        soft: 'rgba(208, 89, 89, 0.18)',
+    },
+    lastMeasurement: {
+        base: '#087a6d',
+        soft: 'rgba(8, 122, 109, 0.18)',
+    },
+} as const;
 
 export interface IconConfig {
     label: string;
@@ -185,13 +207,48 @@ export const CLIMATE_CONFIG = {
     },
 } as const satisfies Record<string, IconConfig>;
 
+export const WATER_CONFIG = {
+    ph: {
+        label: 'pH',
+        icon: FlaskConical,
+        colors: WATER_COLORS.ph,
+    },
+    ec: {
+        label: 'EC',
+        icon: Zap,
+        colors: WATER_COLORS.ec,
+    },
+} as const satisfies Record<string, IconConfig>;
+
+export const DASHBOARD_CONFIG = {
+    environments: {
+        label: 'Environments',
+        icon: Home,
+        colors: DASHBOARD_COLORS.environments,
+    },
+    plants: {
+        label: 'Pflanzen',
+        icon: Sprout,
+        colors: DASHBOARD_COLORS.plants,
+    },
+    warnings: {
+        label: 'Warnungen',
+        icon: TriangleAlert,
+        colors: DASHBOARD_COLORS.warnings,
+    },
+    lastMeasurement: {
+        label: 'Letzte Messung',
+        icon: Clock,
+        colors: DASHBOARD_COLORS.lastMeasurement,
+    },
+} as const satisfies Record<string, IconConfig>;
 
 export const ALL_EVENT_CONFIG: Record<string, IconConfig> = {
     fertilizing: PLANT_EVENT_CONFIG.FERTILIZING,
     repotting: PLANT_EVENT_CONFIG.REPOTTING,
     pest_control: PLANT_EVENT_CONFIG.PEST_CONTROL,
     pruning: PLANT_EVENT_CONFIG.PRUNING,
-    
+
     equipment_change: ENVIRONMENT_EVENT_CONFIG.Equipment_Change,
     maintenance: ENVIRONMENT_EVENT_CONFIG.Maintenance,
     cleaning: ENVIRONMENT_EVENT_CONFIG.Cleaning,
@@ -199,6 +256,7 @@ export const ALL_EVENT_CONFIG: Record<string, IconConfig> = {
 
 export const ALL_ICON_CONFIG: Record<string, IconConfig> = {
     ...ALL_EVENT_CONFIG,
+
     greenhouse: LOCATION_CONFIG.greenhouse,
     tent: LOCATION_CONFIG.tent,
     room: LOCATION_CONFIG.room,
@@ -207,6 +265,14 @@ export const ALL_ICON_CONFIG: Record<string, IconConfig> = {
     humidity: CLIMATE_CONFIG.humidity,
     vpd: CLIMATE_CONFIG.vpd,
     co2: CLIMATE_CONFIG.co2,
+
+    ph: WATER_CONFIG.ph,
+    ec: WATER_CONFIG.ec,
+
+    environments: DASHBOARD_CONFIG.environments,
+    plants: DASHBOARD_CONFIG.plants,
+    warnings: DASHBOARD_CONFIG.warnings,
+    lastmeasurement: DASHBOARD_CONFIG.lastMeasurement,
 };
 
 export function getEventConfig(eventType: string): IconConfig | undefined {
