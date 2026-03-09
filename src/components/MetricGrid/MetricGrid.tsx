@@ -16,7 +16,10 @@ const MetricGrid = ({ items }: MetricGridProps) => {
     if (!items.length) return null;
 
     return (
-        <div className={styles.metricGrid} style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}>
+        <dl
+            className={styles.metricGrid}
+            style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+        >
             {items.map(({ key, value, subValue }) => {
                 const config = getIconConfig(key);
                 if (!config) return null;
@@ -24,19 +27,21 @@ const MetricGrid = ({ items }: MetricGridProps) => {
                 return (
                     <div key={key} className={styles.metric}>
                         <div className={styles.content}>
-                            <div className={styles.labelWrapper}>
+                            <dt className={styles.labelWrapper}>
                                 <TypeIcon icon={config.icon} variant={key} />
-                                <div className={styles.label}>{config.label}</div>
-                            </div>
-                            <div className={styles.value}>{value}</div>
+                                <span className={styles.label}>{config.label}</span>
+                            </dt>
+                            <dd className={styles.value}>{value}</dd>
                             {subValue && (
-                                <div className={styles.subValue}>{subValue}</div>
+                                <dd className={styles.subValue}>
+                                    {subValue}
+                                </dd>
                             )}
                         </div>
                     </div>
                 );
             })}
-        </div>
+        </dl>
     );
 };
 
