@@ -60,9 +60,6 @@ const RecentActivityTab = ({ environments, plants, limit}: RecentActivityProps) 
                                                     <span className={styles.title}>{entry.title}</span>
                                                     <div className={styles.meta}>
                                                         <span className={styles.subTitle}>{entry.subTitle}</span>
-                                                        {entry.notes && (
-                                                            <span className={styles.notes}>{entry.notes}</span>
-                                                        )}
                                                     </div>
                                                 </div>
                                                 <time
