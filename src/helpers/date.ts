@@ -89,3 +89,12 @@ export const setTimeToNoon = (date: Date): Date => {
 
 export const daysSince = (timestamp: number) =>
     (Date.now() - timestamp) / (1000 * 60 * 60 * 24);
+
+export const formatTimestamp = (timestamp: number): string => {
+    const diffMin = Math.floor((Date.now() - timestamp) / 60_000);
+    if (diffMin < 1)  return 'Gerade eben';
+    if (diffMin < 60) return `vor ${diffMin} Min`;
+    const diffH = Math.floor(diffMin / 60);
+    if (diffH < 24)   return `vor ${diffH} Std`;
+    return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+};
