@@ -3,57 +3,74 @@ import { Select } from "@/components/Form/Select";
 import { ClimateDataInput, TempUnit } from "@/types/environment";
 
 interface ClimateInputsProps {
-  climate?: ClimateDataInput; 
-  onChange: (c: ClimateDataInput) => void;
-  errors?: { temp?: string; humidity?: string; co2?: string; vpd?: string };
-  warnings?: { temp?: string; humidity?: string; co2?: string; vpd?: string };
+    climate?: ClimateDataInput;
+    onChange: (c: ClimateDataInput) => void;
+    errors?: { temp?: string; humidity?: string; co2?: string; vpd?: string };
+    warnings?: { temp?: string; humidity?: string; co2?: string; vpd?: string };
+}
+
+function convertToCelsius(value: number, unit: TempUnit): number {
+    return unit === "°F" ? (value - 32) * (5 / 9) : value;
+}
+
+function calculateVPD(tempC: number, humidity: number): number {
+    const svp = 0.6108 * Math.exp((17.27 * tempC) / (tempC + 237.3));
+    return svp * (1 - humidity / 100);
 }
 
 export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateInputsProps) => {
     const safeClimate: ClimateDataInput = climate ?? {};
 
-    const handleTempValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        onChange({
-            ...safeClimate,
-            temp: {
-                value: e.target.value || undefined,
-                unit: safeClimate.temp?.unit ?? "°C",
-            },
-        });
+    const handleValueChange = (field: "temp" | "humidity" | "co2", value: string) => {
+        const newClimate: ClimateDataInput = { ...safeClimate };
+
+        if (field === "temp") {
+            newClimate.temp = { ...safeClimate.temp, value: value || undefined };
+        } else {
+            newClimate[field] = value || undefined;
+        }
+
+        const tempVal = newClimate.temp?.value ? parseFloat(newClimate.temp.value) : undefined;
+        const tempUnit = newClimate.temp?.unit ?? "°C";
+        const humidityVal = newClimate.humidity ? parseFloat(newClimate.humidity) : undefined;
+
+        if (tempVal !== undefined && !isNaN(tempVal) && humidityVal !== undefined && !isNaN(humidityVal)) {
+            newClimate.vpd = calculateVPD(convertToCelsius(tempVal, tempUnit), humidityVal).toFixed(2);
+        } else {
+            newClimate.vpd = undefined;
+        }
+
+        onChange(newClimate);
     };
 
-    const handleTempUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        onChange({
-            ...safeClimate,
-            temp: {
-                value: safeClimate.temp?.value,
-                unit: e.target.value as TempUnit,
-            },
-        });
-    };
+    const handleTempUnitChange = (unit: TempUnit) => {
+        const newClimate: ClimateDataInput = { ...safeClimate, temp: { ...safeClimate.temp, unit } };
 
-    const handleSimpleChange =
-        (field: "humidity" | "co2" | "vpd") =>
-        (e: React.ChangeEvent<HTMLInputElement>) => {
-            onChange({
-                ...safeClimate,
-                [field]: e.target.value || undefined,
-            });
-        };
+        const tempVal = newClimate.temp?.value ? parseFloat(newClimate.temp.value) : undefined;
+        const humidityVal = newClimate.humidity ? parseFloat(newClimate.humidity) : undefined;
+
+        if (tempVal !== undefined && !isNaN(tempVal) && humidityVal !== undefined && !isNaN(humidityVal)) {
+            newClimate.vpd = calculateVPD(convertToCelsius(tempVal, unit), humidityVal).toFixed(2);
+        } else {
+            newClimate.vpd = undefined;
+        }
+
+        onChange(newClimate);
+    };
 
     return (
         <>
             <Input
                 label="Temperatur"
                 value={safeClimate.temp?.value ?? ""}
-                onChange={handleTempValueChange}
+                onChange={(e) => handleValueChange("temp", e.target.value)}
                 suffix={safeClimate.temp?.unit ?? "°C"}
                 error={errors?.temp}
                 warning={warnings?.temp}
             />
             <Select
                 value={safeClimate.temp?.unit ?? "°C"}
-                onChange={handleTempUnitChange}
+                onChange={(e) => handleTempUnitChange(e.target.value as TempUnit)}
             >
                 <option value="°C">°C</option>
                 <option value="°F">°F</option>
@@ -62,7 +79,7 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
             <Input
                 label="Luftfeuchtigkeit"
                 value={safeClimate.humidity ?? ""}
-                onChange={handleSimpleChange("humidity")}
+                onChange={(e) => handleValueChange("humidity", e.target.value)}
                 suffix="%"
                 error={errors?.humidity}
                 warning={warnings?.humidity}
@@ -71,7 +88,7 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
             <Input
                 label="CO₂"
                 value={safeClimate.co2 ?? ""}
-                onChange={handleSimpleChange("co2")}
+                onChange={(e) => handleValueChange("co2", e.target.value)}
                 suffix="ppm"
                 error={errors?.co2}
                 warning={warnings?.co2}
@@ -80,10 +97,9 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
             <Input
                 label="VPD"
                 value={safeClimate.vpd ?? ""}
-                onChange={handleSimpleChange("vpd")}
                 suffix="kPa"
-                error={errors?.vpd}
-                warning={warnings?.vpd}
+                readOnly
+                disabled
             />
         </>
     );

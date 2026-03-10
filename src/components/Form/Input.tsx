@@ -30,7 +30,7 @@ export const Input = ({
       <div className={styles.inputWrapper}>
         <input
           id={inputId}
-          className={`${styles.input} ${error ? styles.inputError : ""} ${className}`}
+          className={`${styles.input} ${error ? styles.inputError : ""}  ${props.readOnly ? styles.inputReadOnly : ""} ${className}`}
           {...props}
         />
         <div className={styles.suffixWrapper}>
