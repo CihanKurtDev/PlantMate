@@ -1,7 +1,7 @@
 import { createMemoizedTableRow } from "./createMemoizedTableRow";
-import { TableHeader } from "./TableHeader";
 import { SortConfig, TableColumn } from "@/types/table";
 import styles from './Table.module.scss';
+import { TableHeader } from "./TableHeader";
 
 interface TableProps<RowType extends { key: string }> {
     columns: TableColumn<RowType>[];
@@ -31,7 +31,7 @@ export const Table = <RowType extends { key: string }>({
             className={styles.table} 
             style={{ gridTemplateColumns: `repeat(${columns.length}, 1fr)` }}
         >
-            <TableHeader 
+            <TableHeader
                 headerData={columns} 
                 sortConfig={sortConfig} 
                 onSort={onSort}

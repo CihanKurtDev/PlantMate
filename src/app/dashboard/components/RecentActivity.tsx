@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { EnvironmentData } from "@/types/environment";
 import { PlantData } from "@/types/plant";
@@ -81,4 +81,4 @@ const RecentActivityTab = ({ environments, plants, limit}: RecentActivityProps) 
     );
 };
 
-export default RecentActivityTab;
+export default memo(RecentActivityTab);
