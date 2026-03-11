@@ -49,8 +49,7 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
                 const stale = row.daysSinceLastMeasurement > measurement.daysSinceLastMeasurement.warn;
-                const noEvents = !row.events || row.events.length === 0;
-                return row.tempBad || row.humidityBad || row.vpdBad || row.co2Bad || stale || noEvents;
+                return row.tempBad || row.humidityBad || row.vpdBad || row.co2Bad || stale ;
             },
         },
     ],

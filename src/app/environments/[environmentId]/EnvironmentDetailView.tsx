@@ -58,8 +58,8 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
         }))
         .sort((a, b) => a.timestamp - b.timestamp);
 
-    const headerTitle = `${environment.name} ${capitalize(environment.type)}`;
-    const headerSubtitle = `${environment.location} - ${capitalize(environment.type)}`;
+    const headerTitle = `${environment.name}`;
+    const headerSubtitle = `${environment.location} - ${capitalize(environment.type)} ${profile.label} `;
 
     const closeModal = () => setModalType("none");
 
