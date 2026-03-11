@@ -1,6 +1,8 @@
 import { daysSince, formatDateShort } from "@/helpers/date";
 import { PlantData, PlantEvent } from "@/types/plant";
+import { EnvironmentData } from "@/types/environment";
 import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
+import { getProfile, getProfileMetric } from "@/config/profiles";
 
 export interface PlantTableRow {
     key: string;
@@ -10,9 +12,11 @@ export interface PlantTableRow {
 
     phValue: number | null;
     phUnit: string | null;
+    phBad: boolean;
 
     ecValue: number | null;
     ecUnit: string | null;
+    ecBad: boolean;
 
     lastEventType: string | null;
     lastEventTimestamp: number;
@@ -28,10 +32,19 @@ export interface PlantTableRow {
     ecHistory: number[];
 }
 
-export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
+export const mapPlantsToTableRows = (plants: PlantData[], environments: EnvironmentData[]): PlantTableRow[] => {
     return plants.map(plant => {
         const lastHistorical = plant.historical?.at(-1);
         const lastEvent = getLastEvent(plant.events);
+
+        const environment = environments.find(e => e.id === plant.environmentId);
+        const profile = getProfile(environment?.profile);
+
+        const ph = lastHistorical?.water?.ph?.value ?? null;
+        const ec = lastHistorical?.water?.ec?.value ?? null;
+
+        const phMetric = getProfileMetric(profile, 'water', 'ph');
+        const ecMetric = getProfileMetric(profile, 'water', 'ec');
 
         return {
             key: plant.id ?? '',
@@ -39,11 +52,13 @@ export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
             species: plant.species,
             environmentId: plant.environmentId,
 
-            phValue: lastHistorical?.water?.ph?.value ?? null,
+            phValue: ph,
             phUnit: lastHistorical?.water?.ph?.unit ?? null,
+            phBad: ph !== null && phMetric ? (ph < phMetric.idealMin || ph > phMetric.idealMax) : false,
 
-            ecValue: lastHistorical?.water?.ec?.value ?? null,
+            ecValue: ec,
             ecUnit: lastHistorical?.water?.ec?.unit ?? null,
+            ecBad: ec !== null && ecMetric ? (ec < ecMetric.idealMin || ec > ecMetric.idealMax) : false,
 
             lastEventType: lastEvent?.type ?? null,
             lastEventTimestamp: lastEvent?.timestamp ?? 0,

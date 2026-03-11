@@ -1,22 +1,13 @@
-"use client"
+"use client";
+
 import { CLIMATE_COLORS } from '@/config/icons';
 import { ENVIRONMENT_LABELS } from '@/config/environment';
 import { EnvironmentTableRow } from '@/components/Table/adapters/environmentTableAdapter';
 import { MobileList, MobileCardData, HealthStatus, getMetricStatus } from '@/components/MobileCard/MobileCard';
 
-const RANGES: Record<string, [number, number]> = {
-    temp:     [20, 28],
-    humidity: [40, 70],
-    vpd:      [0.8, 1.6],
-    co2:      [400, 1500],
-};
-
 function getHealth(row: EnvironmentTableRow): HealthStatus {
-    const tempBad     = row.lastTemp !== null && (row.lastTemp < 20 || row.lastTemp > 28);
-    const humidityBad = row.lastHumidity !== null && (row.lastHumidity < 40 || row.lastHumidity > 70);
-    const co2Bad      = row.lastCo2 !== null && row.lastCo2 > 1500;
-    if (tempBad || co2Bad) return 'danger';
-    if (humidityBad || (row.lastVpd !== null && (row.lastVpd < 0.8 || row.lastVpd > 1.6))) return 'warn';
+    if (row.tempBad || row.co2Bad) return 'danger';
+    if (row.humidityBad || row.vpdBad) return 'warn';
     if (!row.lastTemp && !row.lastHumidity) return 'warn';
     return 'ok';
 }
@@ -36,22 +27,21 @@ function mapRowToCardData(row: EnvironmentTableRow): MobileCardData {
         ].filter(Boolean).join(' · '),
         health: getHealth(row),
         metrics: [
-            { label: 'TEMP', value: row.lastTemp,     display: row.lastTemp !== null     ? `${row.lastTemp}°`     : '—', status: getMetricStatus(row.lastTemp,     RANGES, 'temp')     },
-            { label: 'RLF',  value: row.lastHumidity, display: row.lastHumidity !== null ? `${row.lastHumidity}%` : '—', status: getMetricStatus(row.lastHumidity, RANGES, 'humidity') },
-            { label: 'VPD',  value: row.lastVpd,      display: row.lastVpd !== null      ? `${row.lastVpd}`       : '—', status: getMetricStatus(row.lastVpd,      RANGES, 'vpd')      },
-            { label: 'CO₂',  value: row.lastCo2,      display: row.lastCo2 !== null      ? `${row.lastCo2}`       : '—', status: getMetricStatus(row.lastCo2,      RANGES, 'co2')      },
+            { label: 'TEMP', value: row.lastTemp, display: row.lastTemp !== null ? `${row.lastTemp}°` : '—', status: row.tempBad ? 'warn' : 'ok' },
+            { label: 'RLF', value: row.lastHumidity, display: row.lastHumidity !== null ? `${row.lastHumidity}%` : '—', status: row.humidityBad ? 'warn' : 'ok' },
+            { label: 'VPD', value: row.lastVpd, display: row.lastVpd !== null ? `${row.lastVpd}` : '—', status: row.vpdBad ? 'warn' : 'ok' },
+            { label: 'CO₂', value: row.lastCo2, display: row.lastCo2 !== null ? `${row.lastCo2}` : '—', status: row.co2Bad ? 'warn' : 'ok' },
         ],
         sparkline: {
-            data:         row.tempHistory,
-            color:        CLIMATE_COLORS.temp.base,
-            id:           `spark_${row.key}`,
-            label:        'TEMPERATUR · 30 TAGE',
+            data: row.tempHistory,
+            color: CLIMATE_COLORS.temp.base,
+            id: `spark_${row.key}`,
+            label: 'TEMPERATUR · 30 TAGE',
             currentValue: tempDisplay,
         },
         footerLabel: row.lastMeasurementDate,
     };
 }
-
 
 interface EnvironmentMobileListProps {
     rows: EnvironmentTableRow[];

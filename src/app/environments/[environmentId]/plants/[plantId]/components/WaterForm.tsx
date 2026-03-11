@@ -9,22 +9,23 @@ import { convertWaterInputToData } from "@/helpers/waterConverter";
 import { useModal } from "@/context/ModalContext";
 import { WaterInputs } from "../../../components/shared/WaterInputs";
 import { useWaterValidation } from "@/hooks/useWaterValidation";
-
+import { getProfile } from "@/config/profiles";
 
 export default function WaterForm({ plantId }: { plantId: string }) {
-    const { addPlantHistoryData } = usePlantMonitor();
+    const { addPlantHistoryData, plants, environments } = usePlantMonitor();
     const { waterInput, setWaterInput } = usePlantForm();
-    const { errors, warnings } = useWaterValidation(waterInput);
     const { closeModal } = useModal();
 
-    const validationErrors = errors;
-    const validationWarnings = warnings;
+    const plant = plants.find(p => p.id === plantId);
+    const environment = environments.find(e => e.id === plant?.environmentId);
+    const profile = getProfile(environment?.profile);
+
+    const { errors: validationErrors, warnings: validationWarnings } = useWaterValidation(waterInput, profile);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        const hasErrors = Object.keys(validationErrors).length > 0;
-        if (hasErrors) {
+        if (Object.keys(validationErrors).length > 0) {
             console.warn("Form has validation errors:", validationErrors);
             return;
         }

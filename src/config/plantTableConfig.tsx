@@ -5,6 +5,7 @@ import { getEventConfig } from "./icons";
 import { ActivityIcon, AlertCircle, Droplet, Inbox } from "lucide-react";
 import styles from "@/components/Table/Table.module.scss";
 import Sparkline from "@/components/Sparkline/Sparkline";
+import { THRESHOLDS } from "@/config/thresholds";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -16,6 +17,8 @@ const EC_COLOR = "#d3893e";
 const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
 
+const { plant } = THRESHOLDS;
+
 export const plantTableConfig: TableConfig<PlantTableRow> = {
     title: "Pflanzen",
     searchKeys: ["title", "species"],
@@ -24,19 +27,17 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
         {
             displayText: "Braucht Wasser",
             icon: <AlertCircle size={16} />,
-            customSearchFunc: (row) => row.daysSinceWatering > 7,
+            customSearchFunc: (row) => row.daysSinceWatering > plant.daysSinceWatering.warn,
         },
         {
             displayText: "PH",
             icon: <AlertCircle size={16} />,
-            customSearchFunc: (row) =>
-                row.phValue !== null && (row.phValue < 5.5 || row.phValue > 7.5),
+            customSearchFunc: (row) => row.phBad,
         },
         {
             displayText: "EC",
             icon: <AlertCircle size={16} />,
-            customSearchFunc: (row) =>
-                row.ecValue !== null && (row.ecValue < 0.5 || row.ecValue > 3.5),
+            customSearchFunc: (row) => row.ecBad,
         },
         {
             displayText: "Keine Events",
@@ -47,11 +48,9 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             displayText: "Ungesund",
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
-                const waterNeeded = row.daysSinceWatering > 7;
-                const phBad       = row.phValue !== null && (row.phValue < 5.5 || row.phValue > 7.5);
-                const ecBad       = row.ecValue !== null && (row.ecValue < 0.5 || row.ecValue > 3.5);
-                const noEvents    = !row.events || row.events.length === 0;
-                return waterNeeded || phBad || ecBad || noEvents;
+                const waterNeeded = row.daysSinceWatering > plant.daysSinceWatering.warn;
+                const noEvents = !row.events || row.events.length === 0;
+                return waterNeeded || row.phBad || row.ecBad || noEvents;
             },
         },
     ],
@@ -78,7 +77,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={getWarnStyle(value < 5.5 || value > 7.5)}>
+                    <span className={styles.numeric} style={getWarnStyle(row?.phBad ?? false)}>
                         {value} {row?.phUnit ?? ""}
                     </span>
                 );
@@ -103,7 +102,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={getWarnStyle(value < 0.5 || value > 3.5)}>
+                    <span className={styles.numeric} style={getWarnStyle(row?.ecBad ?? false)}>
                         {value} {row?.ecUnit ?? ""}
                     </span>
                 );
@@ -168,7 +167,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
                         display: "flex",
                         alignItems: "center",
                         gap: 4,
-                        color: row.daysSinceWatering > 10 ? dangerColor : undefined,
+                        color: row.daysSinceWatering > plant.daysSinceWatering.warn ? dangerColor : undefined,
                     }}>
                         <Droplet size={16} />
                         {row.lastWateringDate}

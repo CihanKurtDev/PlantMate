@@ -6,6 +6,8 @@ import { ENVIRONMENT_LABELS } from "./environment";
 import { ActivityIcon, AlertCircle, CalendarClock, Inbox } from "lucide-react";
 import styles from "@/components/Table/Table.module.scss";
 import Sparkline from "@/components/Sparkline/Sparkline";
+import { THRESHOLDS } from "@/config/thresholds";
+import { PROFILES } from "@/config/profiles";
 
 const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
 
@@ -15,20 +17,22 @@ const dangerColor = "#b91c1c";
 const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
 
+const { measurement } = THRESHOLDS;
+
 export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
     title: "Environments",
     searchKeys: ["name", "type", "location"],
 
     filters: [
         {
-            displayText: "Hohe Temp",
+            displayText: "Kritische Temp",
             icon: <AlertCircle size={16} />,
-            customSearchFunc: (row) => row.lastTemp !== null && row.lastTemp > 30,
+            customSearchFunc: (row) => row.tempBad,
         },
         {
-            displayText: "Hohe Luftfeuchte",
+            displayText: "Kritische Luftfeuchte",
             icon: <AlertCircle size={16} />,
-            customSearchFunc: (row) => row.lastHumidity !== null && row.lastHumidity > 70,
+            customSearchFunc: (row) => row.humidityBad,
         },
         {
             displayText: "Keine Events",
@@ -38,17 +42,15 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
         {
             displayText: "Veraltete Messung",
             icon: <CalendarClock size={16} />,
-            customSearchFunc: (row) => row.daysSinceLastMeasurement > 7,
+            customSearchFunc: (row) => row.daysSinceLastMeasurement > measurement.daysSinceLastMeasurement.warn,
         },
         {
             displayText: "Ungesund",
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
-                const tempBad     = row.lastTemp !== null && row.lastTemp > 30;
-                const humidityBad = row.lastHumidity !== null && row.lastHumidity > 70;
-                const stale       = row.daysSinceLastMeasurement > 7;
-                const noEvents    = !row.events || row.events.length === 0;
-                return tempBad || humidityBad || stale || noEvents;
+                const stale = row.daysSinceLastMeasurement > measurement.daysSinceLastMeasurement.warn;
+                const noEvents = !row.events || row.events.length === 0;
+                return row.tempBad || row.humidityBad || row.vpdBad || row.co2Bad || stale || noEvents;
             },
         },
     ],
@@ -71,6 +73,13 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
                     : EMPTY,
         },
         {
+            key: "profile",
+            displayText: "Profil",
+            sortable: true,
+            render: (value) =>
+                value ? <span>{PROFILES[value]?.label ?? value}</span> : EMPTY,
+        },
+        {
             key: "location",
             displayText: "Standort",
             sortable: true,
@@ -84,7 +93,7 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={getWarnStyle(value > 30)}>
+                    <span className={styles.numeric} style={getWarnStyle(row?.tempBad ?? false)}>
                         {value} {row?.lastTempUnit ?? "°C"}
                     </span>
                 );
@@ -106,10 +115,10 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             key: "lastHumidity",
             displayText: "Luftfeuchte",
             sortable: true,
-            render: (value: number | null) => {
+            render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={getWarnStyle(value > 70)}>
+                    <span className={styles.numeric} style={getWarnStyle(row?.humidityBad ?? false)}>
                         {value} %
                     </span>
                 );
@@ -119,10 +128,10 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             key: "lastVpd",
             displayText: "VPD",
             sortable: true,
-            render: (value: number | null) => {
+            render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={getWarnStyle(value < 0.4 || value > 1.6)}>
+                    <span className={styles.numeric} style={getWarnStyle(row?.vpdBad ?? false)}>
                         {value} kPa
                     </span>
                 );
@@ -132,10 +141,10 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             key: "lastCo2",
             displayText: "CO₂",
             sortable: true,
-            render: (value: number | null) => {
+            render: (value: number | null, row) => {
                 if (value === null) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={getWarnStyle(value > 1500)}>
+                    <span className={styles.numeric} style={getWarnStyle(row?.co2Bad ?? false)}>
                         {value} ppm
                     </span>
                 );
@@ -184,7 +193,7 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             render: (value: number, row) => {
                 if (!value || !row?.lastMeasurementDate) return EMPTY;
                 return (
-                    <span className={styles.numeric} style={{ color: row.daysSinceLastMeasurement > 7 ? dangerColor : undefined }}>
+                    <span className={styles.numeric} style={{ color: row.daysSinceLastMeasurement > measurement.daysSinceLastMeasurement.warn ? dangerColor : undefined }}>
                         {row.lastMeasurementDate}
                     </span>
                 );
