@@ -1,6 +1,8 @@
 import { ClimateDataInput, EnvironmentFormData } from "@/types/environment";
 import { WaterDataInput } from "@/types/plant";
 import { LoginFormData, LoginFormErrors } from "@/types/auth";
+import { LIMITS } from "@/config/thresholds";
+import { CultivationProfile, getProfile, getProfileMetric } from "@/config/profiles";
 
 export function hasValidationErrors(errors: object): boolean {
     return Object.values(errors).some(Boolean);
@@ -20,36 +22,42 @@ export interface ClimateWarnings {
     vpd?: string;
 }
 
-export const validateClimate = (climate?: ClimateDataInput): { errors: ClimateErrors; warnings: ClimateWarnings } => {
+export const validateClimate = (climate?: ClimateDataInput, profile?: CultivationProfile): { errors: ClimateErrors; warnings: ClimateWarnings } => {
     const errors: ClimateErrors = {};
     const warnings: ClimateWarnings = {};
+    const p = profile ?? getProfile(null);
+
+    const tempMetric = getProfileMetric(p, 'climate', 'temp');
+    const humidityMetric = getProfileMetric(p, 'climate', 'humidity');
+    const co2Metric = getProfileMetric(p, 'climate', 'co2');
+    const vpdMetric = getProfileMetric(p, 'climate', 'vpd');
 
     if (climate?.temp?.value) {
         const value = parseFloat(climate.temp.value);
         if (isNaN(value)) errors.temp = "Bitte eine Zahl eingeben";
-        else if (value < 0 || value > 50) errors.temp = "Temperatur unrealistisch";
-        else if (value < 18) warnings.temp = "Temperatur sehr niedrig";
-        else if (value > 30) warnings.temp = "Temperatur sehr hoch";
+        else if (value < LIMITS.climate.temp.min || value > LIMITS.climate.temp.max) errors.temp = "Temperatur unrealistisch";
+        else if (tempMetric && (value < tempMetric.idealMin || value > tempMetric.idealMax)) warnings.temp = `Temperatur außerhalb des Idealbereichs (${tempMetric.idealMin}–${tempMetric.idealMax} °C)`;
     }
 
     if (climate?.humidity) {
         const value = parseFloat(climate.humidity);
         if (isNaN(value)) errors.humidity = "Bitte eine Zahl eingeben";
-        else if (value < 0 || value > 100) errors.humidity = "Feuchtigkeit unrealistisch";
-        else if (value < 40) warnings.humidity = "Luftfeuchtigkeit sehr niedrig";
-        else if (value > 80) warnings.humidity = "Luftfeuchtigkeit sehr hoch";
+        else if (value < LIMITS.climate.humidity.min || value > LIMITS.climate.humidity.max) errors.humidity = "Feuchtigkeit unrealistisch";
+        else if (humidityMetric && (value < humidityMetric.idealMin || value > humidityMetric.idealMax)) warnings.humidity = `Luftfeuchtigkeit außerhalb des Idealbereichs (${humidityMetric.idealMin}–${humidityMetric.idealMax} %)`;
     }
 
     if (climate?.co2) {
         const value = parseFloat(climate.co2);
         if (isNaN(value)) errors.co2 = "Bitte eine Zahl eingeben";
-        else if (value < 0 || value > 5000) errors.co2 = "CO₂-Wert unrealistisch";
+        else if (value < LIMITS.climate.co2.min || value > LIMITS.climate.co2.max) errors.co2 = "CO₂-Wert unrealistisch";
+        else if (co2Metric && (value < co2Metric.idealMin || value > co2Metric.idealMax)) warnings.co2 = `CO₂ außerhalb des Idealbereichs (${co2Metric.idealMin}–${co2Metric.idealMax} ppm)`;
     }
 
     if (climate?.vpd) {
         const value = parseFloat(climate.vpd);
         if (isNaN(value)) errors.vpd = "Bitte eine Zahl eingeben";
-        else if (value < 0 || value > 5) errors.vpd = "VPD unrealistisch";
+        else if (value < LIMITS.climate.vpd.min || value > LIMITS.climate.vpd.max) errors.vpd = "VPD unrealistisch";
+        else if (vpdMetric && (value < vpdMetric.idealMin || value > vpdMetric.idealMax)) warnings.vpd = `VPD außerhalb des Idealbereichs (${vpdMetric.idealMin}–${vpdMetric.idealMax} kPa)`;
     }
 
     return { errors, warnings };
@@ -67,31 +75,35 @@ export interface WaterWarnings {
     amount?: string;
 }
 
-export const validateWater = (water?: WaterDataInput): { errors: WaterErrors; warnings: WaterWarnings } => {
+export const validateWater = (water?: WaterDataInput, profile?: CultivationProfile): { errors: WaterErrors; warnings: WaterWarnings } => {
     const errors: WaterErrors = {};
     const warnings: WaterWarnings = {};
+    const p = profile ?? getProfile(null);
+
+    const phMetric = getProfileMetric(p, 'water', 'ph');
+    const ecMetric = getProfileMetric(p, 'water', 'ec');
 
     if (water?.ph !== undefined && water.ph !== "") {
         const value = parseFloat(water.ph);
         if (isNaN(value)) errors.ph = "Bitte eine Zahl eingeben";
-        else if (value < 0 || value > 14) errors.ph = "pH-Wert muss zwischen 0 und 14 liegen";
-        else if (value < 5.5) warnings.ph = "pH-Wert sehr niedrig: Nährstoffaufnahme beeinträchtigt";
-        else if (value > 7.5) warnings.ph = "pH-Wert sehr hoch: Mikronährstoffmangel möglich";
+        else if (value < LIMITS.water.ph.min || value > LIMITS.water.ph.max) errors.ph = "pH-Wert muss zwischen 0 und 14 liegen";
+        else if (phMetric && value < phMetric.idealMin) warnings.ph = `pH-Wert sehr niedrig: Idealbereich ${phMetric.idealMin}–${phMetric.idealMax}`;
+        else if (phMetric && value > phMetric.idealMax) warnings.ph = `pH-Wert sehr hoch: Idealbereich ${phMetric.idealMin}–${phMetric.idealMax}`;
     }
 
     if (water?.ec !== undefined && water.ec !== "") {
         const value = parseFloat(water.ec);
         if (isNaN(value)) errors.ec = "Bitte eine Zahl eingeben";
-        else if (value < 0 || value > 10) errors.ec = "EC-Wert muss zwischen 0 und 10 liegen";
-        else if (value < 0.5) warnings.ec = "EC-Wert sehr niedrig: Nährstoffmangel";
-        else if (value > 3.5) warnings.ec = "EC-Wert sehr hoch: Gefahr von Nährstoffverbrennung";
+        else if (value < LIMITS.water.ec.min || value > LIMITS.water.ec.max) errors.ec = "EC-Wert muss zwischen 0 und 10 liegen";
+        else if (ecMetric && value < ecMetric.idealMin) warnings.ec = `EC-Wert sehr niedrig: Idealbereich ${ecMetric.idealMin}–${ecMetric.idealMax}`;
+        else if (ecMetric && value > ecMetric.idealMax) warnings.ec = `EC-Wert sehr hoch: Idealbereich ${ecMetric.idealMin}–${ecMetric.idealMax}`;
     }
 
     if (water?.amount !== undefined && water.amount !== "") {
         const value = parseFloat(water.amount);
         if (isNaN(value)) errors.amount = "Bitte eine Zahl eingeben";
         else if (value <= 0) errors.amount = "Menge muss größer als 0 sein";
-        else if (value > 100000) errors.amount = "Menge unrealistisch hoch";
+        else if (value > LIMITS.water.amount.max) errors.amount = "Menge unrealistisch hoch";
         else if (value < 50) warnings.amount = "Sehr geringe Wassermenge";
         else if (value > 5000) warnings.amount = "Große Wassermenge – Pflanze nicht überwässern";
     }

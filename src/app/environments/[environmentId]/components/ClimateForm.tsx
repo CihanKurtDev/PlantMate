@@ -9,6 +9,7 @@ import { convertClimateInputToData } from "@/helpers/climateConverter";
 import { useModal } from "@/context/ModalContext";
 import { useClimateValidation } from "@/hooks/useClimateValidation";
 import { useClimateForm } from "@/hooks/useClimateForm";
+import { getProfile } from "@/config/profiles";
 
 interface ClimateFormProps {
     environmentId: string;
@@ -19,12 +20,15 @@ export default function ClimateForm({ environmentId, entryId }: ClimateFormProps
     const { environments, addHistoryData, updateHistoryData } = usePlantMonitor();
     const { closeModal } = useModal();
 
+    const environment = environments.find(e => e.id === environmentId);
+    const profile = getProfile(environment?.profile);
+
     const existingEntry = entryId
-        ? environments.find(e => e.id === environmentId)?.historical?.find(h => h.id === entryId)
+        ? environment?.historical?.find(h => h.id === entryId)
         : undefined;
 
     const { climateInput, setClimateInput } = useClimateForm(existingEntry);
-    const { errors: validationErrors, warnings: validationWarnings } = useClimateValidation(climateInput);
+    const { errors: validationErrors, warnings: validationWarnings } = useClimateValidation(climateInput, profile);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,7 +39,7 @@ export default function ClimateForm({ environmentId, entryId }: ClimateFormProps
         }
 
         const climateData = convertClimateInputToData(climateInput);
-        
+
         if (!climateData) {
             console.warn("Keine Klimadaten eingegeben.");
             return;
@@ -50,9 +54,9 @@ export default function ClimateForm({ environmentId, entryId }: ClimateFormProps
         };
 
         if (existingEntry) {
-            updateHistoryData(environmentId, entry)
+            updateHistoryData(environmentId, entry);
         } else {
-            addHistoryData(environmentId, entry)
+            addHistoryData(environmentId, entry);
         }
 
         closeModal();

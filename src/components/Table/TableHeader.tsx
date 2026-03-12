@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { type TableColumn, type SortConfig } from "../../types/table"
 import styles from './TableHeader.module.scss';
@@ -8,14 +9,16 @@ interface TableHeaderProps<RowType> {
     onSort: (key: keyof RowType) => void;
 }
 
-const SortIcon = ({ isActive, direction }: { isActive: boolean, direction: 'asc' | 'desc' | null }) => {
+const SortIcon = memo(({ isActive, direction }: { isActive: boolean, direction: 'asc' | 'desc' | null}) => {
     if (!isActive) return <ArrowUpDown size={14} />;
     return direction === 'asc' 
         ? <ArrowUp size={14} /> 
         : <ArrowDown size={14} />;
-};
+});
 
-export const TableHeader = <RowType extends { key: string }>({ 
+SortIcon.displayName = 'SortIcon';
+
+const TableHeaderInner = <RowType extends { key: string }>({ 
     headerData, 
     sortConfig, 
     onSort 
@@ -50,5 +53,7 @@ export const TableHeader = <RowType extends { key: string }>({
                 })}
             </ul>
         </div>
-    )
-}
+    );
+};
+
+export const TableHeader = memo(TableHeaderInner) as typeof TableHeaderInner;

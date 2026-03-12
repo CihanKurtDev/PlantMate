@@ -14,8 +14,8 @@ interface PlantsTabProps {
 }
 
 export default function PlantsTab({ plants, onAddNew }: PlantsTabProps) {
-    const { deletePlants } = usePlantMonitor();
-    const rows = mapPlantsToTableRows(plants);
+    const { deletePlants, environments } = usePlantMonitor();
+    const rows = mapPlantsToTableRows(plants, environments);
     const router = useRouter()
     const isMobile = useIsMobile();
     

@@ -77,7 +77,7 @@ export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
                     <option value="">Bitte wählen...</option>
                     {environments.map(env => (
                         <option key={env.id} value={env.id}>
-                            {env.name}
+                            {env.name} {env.profile ? `(${env.profile})` : ''}
                         </option>
                     ))}
                 </Select>

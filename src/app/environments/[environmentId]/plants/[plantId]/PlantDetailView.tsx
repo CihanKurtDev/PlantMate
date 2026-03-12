@@ -5,7 +5,7 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { Pencil, Sprout } from "lucide-react";
 import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
-import DataTab, { MetricConfig } from "../../components/shared/DataTab";
+import DataTab from "../../components/shared/DataTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
@@ -15,16 +15,20 @@ import PlantEventForm from "./components/PlantEventForm";
 import { PlantTimeSeriesEntry } from "@/types/plant";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
+import { getProfile } from "@/config/profiles";
 
-type modalType = "none" | "event" | "edit";
+type ModalType = "none" | "event" | "edit";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { plants, environments } = usePlantMonitor();
-    const [modalType, setModalType] = useState<modalType>("none");
+    const [modalType, setModalType] = useState<ModalType>("none");
 
     const plant = plants.find(p => p.id === plantId);
     if (!plant) return null;
+
     const environment = environments.find(e => e.id === plant.environmentId);
+    const profile = getProfile(environment?.profile);
+
     const latestHistorical = plant.historical?.at(-1);
 
     const phItem: MetricItem | null = latestHistorical?.water?.ph
@@ -49,13 +53,6 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     }));
 
     const closeModal = () => setModalType("none");
-
-    const metrics: MetricConfig[] = [
-        { key: 'ph', label: 'pH', unit: 'pH', color: '#1e88e5', icon: Sprout, min: 0, max: 14, idealMin: 5.5, idealMax: 6.5, format: v => v.toFixed(1) },
-        { key: 'ec', label: 'EC', unit: 'mS/cm', color: '#43a047', icon: Sprout, min: 0, max: 5, idealMin: 1, idealMax: 2, format: v => v.toFixed(2) }
-    ];
-
-    const hasEnoughDataForCharts = chartData.length > 1
 
     return (
         <PageLayout
@@ -85,7 +82,9 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </Card>
             </TabContent>
 
-            {hasEnoughDataForCharts && <DataTab data={chartData} metrics={metrics} />}
+            {chartData.length > 1 && (
+                <DataTab data={chartData} metrics={profile.water} />
+            )}
 
             <PlantEventsTab events={plant.events} />
 

@@ -1,6 +1,7 @@
 import type { MeasuredValue } from "./plant";
-import { BaseEvent, EventTypeConfig, TimeSeriesEntry, CUSTOM_EVENT_EXTRA_FIELDS } from "./events";
+import { BaseEvent, TimeSeriesEntry } from "./events";
 import { ActivityIcon, Droplet, Leaf, Thermometer, Wind } from "lucide-react";
+import type { ProfileKey } from "@/config/profiles";
 
 export type PercentUnit = '%';
 export type PPMUnit = 'ppm';
@@ -32,6 +33,7 @@ export interface EnvironmentFormData {
   name: string;
   type: EnvironmentType;
   location?: string;
+  profile?: ProfileKey;
   historical?: EnvironmentData_Historical[];
 }
 
@@ -40,6 +42,7 @@ export interface EnvironmentData {
   name: string;
   type: EnvironmentType;
   location?: string;
+  profile?: ProfileKey;
   historical?: EnvironmentData_Historical[];
   events?: EnvironmentEvent[]
 }

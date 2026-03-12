@@ -1,21 +1,27 @@
 import { daysSince, formatDateShort } from "@/helpers/date";
 import { EnvironmentData, EnvironmentEvent } from "@/types/environment";
 import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
+import { getProfile, getProfileMetric, ProfileKey } from "@/config/profiles";
 
 export interface EnvironmentTableRow {
     key: string;
     name: string;
     type: string;
     location: string | null;
+    profile: ProfileKey | null;
 
     lastTemp: number | null;
     lastTempUnit: string | null;
+    tempBad: boolean;
 
     lastHumidity: number | null;
+    humidityBad: boolean;
 
     lastVpd: number | null;
+    vpdBad: boolean;
 
     lastCo2: number | null;
+    co2Bad: boolean;
 
     lastMeasurementTimestamp: number;
     lastMeasurementDate: string | null;
@@ -37,21 +43,37 @@ export const mapEnvironmentsToTableRows = (environments: EnvironmentData[]): Env
     return environments.map(env => {
         const lastHistorical = env.historical?.at(-1);
         const lastEvent = getLastEvent(env.events);
+        const profile = getProfile(env.profile);
+
+        const temp = lastHistorical?.climate?.temp?.value ?? null;
+        const humidity = lastHistorical?.climate?.humidity?.value ?? null;
+        const vpd = lastHistorical?.climate?.vpd?.value ?? null;
+        const co2 = lastHistorical?.climate?.co2?.value ?? null;
+
+        const tempMetric = getProfileMetric(profile, 'climate', 'temp');
+        const humidityMetric = getProfileMetric(profile, 'climate', 'humidity');
+        const vpdMetric = getProfileMetric(profile, 'climate', 'vpd');
+        const co2Metric = getProfileMetric(profile, 'climate', 'co2');
 
         return {
             key: env.id ?? '',
             name: env.name,
             type: env.type,
             location: env.location ?? null,
+            profile: env.profile ?? null,
 
-            lastTemp: lastHistorical?.climate?.temp?.value ?? null,
+            lastTemp: temp,
             lastTempUnit: lastHistorical?.climate?.temp?.unit ?? null,
+            tempBad: temp !== null && tempMetric ? (temp < tempMetric.idealMin || temp > tempMetric.idealMax) : false,
 
-            lastHumidity: lastHistorical?.climate?.humidity?.value ?? null,
+            lastHumidity: humidity,
+            humidityBad: humidity !== null && humidityMetric ? (humidity < humidityMetric.idealMin || humidity > humidityMetric.idealMax) : false,
 
-            lastVpd: lastHistorical?.climate?.vpd?.value ?? null,
+            lastVpd: vpd,
+            vpdBad: vpd !== null && vpdMetric ? (vpd < vpdMetric.idealMin || vpd > vpdMetric.idealMax) : false,
 
-            lastCo2: lastHistorical?.climate?.co2?.value ?? null,
+            lastCo2: co2,
+            co2Bad: co2 !== null && co2Metric ? (co2 < co2Metric.idealMin || co2 > co2Metric.idealMax) : false,
 
             lastMeasurementTimestamp: lastHistorical?.timestamp ?? 0,
             lastMeasurementDate: lastHistorical
