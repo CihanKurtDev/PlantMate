@@ -8,6 +8,7 @@ export const useEnvironmentForm = (initialData?: EnvironmentData) => {
         type: initialData?.type ?? "ROOM",
         location: initialData?.location,
         historical: initialData?.historical,
+        profile: initialData?.profile ?? "generic",
     });
 
 
@@ -22,6 +23,7 @@ export const useEnvironmentForm = (initialData?: EnvironmentData) => {
             type: "ROOM",
             location: "",
             historical: undefined,
+            profile: "generic"
         });
     };
 
