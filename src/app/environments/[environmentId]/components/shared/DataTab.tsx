@@ -20,6 +20,7 @@ import styles from "./DataTab.module.scss";
 import { Card } from "@/components/Card/Card";
 import { formatDate, formatDateShort } from "@/helpers/date";
 import { TimeSeriesEntry } from "@/types/events";
+import { DeviationLevel, DEVIATION_STYLES } from "@/config/icons";
 
 export interface MetricConfig {
     key: string;
@@ -68,6 +69,14 @@ function getTrend(data: TimeSeriesEntry[], key: string): Trend | null {
     return { diff, pct };
 }
 
+function getDeviationLevel(value: number, metric: MetricConfig): DeviationLevel {
+    const { idealMin, idealMax } = metric;
+    const warnBuffer = (idealMax - idealMin) * 0.2;
+    if (value >= idealMin && value <= idealMax) return "ok";
+    if (value >= idealMin - warnBuffer && value <= idealMax + warnBuffer) return "warn";
+    return "critical";
+}
+
 interface AreaTooltipProps {
     active?: boolean;
     payload?: readonly { value: number; name: string; color: string }[];
@@ -94,11 +103,14 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
     const latest = getMetricValue(data[data.length - 1], metric.key);
     if (latest === undefined) return null;
 
-    const ideal = latest >= metric.idealMin && latest <= metric.idealMax;
+    const deviation = getDeviationLevel(latest, metric);
+    const deviationStyle = DEVIATION_STYLES[deviation];
+
     const trend = getTrend(data, metric.key);
     const valuePct = toRangePercent(latest, metric.min, metric.max);
     const idealStartPct = toRangePercent(metric.idealMin, metric.min, metric.max);
     const idealWidthPct = toRangePercent(metric.idealMax, metric.min, metric.max) - idealStartPct;
+
     const chartData: ChartDatum[] = data
         .map(entry => {
             const v = getMetricValue(entry, metric.key);
@@ -107,26 +119,28 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
         .filter(Boolean) as ChartDatum[];
 
     const TrendIcon = !trend ? Minus : trend.diff > 0 ? TrendingUp : TrendingDown;
-    const trendColor = !trend ? undefined : trend.diff > 0 ? "#e07b00" : "#1e88e5";
-
+    const trendColor = !trend ? undefined : deviationStyle.color;
     const Icon = metric.icon;
 
     return (
         <div className={styles.metricRow}>
             <div className={styles.metricLeft}>
                 <div className={styles.metricHeader}>
-                    <div className={styles.metricIconWrap} style={{ background: `${metric.color}18` }}>
+                    <div
+                        className={styles.metricIconWrap}
+                        style={{ background: `${metric.color}18` }}
+                    >
                         <Icon size={14} color={metric.color} />
                     </div>
                     <span className={styles.metricLabel}>{metric.label}</span>
                     <span
                         className={styles.metricBadge}
                         style={{
-                            color: ideal ? "#2d7a3e" : "#b83232",
-                            background: ideal ? "#e8f5e9" : "#ffeaea",
+                            color: deviationStyle.color,
+                            background: deviationStyle.background,
                         }}
                     >
-                        {ideal ? "OK" : "!"}
+                        {deviationStyle.statusText}
                     </span>
                 </div>
 
@@ -135,7 +149,13 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                         {metric.format(latest)}
                     </span>
                     {trend && (
-                        <span className={styles.metricTrend} style={{ color: trendColor }}>
+                        <span
+                            className={styles.metricTrend}
+                            style={{
+                                color: trendColor,
+                                background: `${trendColor}18`,
+                            }}
+                        >
                             <TrendIcon size={13} />
                             {trend.diff > 0 ? "+" : ""}
                             {trend.pct}%
@@ -146,7 +166,11 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                 <div className={styles.rangeBar}>
                     <div
                         className={styles.rangeIdeal}
-                        style={{ left: `${idealStartPct}%`, width: `${idealWidthPct}%`, background: `${metric.color}30` }}
+                        style={{
+                            left: `${idealStartPct}%`,
+                            width: `${idealWidthPct}%`,
+                            background: `${metric.color}30`,
+                        }}
                     />
                     <div
                         className={styles.rangeMarker}
@@ -194,12 +218,8 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                             </defs>
                             <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#grad-${metric.key})`} dot={false} isAnimationActive={false} />
                             <YAxis domain={["auto", "auto"]} hide />
-                            <XAxis
-                                dataKey="t"
-                                hide={false}
-                                tickFormatter={(value) => formatDate(value)}
-                            />
-                            <Tooltip content={(props) => <AreaTooltip {...props} metric={metric} />} />
+                            <XAxis dataKey="t" hide={false} tickFormatter={value => formatDate(value)} />
+                            <Tooltip content={props => <AreaTooltip {...props} metric={metric} />} />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
@@ -225,7 +245,12 @@ export default function DataTab({ data, metrics }: DataTabProps) {
                 ) : (
                     <div className={styles.metricList}>
                         {metrics.map(metric => (
-                            <MetricRow key={metric.key} metric={metric} data={data} hasHistory={hasHistory} />
+                            <MetricRow
+                                key={metric.key}
+                                metric={metric}
+                                data={data}
+                                hasHistory={hasHistory}
+                            />
                         ))}
                     </div>
                 )}

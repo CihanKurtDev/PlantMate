@@ -292,3 +292,26 @@ export function isEventType(type: string): boolean {
 export function isIconType(type: string): boolean {
     return getIconConfig(type) !== undefined;
 }
+
+export type DeviationLevel = 'ok' | 'warn' | 'critical';
+
+export const DEVIATION_STYLES: Record<
+    DeviationLevel,
+    { color: string; background: string; statusText: string }
+> = {
+    ok: {
+        color: '#2d7a3e',
+        background: '#e8f5e9',
+        statusText: 'OK',
+    },
+    warn: {
+        color: '#8a5a00',
+        background: '#fff3cd',
+        statusText: '±',
+    },
+    critical: {
+        color: '#b83232',
+        background: '#ffeaea',
+        statusText: '!',
+    },
+};
