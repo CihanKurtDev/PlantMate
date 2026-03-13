@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
@@ -14,9 +14,10 @@ import { useModal } from "@/context/ModalContext";
 interface PlantFormProps {
     environmentId?: string;
     plantId?: string;
+    onBack?: () => void;
 }
 
-export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
+export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) => {
     const { addPlant, updatePlant, environments, plants } = usePlantMonitor();
     const { validate } = usePlantValidation();
     const [plantCount, setPlantCount] = useState<number>(1);
@@ -94,15 +95,14 @@ export const PlantForm = ({ environmentId, plantId }: PlantFormProps) => {
             )}
 
             <div>
-                {plantId ? (
-                    <Button type="button" onClick={handleSubmit}>
-                        Änderungen speichern
-                    </Button>
-                ) : (
-                    <Button type="button" variant="secondary" onClick={handleSubmit}>
-                        Speichern
+                {onBack && (
+                    <Button type="button" variant="secondary" onClick={onBack}>
+                        Zurück
                     </Button>
                 )}
+                <Button type="button" onClick={handleSubmit}>
+                    {plantId ? "Änderungen speichern" : "Speichern"}
+                </Button>
             </div>
         </Form>
     );

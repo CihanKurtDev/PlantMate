@@ -16,9 +16,11 @@ import { PROFILES, ProfileKey } from "@/config/profiles";
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
     environmentId?: string;
+    isMultiStep?: boolean;
+    existingId?: string;
 }
 
-export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps) => {
+export const EnvironmentForm = ({ onSaved, environmentId, isMultiStep, existingId }: EnvironmentFormProps) => {
     const { environments, addEnvironment, updateEnvironment } = usePlantMonitor();
     const { validate } = useEnvironmentValidation();
     const searchParams = useSearchParams();
@@ -26,6 +28,8 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
 
     const existingEnvironment = editId
         ? environments.find(e => e.id === editId)
+        : existingId
+        ? environments.find(e => e.id === existingId)
         : undefined;
 
     const { formState, setField } = useEnvironmentForm(existingEnvironment);
@@ -33,18 +37,17 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
 
     const handleSubmit = (e: React.FormEvent, nextStep: "plant" | "dashboard") => {
         e.preventDefault();
-
         if (hasValidationErrors(validationErrors)) return;
 
-        if (editId && existingEnvironment) {
-            updateEnvironment({ ...existingEnvironment, ...formState, historical: existingEnvironment.historical ?? [] });
-            onSaved?.(editId, nextStep);
-            return;
+        const finalId = existingEnvironment?.id || crypto.randomUUID();
+
+        if (!existingEnvironment) {
+            addEnvironment({ ...formState, id: finalId });
+        } else {
+            updateEnvironment({ ...existingEnvironment, ...formState });
         }
 
-        const envId = crypto.randomUUID();
-        addEnvironment({ ...formState, id: envId });
-        onSaved?.(envId, nextStep);
+        onSaved?.(finalId, nextStep);
     };
 
     return (
@@ -62,9 +65,9 @@ export const EnvironmentForm = ({ onSaved, environmentId }: EnvironmentFormProps
                     value={formState.type}
                     onChange={(e) => setField("type", e.target.value as EnvironmentType)}
                 >
-                    <option value="ROOM">Room</option>
-                    <option value="TENT">Tent</option>
-                    <option value="GREENHOUSE">Greenhouse</option>
+                    <option value="ROOM">🏠 Room</option>
+                    <option value="TENT">⛺ Tent</option>
+                    <option value="GREENHOUSE">🌱 Greenhouse</option>
                 </Select>
             </FormField>
 

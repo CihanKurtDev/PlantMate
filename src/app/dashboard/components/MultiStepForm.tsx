@@ -15,8 +15,8 @@ export const MultiStepForm = () => {
     const { closeModal } = useModal()
 
     const handleEnvironmentSaved = (envId: string, nextStep: "plant" | "dashboard") => {
+        setCreatedEnvironmentId(envId);
         if (nextStep === "plant") {
-            setCreatedEnvironmentId(envId);
             setStep("plant");
         } else {
             closeModal()
@@ -26,22 +26,31 @@ export const MultiStepForm = () => {
     return (
         <div className={styles.multistepContainer}>
             {!isEditMode && (
-                <>
-                    <div className={styles.stepIndicator}>
-                        <div className={`${styles.stepDot} ${step === "environment" ? styles.active : ""}`}>1</div>
-                        <div className={styles.stepLine}></div>
-                        <div className={`${styles.stepDot} ${step === "plant" ? styles.active : ""}`}>2</div>
-                    </div>
-                </>
+                <div className={styles.stepIndicator}>
+                    <div className={`${styles.stepDot} ${step === "environment" ? styles.active : ""}`}>1</div>
+                    <div className={styles.stepLine}></div>
+                    <div className={`${styles.stepDot} ${step === "plant" ? styles.active : ""}`}>2</div>
+                </div>
             )}
             {step === "environment" ? (
                 <>
-                    {!isEditMode ? <h2 className={styles.stepTitle}>Environment bearbeiten</h2> : <h2 className={styles.stepTitle}>Environment erstellen</h2>}
-                    <EnvironmentForm onSaved={handleEnvironmentSaved} />
+                    <h2 className={styles.stepTitle}>
+                        {!isEditMode ? "Environment erstellen" : "Environment bearbeiten"}
+                    </h2>
+                    <EnvironmentForm
+                        isMultiStep={true}
+                        existingId={createdEnvironmentId}
+                        onSaved={handleEnvironmentSaved}
+                        environmentId={isEditMode ? searchParams.get("editId")! : undefined}
+                    />
                 </>
             ) : (
                 <>
-                    <PlantForm environmentId={createdEnvironmentId} />
+                    <h2 className={styles.stepTitle}>Pflanze hinzufügen</h2>
+                    <PlantForm
+                        environmentId={createdEnvironmentId}
+                        onBack={() => setStep("environment")}
+                    />
                 </>
             )}
         </div>
