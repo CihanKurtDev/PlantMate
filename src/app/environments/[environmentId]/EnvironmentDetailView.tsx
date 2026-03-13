@@ -10,7 +10,7 @@ import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
-import { EnvironmentTimeSeriesEntry } from "@/types/environment";
+import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
 import { EnvironmentForm } from "@/components/EnvironmentForm/EnvironmentForm";
 import { PlantForm } from "@/components/PlantForm/PlantForm";
 import styles from './EnvironmentDetailView.module.scss';
@@ -21,6 +21,23 @@ import { getProfile } from "@/config/profiles";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+}
+
+function getLatestClimateValues(historical: EnvironmentData_Historical[]) {
+    const result: Partial<EnvironmentData_Historical["climate"]> = {};
+
+    for (const entry of [...historical].reverse()) {
+        for (const [key, value] of Object.entries(entry.climate)) {
+            const climateKey = key as keyof EnvironmentData_Historical["climate"];
+
+            const alreadyFound = climateKey in result;
+            if (!alreadyFound && value != null) {
+                result[climateKey] = value;
+            }
+        }
+    }
+
+    return result;
 }
 
 type ModalType = "none" | "event" | "edit" | "newPlant";
@@ -35,15 +52,14 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
     const profile = getProfile(environment.profile);
 
-    const latestEntry = environment.historical?.at(-1);
-    const lastClimateValues = latestEntry?.climate;
+    const lastClimateValues = getLatestClimateValues(environment.historical ?? []);
 
-    const climateEntries = Object.entries(lastClimateValues ?? {});
-    const validClimateEntries = climateEntries.filter(([, value]) => value != null);
-    const climateItems: MetricItem[] = validClimateEntries.map(([key, value]) => ({
-        key,
-        value: `${value!.value}${value!.unit}`,
-    }));
+    const climateItems: MetricItem[] = Object.entries(lastClimateValues)
+        .filter(([, value]) => value != null)
+        .map(([key, value]) => ({
+            key,
+            value: `${value!.value}${value!.unit}`,
+        }));
 
     const chartData: EnvironmentTimeSeriesEntry[] = (environment.historical ?? [])
         .map(entry => ({
