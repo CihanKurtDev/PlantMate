@@ -27,6 +27,9 @@
 .label {
     font-size: var(--font-size-l);
     color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .value {
@@ -38,4 +41,29 @@
     font-size: 0.75rem;
     color: gray;
     margin-top: 2px;
+}
+
+@media (max-width: 768px) {
+    .metricGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        padding: var(--spacing-m);
+        gap: var(--spacing-s);
+    }
+
+    .content {
+        padding: var(--spacing-m);
+    }
+
+    .labelWrapper {
+        gap: var(--spacing-s);
+        margin-bottom: var(--spacing-s);
+    }
+
+    .label {
+        font-size: var(--font-size-s);
+    }
+
+    .value {
+        font-size: var(--font-size-l);
+    }
 }
