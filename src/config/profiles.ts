@@ -1,4 +1,4 @@
-import { Droplets, Leaf, Thermometer, Wind } from "lucide-react";
+import { CLIMATE_CONFIG, WATER_CONFIG } from "./icons";
 import { THRESHOLDS, LIMITS } from "./thresholds";
 
 export type ProfileKey = "paprika" | "tomaten" | "gurken" | "salat" | "erdbeeren" | "kräuter" | "pilze" | "generic";
@@ -8,7 +8,7 @@ export interface MetricProfile {
     label: string;
     unit: string;
     color: string;
-    icon: typeof Thermometer;
+    icon: (typeof CLIMATE_CONFIG)[keyof typeof CLIMATE_CONFIG]["icon"];
     min: number;
     max: number;
     idealMin: number;
@@ -23,18 +23,16 @@ export interface CultivationProfile {
     water: MetricProfile[];
 }
 
-const climateMetrics = (overrides: {
-    temp?: { idealMin: number; idealMax: number };
-    humidity?: { idealMin: number; idealMax: number };
-    vpd?: { idealMin: number; idealMax: number };
-    co2?: { idealMin: number; idealMax: number };
-}): MetricProfile[] => [
+type ClimateOverrides = Partial<Record<"temp" | "humidity" | "vpd" | "co2", { idealMin: number; idealMax: number }>>;
+type WaterOverrides = Partial<Record<"ph" | "ec", { idealMin: number; idealMax: number }>>;
+
+const climateMetrics = (overrides: ClimateOverrides): MetricProfile[] => [
     {
         key: "temp",
-        label: "Temperatur",
+        label: CLIMATE_CONFIG.temp.label,
         unit: "°C",
-        color: "#1e88e5",
-        icon: Thermometer,
+        color: CLIMATE_CONFIG.temp.colors.base,
+        icon: CLIMATE_CONFIG.temp.icon,
         min: LIMITS.climate.temp.min,
         max: LIMITS.climate.temp.max,
         idealMin: overrides.temp?.idealMin ?? THRESHOLDS.climate.temp.warn - 10,
@@ -43,10 +41,10 @@ const climateMetrics = (overrides: {
     },
     {
         key: "humidity",
-        label: "Luftfeuchtigkeit",
+        label: CLIMATE_CONFIG.humidity.label,
         unit: "%",
-        color: "#43a047",
-        icon: Droplets,
+        color: CLIMATE_CONFIG.humidity.colors.base,
+        icon: CLIMATE_CONFIG.humidity.icon,
         min: LIMITS.climate.humidity.min,
         max: LIMITS.climate.humidity.max,
         idealMin: overrides.humidity?.idealMin ?? THRESHOLDS.climate.humidity.min,
@@ -55,10 +53,10 @@ const climateMetrics = (overrides: {
     },
     {
         key: "vpd",
-        label: "VPD",
+        label: CLIMATE_CONFIG.vpd.label,
         unit: "kPa",
-        color: "#fbc02d",
-        icon: Wind,
+        color: CLIMATE_CONFIG.vpd.colors.base,
+        icon: CLIMATE_CONFIG.vpd.icon,
         min: LIMITS.climate.vpd.min,
         max: LIMITS.climate.vpd.max,
         idealMin: overrides.vpd?.idealMin ?? THRESHOLDS.climate.vpd.min,
@@ -67,10 +65,10 @@ const climateMetrics = (overrides: {
     },
     {
         key: "co2",
-        label: "CO₂",
+        label: CLIMATE_CONFIG.co2.label,
         unit: "ppm",
-        color: "#e53935",
-        icon: Leaf,
+        color: CLIMATE_CONFIG.co2.colors.base,
+        icon: CLIMATE_CONFIG.co2.icon,
         min: 300,
         max: LIMITS.climate.co2.max,
         idealMin: overrides.co2?.idealMin ?? 400,
@@ -79,16 +77,13 @@ const climateMetrics = (overrides: {
     },
 ];
 
-const waterMetrics = (overrides: {
-    ph?: { idealMin: number; idealMax: number };
-    ec?: { idealMin: number; idealMax: number };
-}): MetricProfile[] => [
+const waterMetrics = (overrides: WaterOverrides): MetricProfile[] => [
     {
         key: "ph",
-        label: "pH",
+        label: WATER_CONFIG.ph.label,
         unit: "pH",
-        color: "#1e88e5",
-        icon: Droplets,
+        color: WATER_CONFIG.ph.colors.base,
+        icon: WATER_CONFIG.ph.icon,
         min: LIMITS.water.ph.min,
         max: LIMITS.water.ph.max,
         idealMin: overrides.ph?.idealMin ?? THRESHOLDS.water.ph.min,
@@ -97,10 +92,10 @@ const waterMetrics = (overrides: {
     },
     {
         key: "ec",
-        label: "EC",
+        label: WATER_CONFIG.ec.label,
         unit: "mS/cm",
-        color: "#43a047",
-        icon: Leaf,
+        color: WATER_CONFIG.ec.colors.base,
+        icon: WATER_CONFIG.ec.icon,
         min: LIMITS.water.ec.min,
         max: LIMITS.water.ec.max,
         idealMin: overrides.ec?.idealMin ?? THRESHOLDS.water.ec.min,
@@ -220,6 +215,6 @@ export function getProfile(key?: ProfileKey | null): CultivationProfile {
     return PROFILES[key ?? "generic"] ?? PROFILES.generic;
 }
 
-export function getProfileMetric(profile: CultivationProfile, section: 'climate' | 'water', key: string): MetricProfile | undefined {
+export function getProfileMetric(profile: CultivationProfile, section: "climate" | "water", key: string): MetricProfile | undefined {
     return profile[section].find(m => m.key === key);
 }

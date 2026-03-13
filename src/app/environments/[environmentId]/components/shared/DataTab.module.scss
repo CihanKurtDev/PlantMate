@@ -103,12 +103,13 @@
 }
 
 .metricTrend {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: var(--font-size-s);
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
-  padding-bottom: 2px;
+  padding: var(--spacing-xs) var(--spacing-xs);
+  border-radius: var(--radius-s);
 }
 
 .metricSparkline {
