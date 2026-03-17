@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
-import DataTab from "./components/shared/DataTab";
+import DataTab from "./components/shared/DataTab/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
 import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
@@ -18,6 +18,7 @@ import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import ClimateForm from "./components/ClimateForm";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import { getProfile } from "@/config/profiles";
+import { toC } from "@/helpers/validationUtils";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -66,7 +67,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             timestamp: entry.timestamp,
             entryKind: 'historical' as const,
             metrics: {
-                temp: entry.climate.temp?.value,
+                temp: entry.climate.temp?.value !== undefined
+                    ? toC(entry.climate.temp.value, entry.climate.temp.unit)
+                    : undefined,
                 humidity: entry.climate.humidity?.value,
                 vpd: entry.climate.vpd?.value,
                 co2: entry.climate.co2?.value,
@@ -102,10 +105,8 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab events={environment.events} />
 
-            {chartData.length > 1 && (
-                <DataTab data={chartData} metrics={profile.climate} />
-            )}
-
+            <DataTab data={chartData} metrics={profile.climate} />
+            
             <Modal
                 isOpen={modalType === "event"}
                 onClose={closeModal}

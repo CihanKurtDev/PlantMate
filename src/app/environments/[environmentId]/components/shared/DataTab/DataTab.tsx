@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
     AreaChart,
     Area,
@@ -14,13 +15,14 @@ import {
     Minus,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import EmptyState from "./EmptyState";
-import TabContent from "./TabContent";
 import styles from "./DataTab.module.scss";
 import { Card } from "@/components/Card/Card";
 import { formatDate, formatDateShort } from "@/helpers/date";
 import { TimeSeriesEntry } from "@/types/events";
-import { DeviationLevel, DEVIATION_STYLES } from "@/config/icons";
+import { DEVIATION_STYLES, DeviationLevel } from "@/config/icons";
+import { UnitToggle } from "./UnitToggle";
+import TabContent from "../TabContent";
+import EmptyState from "../EmptyState";
 
 export interface MetricConfig {
     key: string;
@@ -49,6 +51,8 @@ interface MetricRowProps {
     metric: MetricConfig;
     data: TimeSeriesEntry[];
     hasHistory: boolean;
+    useFahrenheit?: boolean;
+    onToggleFahrenheit?: (v: boolean) => void;
 }
 
 function toRangePercent(value: number, min: number, max: number): number {
@@ -77,6 +81,23 @@ function getDeviationLevel(value: number, metric: MetricConfig): DeviationLevel 
     return "critical";
 }
 
+export function toF(c: number): number {
+    return (c * 9) / 5 + 32;
+}
+
+function getDisplayMetric(metric: MetricConfig, useFahrenheit: boolean): MetricConfig {
+    if (metric.key !== "temp" || !useFahrenheit) return metric;
+    return {
+        ...metric,
+        unit: "°F",
+        min: toF(metric.min),
+        max: toF(metric.max),
+        idealMin: toF(metric.idealMin),
+        idealMax: toF(metric.idealMax),
+        format: (v) => `${v.toFixed(1)} °F`,
+    };
+}
+
 interface AreaTooltipProps {
     active?: boolean;
     payload?: readonly { value: number; name: string; color: string }[];
@@ -99,22 +120,27 @@ function AreaTooltip({ active, payload, label, metric }: AreaTooltipProps) {
     );
 }
 
-function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
-    const latest = getMetricValue(data[data.length - 1], metric.key);
-    if (latest === undefined) return null;
+function MetricRow({ metric, data, hasHistory, useFahrenheit = false, onToggleFahrenheit }: MetricRowProps) {
+    const rawLatest = getMetricValue(data[data.length - 1], metric.key);
+    if (rawLatest === undefined) return null;
 
-    const deviation = getDeviationLevel(latest, metric);
+    const displayMetric = getDisplayMetric(metric, useFahrenheit);
+    const displayLatest = metric.key === "temp" && useFahrenheit ? toF(rawLatest) : rawLatest;
+
+    const deviation = getDeviationLevel(rawLatest, metric);
     const deviationStyle = DEVIATION_STYLES[deviation];
 
     const trend = getTrend(data, metric.key);
-    const valuePct = toRangePercent(latest, metric.min, metric.max);
-    const idealStartPct = toRangePercent(metric.idealMin, metric.min, metric.max);
-    const idealWidthPct = toRangePercent(metric.idealMax, metric.min, metric.max) - idealStartPct;
+    const valuePct = toRangePercent(displayLatest, displayMetric.min, displayMetric.max);
+    const idealStartPct = toRangePercent(displayMetric.idealMin, displayMetric.min, displayMetric.max);
+    const idealWidthPct = toRangePercent(displayMetric.idealMax, displayMetric.min, displayMetric.max) - idealStartPct;
 
     const chartData: ChartDatum[] = data
         .map(entry => {
             const v = getMetricValue(entry, metric.key);
-            return v !== undefined ? { t: entry.timestamp, v } : undefined;
+            if (v === undefined) return undefined;
+            const displayed = metric.key === "temp" && useFahrenheit ? toF(v) : v;
+            return { t: entry.timestamp, v: displayed };
         })
         .filter(Boolean) as ChartDatum[];
 
@@ -133,6 +159,13 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                         <Icon size={14} color={metric.color} />
                     </div>
                     <span className={styles.metricLabel}>{metric.label}</span>
+                    {metric.key === "temp" && onToggleFahrenheit && (
+                        <UnitToggle
+                            options={[{ label: "°C", value: "c" }, { label: "°F", value: "f" }]}
+                            value={useFahrenheit ? "f" : "c"}
+                            onChange={(v) => onToggleFahrenheit(v === "f")}
+                        />
+                    )}
                     <span
                         className={styles.metricBadge}
                         style={{
@@ -146,7 +179,7 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
 
                 <div className={styles.metricValueRow}>
                     <span className={styles.metricValue} style={{ color: metric.color }}>
-                        {metric.format(latest)}
+                        {displayMetric.format(displayLatest)}
                     </span>
                     {trend && (
                         <span
@@ -183,9 +216,9 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                 </div>
 
                 <div className={styles.rangeLabels}>
-                    <span>{metric.min} {metric.unit}</span>
-                    <span>Ziel: {metric.idealMin}–{metric.idealMax}</span>
-                    <span>{metric.max} {metric.unit}</span>
+                    <span>{displayMetric.min.toFixed(0)} {displayMetric.unit}</span>
+                    <span>Ziel: {displayMetric.idealMin.toFixed(0)}–{displayMetric.idealMax.toFixed(0)}</span>
+                    <span>{displayMetric.max.toFixed(0)} {displayMetric.unit}</span>
                 </div>
 
                 {hasHistory && (
@@ -219,7 +252,7 @@ function MetricRow({ metric, data, hasHistory }: MetricRowProps) {
                             <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#grad-${metric.key})`} dot={false} isAnimationActive={false} />
                             <YAxis domain={["auto", "auto"]} hide />
                             <XAxis dataKey="t" hide={false} tickFormatter={value => formatDate(value)} />
-                            <Tooltip content={props => <AreaTooltip {...props} metric={metric} />} />
+                            <Tooltip content={props => <AreaTooltip {...props} metric={displayMetric} />} />
                         </AreaChart>
                     </ResponsiveContainer>
                 </div>
@@ -236,6 +269,7 @@ interface DataTabProps {
 export default function DataTab({ data, metrics }: DataTabProps) {
     const hasHistory = data.length > 1;
     const isEmpty = data.length === 0;
+    const [useFahrenheit, setUseFahrenheit] = useState(false);
 
     return (
         <TabContent id="Klima">
@@ -250,6 +284,8 @@ export default function DataTab({ data, metrics }: DataTabProps) {
                                 metric={metric}
                                 data={data}
                                 hasHistory={hasHistory}
+                                useFahrenheit={useFahrenheit}
+                                onToggleFahrenheit={metric.key === "temp" ? setUseFahrenheit : undefined}
                             />
                         ))}
                     </div>

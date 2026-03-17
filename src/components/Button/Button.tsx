@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './Button.module.scss';
 
-type ButtonVariant = 'primary' | 'secondary' | 'success' | 'alert' | "error" | "floating" | "rounded";
+type ButtonVariant = 'primary' | 'secondary' | 'success' | 'alert' | "error" | "floating" | "rounded" | "ghost";
 type ButtonSize = 'sm' | 'md' | 'lg' | 'fill' | "round";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

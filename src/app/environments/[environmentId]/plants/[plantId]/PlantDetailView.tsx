@@ -5,7 +5,7 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { Pencil, Sprout } from "lucide-react";
 import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
-import DataTab from "../../components/shared/DataTab";
+import DataTab from "../../components/shared/DataTab/DataTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
