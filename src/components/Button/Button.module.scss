@@ -22,6 +22,27 @@
   }
 }
 
+.ghost {
+  background-color: transparent;
+  color: var(--color-text-tertiary);
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  font-size: var(--font-size-s);
+
+  &:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-background-secondary);
+  }
+
+  &.isActive {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
 .floating {
   @include button(primary);
 

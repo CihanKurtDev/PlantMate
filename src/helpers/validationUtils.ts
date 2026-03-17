@@ -1,4 +1,4 @@
-import { ClimateDataInput, EnvironmentFormData } from "@/types/environment";
+import { ClimateDataInput, EnvironmentFormData, TempUnit } from "@/types/environment";
 import { WaterDataInput } from "@/types/plant";
 import { LoginFormData, LoginFormErrors } from "@/types/auth";
 import { LIMITS } from "@/config/thresholds";
@@ -22,6 +22,10 @@ export interface ClimateWarnings {
     vpd?: string;
 }
 
+export function toC(value: number, unit?: TempUnit): number {
+    return unit === "°F" ? (value - 32) * (5 / 9) : value;
+}
+
 export const validateClimate = (climate?: ClimateDataInput, profile?: CultivationProfile): { errors: ClimateErrors; warnings: ClimateWarnings } => {
     const errors: ClimateErrors = {};
     const warnings: ClimateWarnings = {};
@@ -33,10 +37,26 @@ export const validateClimate = (climate?: ClimateDataInput, profile?: Cultivatio
     const vpdMetric = getProfileMetric(p, 'climate', 'vpd');
 
     if (climate?.temp?.value) {
-        const value = parseFloat(climate.temp.value);
-        if (isNaN(value)) errors.temp = "Bitte eine Zahl eingeben";
-        else if (value < LIMITS.climate.temp.min || value > LIMITS.climate.temp.max) errors.temp = "Temperatur unrealistisch";
-        else if (tempMetric && (value < tempMetric.idealMin || value > tempMetric.idealMax)) warnings.temp = `Temperatur außerhalb des Idealbereichs (${tempMetric.idealMin}–${tempMetric.idealMax} °C)`;
+        const raw = parseFloat(climate.temp.value);
+        const unit = climate.temp.unit ?? "°C";
+
+        if (isNaN(raw)) {
+            errors.temp = "Bitte eine Zahl eingeben";
+        } else {
+            const valueC = toC(raw, unit);
+
+            if (valueC < LIMITS.climate.temp.min || valueC > LIMITS.climate.temp.max) {
+                errors.temp = "Temperatur unrealistisch";
+            } else if (tempMetric && (valueC < tempMetric.idealMin || valueC > tempMetric.idealMax)) {
+                if (unit === "°F") {
+                    const minF = (tempMetric.idealMin * 9) / 5 + 32;
+                    const maxF = (tempMetric.idealMax * 9) / 5 + 32;
+                    warnings.temp = `Temperatur außerhalb des Idealbereichs (${minF.toFixed(1)}–${maxF.toFixed(1)} °F)`;
+                } else {
+                    warnings.temp = `Temperatur außerhalb des Idealbereichs (${tempMetric.idealMin}–${tempMetric.idealMax} °C)`;
+                }
+            }
+        }
     }
 
     if (climate?.humidity) {
