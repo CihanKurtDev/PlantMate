@@ -10,6 +10,7 @@ import { Select } from "@/components/Form/Select";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
 import { useModal } from "@/context/ModalContext";
+import { ProfileKey, PROFILES } from "@/config/profiles";
 
 interface PlantFormProps {
     environmentId?: string;
@@ -78,8 +79,20 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
                     <option value="">Bitte wählen...</option>
                     {environments.map(env => (
                         <option key={env.id} value={env.id}>
-                            {env.name} {env.profile ? `(${env.profile})` : ''}
+                            {env.name}
                         </option>
+                    ))}
+                </Select>
+            </FormField>
+
+            <FormField>
+                <Select
+                    label="Profil"
+                    value={formState.profile ?? "generic"}
+                    onChange={(e) => setField("profile", e.target.value as ProfileKey)}
+                >
+                    {Object.values(PROFILES).map(p => (
+                        <option key={p.key} value={p.key}>{p.label}</option>
                     ))}
                 </Select>
             </FormField>

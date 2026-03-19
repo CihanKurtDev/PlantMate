@@ -33,7 +33,6 @@ export interface EnvironmentFormData {
   name: string;
   type: EnvironmentType;
   location?: string;
-  profile?: ProfileKey;
   historical?: EnvironmentData_Historical[];
 }
 
@@ -42,7 +41,6 @@ export interface EnvironmentData {
   name: string;
   type: EnvironmentType;
   location?: string;
-  profile?: ProfileKey;
   historical?: EnvironmentData_Historical[];
   events?: EnvironmentEvent[]
 }

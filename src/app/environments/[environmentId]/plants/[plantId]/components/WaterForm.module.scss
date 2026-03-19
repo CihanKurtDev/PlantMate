@@ -1,0 +1,212 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sectionLabel {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.groupBox {
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    overflow: hidden;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    background: var(--color-background-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+
+.tbtn {
+    font-size: 12px;
+    background: none;
+    border: none;
+    border-right: 0.5px solid var(--color-border-tertiary);
+    cursor: pointer;
+    padding: 7px 12px;
+    font-family: inherit;
+    transition: color 0.1s, background 0.1s;
+    white-space: nowrap;
+
+    &:hover {
+        color: var(--color-text-secondary);
+        background: var(--color-background-tertiary);
+    }
+}
+
+.count {
+    margin-left: auto;
+    font-size: 12px;
+    padding: 7px 12px;
+    border-left: 0.5px solid var(--color-border-tertiary);
+    white-space: nowrap;
+}
+
+.list {
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    transition: background 0.08s;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:hover:not(.fixed) {
+        background: var(--color-background-secondary);
+    }
+
+    &.selected {
+        background: var(--color-background-info);
+    }
+
+    &.fixed {
+        background: var(--color-background-success);
+        cursor: default;
+    }
+}
+
+.checkbox {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    border: 0.5px solid var(--color-border-secondary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-background-primary);
+
+    svg {
+        display: none;
+    }
+
+    .selected & {
+        background: var(--color-text-info);
+        border-color: var(--color-text-info);
+
+        svg {
+            display: block;
+        }
+    }
+
+    .fixed & {
+        background: var(--color-text-success);
+        border-color: var(--color-text-success);
+
+        svg {
+            display: block;
+        }
+    }
+}
+
+.info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .selected & {
+        color: var(--color-text-info);
+    }
+
+    .fixed & {
+        color: var(--color-text-success);
+    }
+}
+
+.fixedBadge {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--color-text-success);
+    opacity: 0.8;
+}
+
+.species {
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tag {
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: var(--color-background-secondary);
+    color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-tertiary);
+    flex-shrink: 0;
+
+    .selected & {
+        background: var(--color-background-info);
+        color: var(--color-text-info);
+        border-color: var(--color-border-info);
+    }
+
+    .fixed & {
+        background: var(--color-background-success);
+        color: var(--color-text-success);
+        border-color: var(--color-border-success);
+    }
+}
+
+.hint {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: var(--color-background-secondary);
+    border-top: 0.5px solid var(--color-border-tertiary);
+}
+
+.kbd {
+    display: inline-block;
+    font-size: 10px;
+    padding: 1px 5px;
+    border: 0.5px solid var(--color-border-secondary);
+    border-radius: 3px;
+    color: var(--color-text-tertiary);
+    background: var(--color-background-primary);
+    font-family: var(--font-mono);
+    line-height: 1.6;
+}
+
+.hintText {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+}
+
+.hintDot {
+    color: var(--color-border-secondary);
+    font-size: 11px;
+    margin: 0 3px;
+}

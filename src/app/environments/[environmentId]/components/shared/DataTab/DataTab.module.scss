@@ -19,14 +19,9 @@
 }
 
 .metricList {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
   gap: var(--spacing-m);
-
-  @media (min-width: 768px) {
-    display: flex;
-    flex-direction: column;
-  }
+  flex-direction: column;
 }
 
 .metricRow {
@@ -36,7 +31,7 @@
   padding: var(--spacing-m);
   background-color: var(--color-background-secondary);
   border-radius: var(--radius-s);
-  
+
   @media (min-width: 768px) {
     gap: var(--spacing-xl);
     display: grid;
@@ -47,6 +42,11 @@
       border-bottom: none;
     }
   }
+}
+
+.metricRowGhost {
+  pointer-events: none;
+  user-select: none;
 }
 
 .metricLeft {
@@ -157,4 +157,55 @@
     height: 100%;
     min-height: 120px;
   }
+}
+
+.ghostWrapper {
+  position: relative;
+}
+
+.ghostContent {
+  opacity: 0.5;
+  filter: saturate(0.4);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ghostOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+}
+
+.ghostOverlayCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-m);
+  text-align: center;
+  background-color: var(--color-background-primary);
+  border: 1px solid #c8c8c8;
+  border-radius: var(--radius-l);
+  padding: var(--spacing-xl);
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+.ghostOverlayTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.ghostOverlayText {
+  font-size: var(--font-size-xs);
+  color: #555;
+  max-width: 240px;
+  line-height: 1.5;
+  margin: 0;
 }
