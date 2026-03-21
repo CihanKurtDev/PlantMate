@@ -5,12 +5,17 @@ import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useWaterValidation } from "@/hooks/useWaterValidation";
-import { PlantData_Historical } from "@/types/plant";
-import { useCallback, useState } from "react";
+import { PlantData_Historical, PlantData } from "@/types/plant";
+import { useState } from "react";
 import { WaterInputs } from "../../../components/shared/WaterInputs";
 import { Button } from "@/components/Button/Button";
-import { PlantData } from "@/types/plant";
+import Checkbox from "@/components/Checkbox/Checkbox";
 import styles from "./WaterForm.module.scss";
+
+function plantsShareProfile(plant: PlantData, otherPlant: PlantData): boolean {
+    if (!plant.profile) return false;
+    return plant.profile === otherPlant.profile;
+}
 
 interface WateringGroupProps {
     plants: PlantData[];
@@ -20,123 +25,140 @@ interface WateringGroupProps {
 }
 
 export function WateringGroup({ plants, fixedPlantId, selectedPlantIds, onChange }: WateringGroupProps) {
-    const [lastIdx, setLastIdx] = useState<number | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
-    const fixedPlant = plants.find(p => p.id === fixedPlantId);
-    const allSelected = new Set([fixedPlantId, ...selectedPlantIds]);
+    const fixedPlant = plants.find((plant) => plant.id === fixedPlantId);
+    const allSelectedIds = new Set([fixedPlantId, ...selectedPlantIds]);
 
-    const toggle = useCallback((id: string, idx: number, shiftKey: boolean, ctrlKey: boolean) => {
-        if (id === fixedPlantId) return;
+    const nonFixedIds = plants.map((plant) => plant.id!).filter((id) => id !== fixedPlantId);
+    const allNonFixedSelected = nonFixedIds.every((id) => selectedPlantIds.includes(id));
 
-        if (shiftKey && lastIdx !== null) {
-            const from = Math.min(lastIdx, idx);
-            const to = Math.max(lastIdx, idx);
-            const shouldSelect = !allSelected.has(id);
-            const range = plants.slice(from, to + 1)
-                .map(p => p.id!)
-                .filter(pid => pid !== fixedPlantId);
+    const sameProfileIds = fixedPlant
+        ? plants
+              .filter((plant) => plant.id !== fixedPlantId && plantsShareProfile(plant, fixedPlant))
+              .map((plant) => plant.id!)
+        : [];
 
-            const next = new Set(selectedPlantIds);
-            range.forEach(pid => shouldSelect ? next.add(pid) : next.delete(pid));
-            onChange([...next]);
-        } else if (ctrlKey) {
-            const next = new Set(selectedPlantIds);
-            allSelected.has(id) ? next.delete(id) : next.add(id);
-            onChange([...next]);
-            setLastIdx(idx);
+    const allSameProfileSelected =
+        sameProfileIds.length > 0 && sameProfileIds.every((id) => selectedPlantIds.includes(id));
+
+    const toggle = (plantId: string) => {
+        if (plantId === fixedPlantId) return;
+        const next = new Set(selectedPlantIds);
+        next.has(plantId) ? next.delete(plantId) : next.add(plantId);
+        onChange([...next]);
+    };
+
+    const toggleAll = () => {
+        onChange(allNonFixedSelected ? [] : nonFixedIds);
+    };
+
+    const toggleSameProfile = () => {
+        if (allSameProfileSelected) {
+            onChange(selectedPlantIds.filter((id) => !sameProfileIds.includes(id)));
         } else {
-            const isOnlySelected = allSelected.has(id) && allSelected.size === 2;
-            if (isOnlySelected) {
-                onChange([]);
-            } else {
-                onChange([id]);
-            }
-            setLastIdx(idx);
+            onChange([...new Set([...selectedPlantIds, ...sameProfileIds])]);
         }
-    }, [plants, fixedPlantId, selectedPlantIds, allSelected, lastIdx, onChange]);
-
-    const selectAll = () => {
-        onChange(plants.map(p => p.id!).filter(id => id !== fixedPlantId));
     };
 
-    const selectNone = () => {
-        onChange([]);
-    };
-
-    const selectSameSpecies = () => {
-        if (!fixedPlant?.species) return;
-        const ids = plants
-            .filter(p => p.species === fixedPlant.species && p.id !== fixedPlantId)
-            .map(p => p.id!);
-        onChange(ids);
-    };
-
-    const totalSelected = allSelected.size;
-    const total = plants.length;
+    const summary = (() => {
+        const selectedPlantNames = [...allSelectedIds]
+            .map((id) => plants.find((p) => p.id === id)?.title)
+            .filter(Boolean) as string[];
+        const visible = selectedPlantNames.slice(0, 2);
+        const overflow = selectedPlantNames.length - visible.length;
+        return overflow > 0
+            ? `${visible.join(", ")} +${overflow} weitere`
+            : visible.join(", ");
+    })();
 
     return (
-        <div className={styles.wrapper}>
-            <div className={styles.sectionLabel}>Pflanzen</div>
-
+        <div className={styles.groupField}>
+            <span className={styles.groupLabel}>Pflanzen</span>
             <div className={styles.groupBox}>
-                <div className={styles.toolbar}>
-                    <button type="button" className={styles.tbtn} onClick={selectAll}>Alle</button>
-                    <button type="button" className={styles.tbtn} onClick={selectNone}>Keine</button>
-                    {fixedPlant?.species && (
-                        <button type="button" className={styles.tbtn} onClick={selectSameSpecies}>
-                            Gleiche Art
-                        </button>
-                    )}
-                    <span className={styles.count}>{totalSelected} / {total}</span>
-                </div>
+                <button
+                    type="button"
+                    className={styles.groupToggle}
+                    onClick={() => setIsOpen((prev) => !prev)}
+                    aria-expanded={isOpen}
+                >
+                    <span className={styles.groupToggleSummary}>{summary}</span>
+                    <svg
+                        className={`${styles.groupToggleChevron} ${isOpen ? styles.open : ""}`}
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                    >
+                        <polyline
+                            points="2,4 7,10 12,4"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                </button>
 
-                <div className={styles.list}>
-                    {plants.map((plant, idx) => {
-                        const isFixed = plant.id === fixedPlantId;
-                        const isSelected = allSelected.has(plant.id!);
-                        return (
-                            <div
-                                key={plant.id}
-                                className={`${styles.item} ${isFixed ? styles.fixed : isSelected ? styles.selected : ""}`}
-                                onClick={e => toggle(plant.id!, idx, e.shiftKey, e.ctrlKey || e.metaKey)}
+                <div className={`${styles.groupContentWrapper} ${isOpen ? styles.open : ""}`}>
+                    <div className={styles.groupContent}>
+                        <div className={styles.toolbar}>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                size="sm"
+                                className={`${styles.toolbarButton} ${allNonFixedSelected ? styles.toolbarButtonActive : ""}`}
+                                onClick={toggleAll}
+                                aria-pressed={allNonFixedSelected}
                             >
-                                <div className={styles.checkbox}>
-                                    <CheckIcon />
-                                </div>
-                                <div className={styles.info}>
-                                    <span className={styles.name}>
-                                        {plant.title}
-                                        {isFixed && <span className={styles.fixedBadge}>diese</span>}
-                                    </span>
-                                    {plant.species && (
-                                        <span className={styles.species}>{plant.species}</span>
-                                    )}
-                                </div>
-                                {plant.profile && (
-                                    <span className={styles.tag}>{plant.profile}</span>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
+                                Alle
+                            </Button>
+                            {sameProfileIds.length > 0 && (
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="sm"
+                                    className={`${styles.toolbarButton} ${allSameProfileSelected ? styles.toolbarButtonActive : ""}`}
+                                    onClick={toggleSameProfile}
+                                    aria-pressed={allSameProfileSelected}
+                                >
+                                    Gleiches Profil
+                                </Button>
+                            )}
+                        </div>
 
-                <div className={styles.hint}>
-                    <kbd className={styles.kbd}>Strg</kbd>
-                    <span className={styles.hintText}>einzeln</span>
-                    <span className={styles.hintDot}>·</span>
-                    <kbd className={styles.kbd}>Shift</kbd>
-                    <span className={styles.hintText}>Bereich</span>
+                        <ul className={styles.list}>
+                            {plants.map((plant) => {
+                                const isFixed = plant.id === fixedPlantId;
+                                const isSelected = allSelectedIds.has(plant.id!);
+
+                                return (
+                                    <li key={plant.id}>
+                                        <Checkbox
+                                            checked={isSelected}
+                                            disabled={isFixed}
+                                            onChange={() => toggle(plant.id!)}
+                                            variant={isFixed ? "success" : "default"}
+                                            className={`${styles.item} ${isFixed ? styles.fixed : ""} ${isSelected && !isFixed ? styles.selected : ""}`}
+                                        >
+                                            <div className={styles.info}>
+                                                <span className={styles.name}>{plant.title}</span>
+                                                {plant.species && (
+                                                    <span className={styles.species}>{plant.species}</span>
+                                                )}
+                                            </div>
+                                            {plant.profile && (
+                                                <span className={styles.tag}>{plant.profile}</span>
+                                            )}
+                                        </Checkbox>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
-    );
-}
-
-function CheckIcon() {
-    return (
-        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4l3 3 5-6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
     );
 }
 
@@ -146,32 +168,34 @@ export default function WaterForm({ plantId }: { plantId: string }) {
     const { closeModal } = useModal();
     const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);
 
-    const plant = plants.find(p => p.id === plantId);
-    const environment = environments.find(e => e.id === plant?.environmentId);
-    const plantsInEnv = plants.filter(p => p.environmentId === environment?.id);
+    const plant = plants.find((plant) => plant.id === plantId);
+    const environment = environments.find((env) => env.id === plant?.environmentId);
+    const plantsInEnvironment = plants.filter((plant) => plant.environmentId === environment?.id);
 
-    const allSelected = [plantId, ...selectedPlantIds.filter(id => id !== plantId)];
+    const allSelectedIds = [plantId, ...selectedPlantIds.filter((id) => id !== plantId)];
 
-    const profiles = [...new Map(
-        allSelected
-            .map(id => plants.find(p => p.id === id))
-            .filter(Boolean)
-            .map(p => getProfile(p!.profile))
-            .map(prof => [prof.key, prof])
-    ).values()];
+    const selectedPlants = allSelectedIds
+        .map((id) => plants.find((plant) => plant.id === id))
+        .filter(Boolean);
 
-    const { errors: validationErrors, warnings: validationWarnings } = useWaterValidation(waterInput, profiles);
+    const uniqueProfileKeys = [...new Set(selectedPlants.map((plant) => plant!.profile).filter(Boolean))];
+    const profiles = uniqueProfileKeys.map((key) => getProfile(key));
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const { errors: validationErrors, warnings: validationWarnings } = useWaterValidation(
+        waterInput,
+        profiles
+    );
+
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
         if (Object.keys(validationErrors).length > 0) return;
 
         const waterData = convertWaterInputToData(waterInput);
         const timestamp = Date.now();
 
-        allSelected.forEach((id, i) => {
+        allSelectedIds.forEach((id, index) => {
             const entry: PlantData_Historical = {
-                id: `${timestamp}-${i}`,
+                id: `${timestamp}-${index}`,
                 plantId: id,
                 timestamp,
                 water: waterData || {},
@@ -186,9 +210,9 @@ export default function WaterForm({ plantId }: { plantId: string }) {
         <Form onSubmit={handleSubmit}>
             <FormSectionTitle>Wassermessung eintragen</FormSectionTitle>
 
-            {plantsInEnv.length > 1 && (
+            {plantsInEnvironment.length > 1 && (
                 <WateringGroup
-                    plants={plantsInEnv}
+                    plants={plantsInEnvironment}
                     fixedPlantId={plantId}
                     selectedPlantIds={selectedPlantIds}
                     onChange={setSelectedPlantIds}
@@ -204,7 +228,9 @@ export default function WaterForm({ plantId }: { plantId: string }) {
 
             <FormField>
                 <Button type="submit">Speichern</Button>
-                <Button variant="secondary" type="button" onClick={closeModal}>Abbrechen</Button>
+                <Button variant="secondary" type="button" onClick={closeModal}>
+                    Abbrechen
+                </Button>
             </FormField>
         </Form>
     );

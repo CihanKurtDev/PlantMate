@@ -1,0 +1,69 @@
+@use "@/styles/mixins" as m;
+
+.fieldCheckbox {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    cursor: pointer;
+
+    &.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+}
+
+.checkboxInput {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.checkboxControl {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    border-radius: 3px;
+    border: 1.5px solid var(--color-border-primary);
+    background: var(--color-background-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, border-color 0.1s;
+    color: #ffffff;
+}
+
+.fieldCheckbox:not(.disabled):hover .checkboxControl {
+    border-color: var(--color-border-secondary);
+    background: var(--color-background-secondary);
+}
+
+.checkboxInput:focus-visible + .checkboxControl {
+    outline: 2px solid var(--color-border-secondary);
+    outline-offset: 2px;
+}
+
+.default {
+    &.checked {
+        background: var(--color-text-info);
+        border-color: var(--color-text-info);
+    }
+}
+
+.success {
+    &.checked {
+        background: var(--color-text-success);
+        border-color: var(--color-text-success);
+    }
+}
+
+.disabledControl {
+    cursor: not-allowed;
+}
+
+.checkboxLabelText {
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+}
