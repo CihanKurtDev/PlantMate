@@ -19,6 +19,7 @@ export interface MetricProfile {
 export interface CultivationProfile {
     key: ProfileKey;
     label: string;
+    color: string;
     climate: MetricProfile[];
     water: MetricProfile[];
 }
@@ -108,6 +109,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     paprika: {
         key: "paprika",
         label: "Paprika",
+        color: "#c0522a",
         climate: climateMetrics({
             temp: { idealMin: 23, idealMax: 28 },
             humidity: { idealMin: 60, idealMax: 70 },
@@ -122,6 +124,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     tomaten: {
         key: "tomaten",
         label: "Tomaten",
+        color: "#c0312a",
         climate: climateMetrics({
             temp: { idealMin: 20, idealMax: 26 },
             humidity: { idealMin: 60, idealMax: 70 },
@@ -136,6 +139,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     gurken: {
         key: "gurken",
         label: "Gurken",
+        color: "#3a7d44",
         climate: climateMetrics({
             temp: { idealMin: 22, idealMax: 28 },
             humidity: { idealMin: 70, idealMax: 85 },
@@ -150,6 +154,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     salat: {
         key: "salat",
         label: "Salat",
+        color: "#6a9e2f",
         climate: climateMetrics({
             temp: { idealMin: 16, idealMax: 22 },
             humidity: { idealMin: 50, idealMax: 70 },
@@ -164,6 +169,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     erdbeeren: {
         key: "erdbeeren",
         label: "Erdbeeren",
+        color: "#c0294d",
         climate: climateMetrics({
             temp: { idealMin: 18, idealMax: 24 },
             humidity: { idealMin: 60, idealMax: 75 },
@@ -178,6 +184,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     kräuter: {
         key: "kräuter",
         label: "Kräuter",
+        color: "#2e8c64",
         climate: climateMetrics({
             temp: { idealMin: 18, idealMax: 24 },
             humidity: { idealMin: 50, idealMax: 70 },
@@ -192,6 +199,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     pilze: {
         key: "pilze",
         label: "Pilze",
+        color: "#8c6b2e",
         climate: climateMetrics({
             temp: { idealMin: 14, idealMax: 22 },
             humidity: { idealMin: 80, idealMax: 95 },
@@ -206,6 +214,7 @@ export const PROFILES: Record<ProfileKey, CultivationProfile> = {
     generic: {
         key: "generic",
         label: "Generisch",
+        color: "#4a6b8c",
         climate: climateMetrics({}),
         water: waterMetrics({}),
     },

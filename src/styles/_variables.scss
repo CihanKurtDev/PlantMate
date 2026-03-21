@@ -2,45 +2,53 @@ $breakpoints: (
   sm: 480px,
   md: 768px,
   lg: 1024px,
-  xl: 1280px
+  xl: 1280px,
 );
 
-//placeholder colors | WIP
 $colors-light: (
   text: (
     primary: #1a3d1a,
-    secondary: #FAFAFA,
+    secondary: #4a5e4a,
     tertiary: #5a6d5a,
     success: #2d7a3e,
+    info: #1a4d8c,
     alert: #c77d00,
-    error: #b83232
+    error: #b83232,
   ),
   background: (
     primary: #f4f9f4,
     secondary: #e8f5e9,
-    tertiary: #82ac88,
+    tertiary: #d6ecd7,
     accent: #95d386,
     accent-hover: #78b16a,
+    success: #c8e6c9,
+    info: #e8f0fa,
+    alert: #fff8e6,
     error: #ffeaea,
-    success: #e8f5e9,
   ),
   border: (
     primary: #c8d9c8,
-    secondary: #e0e9e0
+    secondary: #b0c8b0,
+    tertiary: #dceadc,
+    success: #a8d5b0,
+    info: #a8c0e8,
+    alert: #f0c060,
+    error: #e8a0a0,
   ),
   flag: (
     success: #d4edda,
     alert: #fff3cd,
-    error: #f8d7da
+    error: #f8d7da,
   ),
 );
 
 $colors-dark: (
   text: (
     primary: #e8f5e9,
-    secondary: #1a2e1a,
-    tertiary: #a8c5a8,
+    secondary: #a8c5a8,
+    tertiary: #7a9a7a,
     success: #4caf50,
+    info: #6aabef,
     alert: #ffb74d,
     error: #ef5350,
   ),
@@ -50,102 +58,108 @@ $colors-dark: (
     tertiary: #3d5a3d,
     accent: #ff9966,
     accent-hover: #ff7744,
+    success: #3a6b3a,
+    info: #1a2e4a,
+    alert: #4a3d1a,
     error: #4a1a1a,
-    success: #2d4a2d,
-    alert: #4a3d1a
   ),
   border: (
     primary: #4a6d4a,
-    secondary: #3d5a3d
+    secondary: #3d5a3d,
+    tertiary: #2d4a2d,
+    success: #3a6d42,
+    info: #2a4a7a,
+    alert: #7a6020,
+    error: #7a2a2a,
   ),
   flag: (
     success: #2d4a2d,
     alert: #4a3d1a,
-    error: #4a1a1a
+    error: #4a1a1a,
   ),
 );
 
 $fonts: (
   size: (
-    xs: 0.75rem,   // 12px
-    s: 0.875rem,  // 14px
-    m: 1rem,      // 16px
-    l: 1.25rem,    // 24px
-    xl: 1.75rem,      
-    xxl: 2rem,      
-    xxxl: 4rem      
+    xs: 0.75rem,
+    s: 0.875rem,
+    m: 1rem,
+    l: 1.25rem,
+    xl: 1.75rem,
+    xxl: 2rem,
+    xxxl: 4rem,
   ),
   weight: (
     regular: 400,
     medium: 500,
-    bold: 700
-  )
+    bold: 700,
+  ),
 );
 
 $buttons-light: (
   primary: (
     bg: #82ac88,
     text: #ffffff,
-    hover: #1F4512,
-    active: #163a0d
+    hover: #1f4512,
+    active: #163a0d,
   ),
   secondary: (
     bg: #d9e7db,
     text: #212121,
     hover: #a3d0a3,
-    active: #8bbf8b
+    active: #8bbf8b,
   ),
   success: (
     bg: #27ae60,
     text: #ffffff,
     hover: #1e8449,
-    active: #166437
+    active: #166437,
   ),
   alert: (
     bg: #f6e6b0,
     text: #212121,
     hover: #e6d291,
-    active: #d4bc70
+    active: #d4bc70,
   ),
   error: (
     bg: #961817,
     text: #ffffff,
     hover: #610f0f,
-    active: #450a0a
-  )
+    active: #450a0a,
+  ),
 );
 
 $buttons-dark: (
   primary: (
-    bg: #2D651A,
+    bg: #2d651a,
     text: #ffffff,
-    hover: #1F4512,
-    active: #163a0d
+    hover: #1f4512,
+    active: #163a0d,
   ),
   secondary: (
     bg: #5e8e5a,
     text: #ffffff,
     hover: #4b7248,
-    active: #3a5938
+    active: #3a5938,
   ),
   success: (
     bg: #27ae60,
     text: #ffffff,
     hover: #1e8449,
-    active: #166437
+    active: #166437,
   ),
   alert: (
     bg: #d4c572,
     text: #212121,
     hover: #bdae53,
-    active: #a89840
+    active: #a89840,
   ),
   error: (
     bg: #961817,
     text: #ffffff,
     hover: #610f0f,
-    active: #450a0a
-  )
+    active: #450a0a,
+  ),
 );
 
 $spacings: (
@@ -156,7 +170,7 @@ $spacings: (
   l: 1.5rem,
   xl: 2rem,
   2xl: 3rem,
-  3xl: 5rem
+  3xl: 5rem,
 );
 
 $radii: (
@@ -165,7 +179,7 @@ $radii: (
   m: 8px,
   l: 12px,
   xl: 16px,
-  circle: 50%
+  circle: 50%,
 );
 
 $icon-sizes: (
@@ -174,5 +188,5 @@ $icon-sizes: (
   m: 32px,
   l: 40px,
   xl: 48px,
-  xxl: 64px
+  xxl: 64px,
 );

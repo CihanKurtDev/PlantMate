@@ -17,8 +17,8 @@ import styles from './EnvironmentDetailView.module.scss';
 import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import ClimateForm from "./components/ClimateForm";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
-import { getProfile } from "@/config/profiles";
 import { toC } from "@/helpers/validationUtils";
+import { getIntersectedClimateMetrics } from "./components/shared/DataTab/dataTabUtils";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -30,7 +30,6 @@ function getLatestClimateValues(historical: EnvironmentData_Historical[]) {
     for (const entry of [...historical].reverse()) {
         for (const [key, value] of Object.entries(entry.climate)) {
             const climateKey = key as keyof EnvironmentData_Historical["climate"];
-
             const alreadyFound = climateKey in result;
             if (!alreadyFound && value != null) {
                 result[climateKey] = value;
@@ -48,10 +47,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const environment = environments.find(e => e.id === environmentId);
     const [modalType, setModalType] = useState<ModalType>("none");
     const plants = getPlantsByEnvironment(environmentId);
+    const climateMetrics = getIntersectedClimateMetrics(plants);
 
     if (!environment) return null;
-
-    const profile = getProfile(environment.profile);
 
     const lastClimateValues = getLatestClimateValues(environment.historical ?? []);
 
@@ -77,15 +75,12 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
         }))
         .sort((a, b) => a.timestamp - b.timestamp);
 
-    const headerTitle = `${environment.name}`;
-    const headerSubtitle = `${environment.location} - ${capitalize(environment.type)} ${profile.label} `;
-
     const closeModal = () => setModalType("none");
 
     return (
         <PageLayout
-            title={headerTitle}
-            subtitle={headerSubtitle}
+            title={environment.name}
+            subtitle={`${environment.location} - ${capitalize(environment.type)}`}
             icon={ENVIRONMENT_ICONS[environment.type]}
             iconVariant={environment.type.toLowerCase()}
             actions={
@@ -105,8 +100,16 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab events={environment.events} />
 
-            <DataTab data={chartData} metrics={profile.climate} />
-            
+            <DataTab
+                data={chartData}
+                metrics={climateMetrics}
+                onAddMeasurement={() => setModalType("event")}
+                title="Klimadaten"
+                emptyTitle="Klimaverlauf aktivieren"
+                emptyText="Trage mindestens 2 Messungen ein um Trends, Abweichungen und Verläufe zu sehen."
+                ctaLabel="Messung eintragen"
+            />
+
             <Modal
                 isOpen={modalType === "event"}
                 onClose={closeModal}
@@ -115,11 +118,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     { key: "ereignis", label: "📋 Ereignis", content: <EnvironmentEventForm environmentId={environmentId} /> },
                 ]}
             />
-
             <Modal isOpen={modalType === "newPlant"} onClose={closeModal}>
                 <PlantForm environmentId={environmentId} />
             </Modal>
-
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>
                 <EnvironmentForm environmentId={environmentId} onSaved={closeModal} />
             </Modal>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
     AreaChart,
     Area,
@@ -22,7 +22,7 @@ import { TimeSeriesEntry } from "@/types/events";
 import { DEVIATION_STYLES, DeviationLevel } from "@/config/icons";
 import { UnitToggle } from "./UnitToggle";
 import TabContent from "../TabContent";
-import EmptyState from "../EmptyState";
+import { Button } from "@/components/Button/Button";
 
 export interface MetricConfig {
     key: string;
@@ -261,21 +261,130 @@ function MetricRow({ metric, data, hasHistory, useFahrenheit = false, onToggleFa
     );
 }
 
+function generateGhostData(idealMin: number, idealMax: number): ChartDatum[] {
+    const mid = (idealMin + idealMax) / 2;
+    const range = (idealMax - idealMin) * 0.4;
+    const offsets = [0.2, -0.1, 0.4, 0.1, -0.2, 0.5, 0.3, -0.15, 0.35, 0.2, -0.05, 0.25];
+    const now = Date.now();
+    return offsets.map((o, i) => ({
+        t: now - (offsets.length - 1 - i) * 3600000,
+        v: mid + o * range,
+    }));
+}
+
+interface GhostMetricRowProps {
+    metric: MetricConfig;
+}
+
+function GhostMetricRow({ metric }: GhostMetricRowProps) {
+    const mid = (metric.idealMin + metric.idealMax) / 2;
+    const ghostData = useMemo(() => generateGhostData(metric.idealMin, metric.idealMax), [metric.idealMin, metric.idealMax]);
+    const valuePct = toRangePercent(mid, metric.min, metric.max);
+    const idealStartPct = toRangePercent(metric.idealMin, metric.min, metric.max);
+    const idealWidthPct = toRangePercent(metric.idealMax, metric.min, metric.max) - idealStartPct;
+    const Icon = metric.icon;
+
+    return (
+        <div className={`${styles.metricRow} ${styles.metricRowGhost}`}>
+            <div className={styles.metricLeft}>
+                <div className={styles.metricHeader}>
+                    <div className={styles.metricIconWrap} style={{ background: `${metric.color}18` }}>
+                        <Icon size={14} color={metric.color} />
+                    </div>
+                    <span className={styles.metricLabel}>{metric.label}</span>
+                    <span className={styles.metricBadge} style={{ color: "#1D9E75", background: "#1D9E7520" }}>
+                        OK
+                    </span>
+                </div>
+
+                <div className={styles.metricValueRow}>
+                    <span className={styles.metricValue} style={{ color: metric.color }}>
+                        {metric.format(mid)}
+                    </span>
+                </div>
+
+                <div className={styles.rangeBar}>
+                    <div
+                        className={styles.rangeIdeal}
+                        style={{ left: `${idealStartPct}%`, width: `${idealWidthPct}%`, background: `${metric.color}30` }}
+                    />
+                    <div
+                        className={styles.rangeMarker}
+                        style={{ left: `calc(${valuePct}% - 6px)`, background: metric.color }}
+                    />
+                </div>
+
+                <div className={styles.rangeLabels}>
+                    <span>{metric.min.toFixed(0)} {metric.unit}</span>
+                    <span>Ziel: {metric.idealMin.toFixed(0)}–{metric.idealMax.toFixed(0)}</span>
+                    <span>{metric.max.toFixed(0)} {metric.unit}</span>
+                </div>
+            </div>
+
+            <div className={styles.metricChart}>
+                <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={ghostData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                        <defs>
+                            <linearGradient id={`ghost-grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
+                                <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
+                            </linearGradient>
+                        </defs>
+                        <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#ghost-grad-${metric.key})`} dot={false} isAnimationActive={false} />
+                        <YAxis domain={["auto", "auto"]} hide />
+                        <XAxis dataKey="t" hide />
+                    </AreaChart>
+                </ResponsiveContainer>
+            </div>
+        </div>
+    );
+}
+
 interface DataTabProps {
     data: TimeSeriesEntry[];
     metrics: MetricConfig[];
+    title: string;
+    emptyTitle: string;
+    emptyText: string;
+    ctaLabel: string;
+    onAddMeasurement?: () => void;
+    id?: string,
 }
 
-export default function DataTab({ data, metrics }: DataTabProps) {
+export default function DataTab({ data, metrics, onAddMeasurement, title, emptyTitle, emptyText, ctaLabel}: DataTabProps) {
     const hasHistory = data.length > 1;
-    const isEmpty = data.length === 0;
+    const isEmpty = data.length < 2;
     const [useFahrenheit, setUseFahrenheit] = useState(false);
 
     return (
-        <TabContent id="Klima">
-            <Card title="Klimadaten" collapsible={true}>
+        <TabContent>
+            <Card title={title} collapsible={true}>
                 {isEmpty ? (
-                    <EmptyState message="Keine Klimadaten vorhanden" />
+                    <div className={styles.ghostWrapper}>
+                        <div className={styles.ghostContent}>
+                            <div className={styles.metricList}>
+                                {metrics.map(metric => (
+                                    <GhostMetricRow key={metric.key} metric={metric} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className={styles.ghostOverlay}>
+                            <div className={styles.ghostOverlayCard}>
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#555555" }}>
+                                    <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+                                </svg>
+                                <p className={styles.ghostOverlayTitle}>{emptyTitle}</p>
+                                <p className={styles.ghostOverlayText}>
+                                    {emptyText}
+                                </p>
+                                {onAddMeasurement && (
+                                    <Button variant="secondary" type="button" onClick={onAddMeasurement}>
+                                        {ctaLabel}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 ) : (
                     <div className={styles.metricList}>
                         {metrics.map(metric => (

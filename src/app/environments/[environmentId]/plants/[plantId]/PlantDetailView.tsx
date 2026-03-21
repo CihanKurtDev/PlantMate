@@ -27,7 +27,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     if (!plant) return null;
 
     const environment = environments.find(e => e.id === plant.environmentId);
-    const profile = getProfile(environment?.profile);
+    const profile = getProfile(plant.profile);
 
     const latestHistorical = plant.historical?.at(-1);
 
@@ -39,17 +39,17 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
         ? { key: 'ec', value: `${latestHistorical.water.ec.value} mS/cm` }
         : null;
 
-    const waterItems: MetricItem[] = [phItem, ecItem].filter((item) => item !== null);
+    const waterItems: MetricItem[] = [phItem, ecItem].filter((item): item is MetricItem => item !== null);
 
-    const chartData: PlantTimeSeriesEntry[] = (plant.historical ?? []).map(h => ({
-        timestamp: h.timestamp,
+    const chartData: PlantTimeSeriesEntry[] = (plant.historical ?? []).map(entry => ({
+        timestamp: entry.timestamp,
         entryKind: 'historical',
         metrics: {
-            ph: h.water?.ph?.value,
-            ec: h.water?.ec?.value,
-            height: h.height?.value,
+            ph: entry.water?.ph?.value,
+            ec: entry.water?.ec?.value,
+            height: entry.height?.value,
         },
-        notes: h.notes,
+        notes: entry.notes,
     }));
 
     const closeModal = () => setModalType("none");
@@ -60,7 +60,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
             icon={Sprout}
             iconVariant="sprout"
             backLink={{
-                label: environment?.name ? `Zurück zum Environment: ${environment?.name}` : "Zurück zum Environment",
+                label: environment?.name ? `Zurück zum Environment: ${environment.name}` : "Zurück zum Environment",
                 href: `/environments/${plant.environmentId}`,
             }}
             actions={
@@ -82,16 +82,21 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </Card>
             </TabContent>
 
-            {chartData.length > 1 && (
-                <DataTab data={chartData} metrics={profile.water} />
-            )}
+            <DataTab
+                data={chartData}
+                metrics={profile.water}
+                onAddMeasurement={() => setModalType("event")}
+                title="Wasserwerte"
+                emptyTitle="Wasserverlauf aktivieren"
+                emptyText="Trage mindestens 2 Wässerungen ein um pH, EC und Trends zu sehen."
+                ctaLabel="Wässerung eintragen"
+            />
 
             <PlantEventsTab events={plant.events} />
 
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>
                 <PlantForm plantId={plant.id} />
             </Modal>
-
             <Modal
                 isOpen={modalType === "event"}
                 onClose={closeModal}

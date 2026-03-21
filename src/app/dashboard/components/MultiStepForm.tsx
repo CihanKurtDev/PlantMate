@@ -38,7 +38,6 @@ export const MultiStepForm = () => {
                         {!isEditMode ? "Environment erstellen" : "Environment bearbeiten"}
                     </h2>
                     <EnvironmentForm
-                        isMultiStep={true}
                         existingId={createdEnvironmentId}
                         onSaved={handleEnvironmentSaved}
                         environmentId={isEditMode ? searchParams.get("editId")! : undefined}

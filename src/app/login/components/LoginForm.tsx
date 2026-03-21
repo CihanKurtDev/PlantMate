@@ -8,7 +8,7 @@ import { hasValidationErrors } from "@/helpers/validationUtils"
 import { useRouter } from "next/navigation"
 import Form from "@/components/Form/Form"
 import { Input } from "@/components/Form/Input"
-import Checkbox from "@/components/Form/Checkbox"
+import Checkbox from "@/components/Checkbox/Checkbox"
 import { Button } from "@/components/Button/Button"
 
 async function fakeLoginRequest(data: LoginFormData) {

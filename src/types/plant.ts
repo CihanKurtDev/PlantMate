@@ -1,3 +1,4 @@
+import { ProfileKey } from "@/config/profiles";
 import { BaseEvent, TimeSeriesEntry } from "./events";
 
 export type ECUnit = 'mS/cm';
@@ -25,6 +26,7 @@ export interface PlantFormData {
   title: string;
   species: string;
   environmentId: string;
+  profile?: ProfileKey;
   historical?: PlantData_Historical[];
 }
 
@@ -33,6 +35,7 @@ export interface PlantData {
   title: string;
   species: string;
   environmentId: string;
+  profile?: ProfileKey;
   historical?: PlantData_Historical[];
   events?: PlantEvent[];
 }
