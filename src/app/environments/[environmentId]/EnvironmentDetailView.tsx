@@ -15,7 +15,7 @@ import { EnvironmentForm } from "@/components/EnvironmentForm/EnvironmentForm";
 import { PlantForm } from "@/components/PlantForm/PlantForm";
 import styles from './EnvironmentDetailView.module.scss';
 import EnvironmentEventForm from "./components/EnvironmentEventForm";
-import ClimateForm from "./components/ClimateForm";
+import ClimateForm from "./components/ClimateForm/ClimateForm";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import { toC } from "@/helpers/validationUtils";
 import { getIntersectedClimateMetrics } from "./components/shared/DataTab/dataTabUtils";
