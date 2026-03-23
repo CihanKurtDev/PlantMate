@@ -5,21 +5,45 @@ import { CultivationProfile } from "@/config/profiles";
 
 export type { WaterErrors, WaterWarnings };
 
-function mergeRangeWarnings(profileWarnings: Array<{ label: string; warning: string }>): string | undefined {
+interface RangeWarningDetail {
+    label: string;
+    severity: string;
+    min: number;
+    max: number;
+    rawWarning: string;
+}
+
+const RANGE_PATTERN = /^(.+?):\s*Idealbereich\s+([\d.]+)[–-]([\d.]+)/;
+
+function parseRangeWarning(label: string, warning: string): RangeWarningDetail | null {
+    const match = warning.match(RANGE_PATTERN);
+    if (!match) return null;
+    return {
+        label,
+        severity: match[1].trim(),
+        min: parseFloat(match[2]),
+        max: parseFloat(match[3]),
+        rawWarning: warning,
+    };
+}
+
+function mergeRangeWarnings(
+    profileWarnings: Array<{ label: string; warning: string }>
+): string | undefined {
     if (profileWarnings.length === 0) return undefined;
+    if (profileWarnings.length === 1) return profileWarnings[0].warning;
 
-    const rangePattern = /Idealbereich\s+([\d.]+)[–-]([\d.]+)/;
+    const parsed = profileWarnings.map(({ label, warning }) =>
+        parseRangeWarning(label, warning)
+    );
 
-    const ranges = profileWarnings
-        .map(({ warning }) => warning.match(rangePattern))
-        .filter(Boolean)
-        .map((match) => ({ min: parseFloat(match![1]), max: parseFloat(match![2]) }));
+    const allParsed = parsed.every((p): p is RangeWarningDetail => p !== null);
 
-    if (ranges.length === profileWarnings.length && ranges.length > 1) {
-        const globalMin = Math.min(...ranges.map((r) => r.min));
-        const globalMax = Math.max(...ranges.map((r) => r.max));
-        const severityPhrase = profileWarnings[0].warning.match(/^([\w-]+\s[\w-]+)/)?.[1] ?? "Außerhalb";
-        return `${severityPhrase}: Idealbereich ${globalMin}–${globalMax} (alle Profile)`;
+    if (allParsed) {
+        const globalMin = Math.min(...parsed.map((p) => p!.min));
+        const globalMax = Math.max(...parsed.map((p) => p!.max));
+        const severity = parsed[0]!.severity;
+        return `${severity}: Idealbereich ${globalMin}–${globalMax} (alle Profile)`;
     }
 
     return profileWarnings.map(({ label, warning }) => `${label}: ${warning}`).join(" | ");
