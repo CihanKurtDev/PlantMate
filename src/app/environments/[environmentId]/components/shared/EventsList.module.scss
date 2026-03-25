@@ -1,5 +1,16 @@
 @use "../../../../../styles/mixins" as *;
 
+.container {
+    position: relative;
+}
+
+.ghostContent {
+    opacity: 0.5;
+    filter: saturate(0.4);
+    pointer-events: none;
+    user-select: none;
+}
+
 .card {
     @include card-flat;
     padding: var(--spacing-m);
@@ -11,7 +22,7 @@
 
 .eventInfoWrapper {
     flex: 1;
-    
+
     h4 {
         margin: 0 0 var(--spacing-xs) 0;
         font-size: var(--font-size-m);
@@ -33,12 +44,12 @@
 .dateHeader {
     display: flex;
     align-items: center;
-    gap: 1rem; 
+    gap: 1rem;
     margin-bottom: 1rem;
 }
 
 .dateTitle {
-    font-size: 1.125rem;
+    font-size: var(--font-size-l);
     font-weight: 700;
     color: #111827;
     margin: 0;
@@ -56,12 +67,50 @@
     padding: 0;
     list-style-type: none;
     gap: var(--spacing-m);
-    
+
     @media (min-width: 768px) {
         grid-template-columns: repeat(2, 1fr);
     }
-  
+
     @media (min-width: 1200px) {
         grid-template-columns: repeat(3, 1fr);
     }
+}
+
+.exampleOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.exampleOverlayCard {
+    pointer-events: all;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-m);
+    text-align: center;
+    background-color: var(--color-background-primary);
+    border: 1px solid #c8c8c8;
+    border-radius: var(--radius-l);
+    padding: var(--spacing-xl);
+    max-width: 320px;
+    width: 100%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+
+    svg {
+        color: var(--color-text-tertiary);
+    }
+}
+
+.exampleOverlayDescription {
+    font-size: var(--font-size-xs);
+    color: #555;
+    max-width: 240px;
+    line-height: 1.5;
+    margin: 0;
 }

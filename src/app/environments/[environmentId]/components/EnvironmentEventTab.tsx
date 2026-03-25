@@ -8,16 +8,17 @@ import { getEventConfig } from "@/config/icons";
 
 interface EnvironmentEventTabProps {
     events?: EnvironmentEvent[];
+    onAddEvent?: () => void;
 }
 
-export default function EnvironmentEventTab({ events }: EnvironmentEventTabProps) {
-
+export default function EnvironmentEventTab({ events, onAddEvent }: EnvironmentEventTabProps) {
     return (
         <TabContent id="events">
             <Card title="events" collapsible={true}>
                 <EventsList
                     events={events ?? []}
-                    emptyMessage="Keine Events vorhanden"
+                    emptyMessage="Trage mindestens 1 Event ein um deinen Verlauf zu sehen."
+                    onAddEvent={onAddEvent}
                     getTitle={(event) => {
                         const config = getEventConfig(event.type);
                         return (
