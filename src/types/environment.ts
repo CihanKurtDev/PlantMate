@@ -1,7 +1,6 @@
 import type { MeasuredValue } from "./plant";
 import { BaseEvent, TimeSeriesEntry } from "./events";
-import { ActivityIcon, Droplet, Leaf, Thermometer, Wind } from "lucide-react";
-import type { ProfileKey } from "@/config/profiles";
+import { iconMap } from "./icons";
 
 export type PercentUnit = '%';
 export type PPMUnit = 'ppm';
@@ -9,7 +8,7 @@ export type KPaUnit = 'kPa';
 export type EnvironmentType = 'ROOM' | 'TENT' | 'GREENHOUSE';
 export type TempUnit = '°C' | '°F';
 
-export const iconMap = { Leaf, Thermometer, ActivityIcon, Droplet, Wind } as const;
+export { iconMap };
 
 export interface ClimateData {
   temp?: MeasuredValue<TempUnit>;

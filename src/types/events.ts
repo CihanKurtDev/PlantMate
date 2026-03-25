@@ -1,16 +1,15 @@
+import type { IconMapKey } from "./icons";
 
 export interface BaseEvent {
   id: string;
   timestamp: number;
   type: string;
   notes?: string;
-
-  customIconName?: string;
+  customIconName?: IconMapKey;
   customBgColor?: string;
   customTextColor?: string;
   customBorderColor?: string;
 }
-
 
 export type ExtraValue = string | number | undefined;
 
@@ -101,7 +100,7 @@ export interface TimeSeriesEntry<EventType = BaseEvent> {
 
 export interface CustomEventFields {
   resolvedType: string;
-  customIconName?: string;
+  customIconName?: IconMapKey;
   customBgColor?: string;
   customTextColor?: string;
   customBorderColor?: string;
@@ -114,9 +113,17 @@ export function extractCustomFields(
   const isCustom = type === "custom";
   return {
     resolvedType: isCustom ? (extra[CUSTOM_EXTRA_KEYS.name] as string) : type,
-    customIconName: isCustom ? (extra[CUSTOM_EXTRA_KEYS.iconName] as string) : undefined,
-    customBgColor: isCustom ? (extra[CUSTOM_EXTRA_KEYS.bgColor] as string) : undefined,
-    customTextColor: isCustom ? (extra[CUSTOM_EXTRA_KEYS.textColor] as string) : undefined,
-    customBorderColor: isCustom ? (extra[CUSTOM_EXTRA_KEYS.borderColor] as string) : undefined,
+    customIconName: isCustom
+      ? (extra[CUSTOM_EXTRA_KEYS.iconName] as IconMapKey)
+      : undefined,
+    customBgColor: isCustom
+      ? (extra[CUSTOM_EXTRA_KEYS.bgColor] as string)
+      : undefined,
+    customTextColor: isCustom
+      ? (extra[CUSTOM_EXTRA_KEYS.textColor] as string)
+      : undefined,
+    customBorderColor: isCustom
+      ? (extra[CUSTOM_EXTRA_KEYS.borderColor] as string)
+      : undefined,
   };
 }

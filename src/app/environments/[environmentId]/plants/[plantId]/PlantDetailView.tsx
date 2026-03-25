@@ -10,7 +10,7 @@ import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Card } from "@/components/Card/Card";
 import { PlantForm } from "@/components/PlantForm/PlantForm";
-import WaterForm from "./components/WaterForm";
+import WaterForm from "./components/WaterForm/WaterForm";
 import PlantEventForm from "./components/PlantEventForm";
 import { PlantTimeSeriesEntry } from "@/types/plant";
 import { PageLayout } from "@/components/PageLayout/PageLayout";

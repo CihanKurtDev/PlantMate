@@ -11,6 +11,7 @@ import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
 import { useModal } from "@/context/ModalContext";
 import { ProfileKey, PROFILES } from "@/config/profiles";
+import { MAX_PLANT_COUNT } from "@/helpers/validationUtils";
 
 interface PlantFormProps {
     environmentId?: string;
@@ -33,7 +34,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
         }
     }, [environmentId, existingPlant]);
 
-    const validationErrors = validate(formState);
+    const validationErrors = validate(formState, plantId ? undefined : plantCount);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -102,8 +103,10 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
                     label="Anzahl Pflanzen"
                     type="number"
                     value={plantCount}
-                    onChange={(e) => setPlantCount(Math.max(1, parseInt(e.target.value) || 1))}
+                    onChange={(e) => setPlantCount(Math.max(1, Math.min(MAX_PLANT_COUNT, parseInt(e.target.value) || 1)))}
+                    error={validationErrors.count}
                     min={1}
+                    max={MAX_PLANT_COUNT}
                 />
             )}
 

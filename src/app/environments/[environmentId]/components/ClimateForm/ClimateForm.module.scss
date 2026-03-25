@@ -10,15 +10,15 @@
 .profileChips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--spacing-xs);
 }
 
 .profileChip {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: var(--spacing-xs);
     font-size: var(--font-size-xs);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     padding: var(--spacing-xs) var(--spacing-s);
     border-radius: var(--radius-l);
     border: 0.5px solid var(--color-border-secondary);
@@ -27,9 +27,13 @@
 }
 
 .profileChipDot {
+    /*
+     * 7px ist eine bewusste Design-Entscheidung für den farbigen Indikator-Dot.
+     * Kein passender Token in $icon-sizes, bleibt hardcodiert.
+     */
     width: 7px;
     height: 7px;
-    border-radius: 50%;
+    border-radius: var(--radius-circle);
     flex-shrink: 0;
 }
 
@@ -41,10 +45,17 @@
 .metricRows {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    /*
+     * gap: 4px — unterhalb der Token-Skala (--spacing-xs wäre 0.25rem ≈ 4px).
+     * Nutzen wir den Token.
+     */
+    gap: var(--spacing-xs);
 }
 
 .metricRow {
+    /*
+     * 110px für die Label-Spalte ist eine bewuste Layout-Entscheidung, kein Token.
+     */
     display: grid;
     grid-template-columns: 110px minmax(0, 1fr) auto;
     align-items: center;
@@ -54,7 +65,7 @@
 
 .metricValues {
     display: flex;
-    gap: 5px;
+    gap: var(--spacing-xs);
     flex-wrap: wrap;
 }
 
@@ -70,7 +81,7 @@
 
 .metricResult {
     font-size: var(--font-size-xs);
-    font-weight: 500;
+    font-weight: var(--font-weight-medium);
     white-space: nowrap;
     padding: var(--spacing-xs) var(--spacing-s);
     border-radius: var(--radius-l);
@@ -83,14 +94,14 @@
 }
 
 .metricResultWarn {
-    color: var(--color-text-warning);
-    background: var(--color-background-warning);
+    color: var(--color-text-alert);
+    background: var(--color-background-alert);
 }
 
 .singleMetrics {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--spacing-xs);
 }
 
 .singlePill {
@@ -102,6 +113,6 @@
 
     strong {
         color: var(--color-text-primary);
-        font-weight: 500;
+        font-weight: var(--font-weight-medium);
     }
 }

@@ -1,16 +1,15 @@
 import { useMemo } from "react";
-import { WaterDataInput } from "@/types/plant";
-import { validateWater, WaterErrors, WaterWarnings } from "@/helpers/validationUtils";
+import { ClimateDataInput } from "@/types/environment";
+import { validateClimate, ClimateErrors, ClimateWarnings } from "@/helpers/validationUtils";
 import { CultivationProfile } from "@/config/profiles";
 
-export type { WaterErrors, WaterWarnings };
+export type { ClimateErrors, ClimateWarnings };
 
 interface RangeWarningDetail {
     label: string;
     severity: string;
     min: number;
     max: number;
-    rawWarning: string;
 }
 
 const RANGE_PATTERN = /^(.+?):\s*Idealbereich\s+([\d.]+)[–-]([\d.]+)/;
@@ -23,7 +22,6 @@ function parseRangeWarning(label: string, warning: string): RangeWarningDetail |
         severity: match[1].trim(),
         min: parseFloat(match[2]),
         max: parseFloat(match[3]),
-        rawWarning: warning,
     };
 }
 
@@ -49,40 +47,46 @@ function mergeRangeWarnings(
     return profileWarnings.map(({ label, warning }) => `${label}: ${warning}`).join(" | ");
 }
 
-export const useWaterValidation = (
-    water?: WaterDataInput,
+export const useClimateValidation = (
+    climate?: ClimateDataInput,
     profiles?: CultivationProfile | CultivationProfile[]
-): { errors: WaterErrors; warnings: WaterWarnings } => {
+): { errors: ClimateErrors; warnings: ClimateWarnings } => {
     return useMemo(() => {
         const profileList = Array.isArray(profiles)
             ? profiles
             : ([profiles].filter(Boolean) as CultivationProfile[]);
 
         if (profileList.length <= 1) {
-            return validateWater(water, profileList[0]);
+            return validateClimate(climate, profileList[0]);
         }
 
-        const { errors } = validateWater(water, profileList[0]);
+        const { errors } = validateClimate(climate, profileList[0]);
 
-        const collected: Record<"ph" | "ec" | "amount", Array<{ label: string; warning: string }>> = {
-            ph: [],
-            ec: [],
-            amount: [],
+        const collected: Record<
+            "temp" | "humidity" | "co2" | "vpd",
+            Array<{ label: string; warning: string }>
+        > = {
+            temp: [],
+            humidity: [],
+            co2: [],
+            vpd: [],
         };
 
         for (const profile of profileList) {
-            const { warnings } = validateWater(water, profile);
-            if (warnings.ph) collected.ph.push({ label: profile.label, warning: warnings.ph });
-            if (warnings.ec) collected.ec.push({ label: profile.label, warning: warnings.ec });
-            if (warnings.amount) collected.amount.push({ label: profile.label, warning: warnings.amount });
+            const { warnings } = validateClimate(climate, profile);
+            if (warnings.temp) collected.temp.push({ label: profile.label, warning: warnings.temp });
+            if (warnings.humidity) collected.humidity.push({ label: profile.label, warning: warnings.humidity });
+            if (warnings.co2) collected.co2.push({ label: profile.label, warning: warnings.co2 });
+            if (warnings.vpd) collected.vpd.push({ label: profile.label, warning: warnings.vpd });
         }
 
-        const warnings: WaterWarnings = {
-            ph: mergeRangeWarnings(collected.ph),
-            ec: mergeRangeWarnings(collected.ec),
-            amount: collected.amount[0]?.warning,
+        const warnings: ClimateWarnings = {
+            temp: mergeRangeWarnings(collected.temp),
+            humidity: mergeRangeWarnings(collected.humidity),
+            co2: mergeRangeWarnings(collected.co2),
+            vpd: mergeRangeWarnings(collected.vpd),
         };
 
         return { errors, warnings };
-    }, [water, profiles]);
+    }, [climate, profiles]);
 };

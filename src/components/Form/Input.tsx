@@ -1,11 +1,11 @@
 import styles from "./Input.module.scss"
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string | React.ReactNode
+  label?: string | React.ReactNode
   error?: string
   warning?: string
   iconLeft?: React.ReactNode
-  suffix?: string  | React.ReactNode
+  suffix?: string | React.ReactNode
 }
 
 export const Input = ({ 
@@ -22,10 +22,12 @@ export const Input = ({
 
   return (
     <div className={styles.field}>
-      <label htmlFor={inputId} className={styles.label}>
-        {iconLeft && <span className={styles.iconLeft}>{iconLeft}</span>}
-        {label}
-      </label>
+      {label && (
+        <label htmlFor={inputId} className={styles.label}>
+          {iconLeft && <span className={styles.iconLeft}>{iconLeft}</span>}
+          {label}
+        </label>
+      )}
 
       <div className={styles.inputWrapper}>
         <input
@@ -39,7 +41,6 @@ export const Input = ({
           {!error && warning && <span className={styles.fieldWarning}>{warning}</span>}
         </div>
       </div>
-
     </div>
   )
 }

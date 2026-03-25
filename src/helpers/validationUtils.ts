@@ -158,13 +158,19 @@ export const validateEnvironment = (env: EnvironmentFormData): { errors: Environ
     return { errors, warnings };
 };
 
+export const MAX_PLANT_COUNT = 100;
+
 export interface PlantErrors {
     title?: string;
     species?: string;
     environmentId?: string;
+    count?: string;
 }
 
-export const validatePlant = (plant: { title: string; species?: string; environmentId: string }): PlantErrors => {
+export const validatePlant = (
+    plant: { title: string; species?: string; environmentId: string },
+    count?: number
+): PlantErrors => {
     const errors: PlantErrors = {};
 
     if (!plant.title || plant.title.trim() === "") errors.title = "Name erforderlich";
@@ -174,6 +180,11 @@ export const validatePlant = (plant: { title: string; species?: string; environm
 
     if (!plant.environmentId || plant.environmentId.trim() === "") {
         errors.environmentId = "Environment erforderlich";
+    }
+
+    if (count !== undefined) {
+        if (!Number.isInteger(count) || count < 1) errors.count = "Anzahl muss mindestens 1 sein";
+        else if (count > MAX_PLANT_COUNT) errors.count = `Maximal ${MAX_PLANT_COUNT} Pflanzen auf einmal`;
     }
 
     return errors;

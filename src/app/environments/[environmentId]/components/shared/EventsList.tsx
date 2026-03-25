@@ -1,22 +1,13 @@
+"use client";
+
+import { BaseEvent } from "@/types/events";
+import { iconMap } from "@/types/icons";
 import EmptyState from "./EmptyState";
 import styles from "./EventsList.module.scss";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
 import { Leaf } from "lucide-react";
-import { iconMap } from "@/types/environment";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
 import { getEventConfig } from "@/config/icons";
-
-export interface BaseEvent {
-    id: string;
-    type: string;
-    timestamp: number;
-    notes?: string;
-
-    customIconName?: keyof typeof iconMap;
-    customBgColor?: string;
-    customTextColor?: string;
-    customBorderColor?: string;
-}
 
 interface EventsListProps<T extends BaseEvent> {
     events: T[];
