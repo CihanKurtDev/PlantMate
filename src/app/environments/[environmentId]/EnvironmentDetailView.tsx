@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
@@ -19,6 +18,8 @@ import ClimateForm from "./components/ClimateForm/ClimateForm";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import { toC } from "@/helpers/validationUtils";
 import { getIntersectedClimateMetrics } from "./components/shared/DataTab/dataTabUtils";
+import { useEnvironment } from "@/context/EnvironmentContext";
+import { usePlant } from "@/context/PlantContext";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -43,7 +44,8 @@ function getLatestClimateValues(historical: EnvironmentData_Historical[]) {
 type ModalType = "none" | "event" | "edit" | "newPlant";
 
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
-    const { environments, getPlantsByEnvironment } = usePlantMonitor();
+    const { environments } = useEnvironment();
+    const { getPlantsByEnvironment } = usePlant();
     const environment = environments.find(e => e.id === environmentId);
     const [modalType, setModalType] = useState<ModalType>("none");
     const plants = getPlantsByEnvironment(environmentId);

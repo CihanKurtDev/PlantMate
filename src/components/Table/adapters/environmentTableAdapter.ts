@@ -43,6 +43,7 @@ export const mapEnvironmentsToTableRows = (environments: EnvironmentData[]): Env
     return environments.map(env => {
         const lastHistorical = env.historical?.at(-1);
         const lastEvent = getLastEvent(env.events);
+        // TODO: hier brauche ich die profile der pflanzen in dem environment
         const profile = getProfile(env.profile);
 
         const temp = lastHistorical?.climate?.temp?.value ?? null;

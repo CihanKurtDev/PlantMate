@@ -8,9 +8,9 @@ import { Select } from "@/components/Form/Select";
 import type { EnvironmentType } from "@/types/environment";
 import styles from "./EnvironmentForm.module.scss";
 import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 import { hasValidationErrors } from "@/helpers/validationUtils";
+import { useEnvironment } from "@/context/EnvironmentContext";
 
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
@@ -19,7 +19,7 @@ interface EnvironmentFormProps {
 }
 
 export const EnvironmentForm = ({ onSaved, environmentId, existingId }: EnvironmentFormProps) => {
-    const { environments, addEnvironment, updateEnvironment } = usePlantMonitor();
+    const { environments, addEnvironment, updateEnvironment } = useEnvironment();
     const { validate } = useEnvironmentValidation();
     const searchParams = useSearchParams();
     const editId = environmentId ?? searchParams.get("editId");

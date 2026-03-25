@@ -1,6 +1,5 @@
 "use client";
 
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { EnvironmentData_Historical } from "@/types/environment";
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { Button } from "@/components/Button/Button";
@@ -11,6 +10,8 @@ import { useClimateValidation } from "@/hooks/useClimateValidation";
 import { useClimateForm } from "@/hooks/useClimateForm";
 import { getProfile, ProfileKey } from "@/config/profiles";
 import { ClimateProfileInfo } from "./ClimateProfileInfo";
+import { useEnvironment } from "@/context/EnvironmentContext";
+import { usePlant } from "@/context/PlantContext";
 
 interface ClimateFormProps {
     environmentId: string;
@@ -18,7 +19,8 @@ interface ClimateFormProps {
 }
 
 export default function ClimateForm({ environmentId, entryId }: ClimateFormProps) {
-    const { environments, addHistoryData, updateHistoryData, getPlantsByEnvironment } = usePlantMonitor();
+    const { environments, addHistoryData, updateHistoryData } = useEnvironment();
+    const { getPlantsByEnvironment } = usePlant();
     const { closeModal } = useModal();
 
     const environment = environments.find((e) => e.id === environmentId);
