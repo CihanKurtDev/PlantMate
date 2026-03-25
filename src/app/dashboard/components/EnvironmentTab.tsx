@@ -2,7 +2,7 @@
 import { usePlantMonitor } from '@/context/PlantMonitorContext';
 import { EnvironmentTableCard } from '@/components/Table/TableCard';
 import { useRouter } from 'next/navigation';
-import TabContent from '@/app/environments/[environmentId]/components/shared/TabContent';
+import TabContent from '@/components/TabContent/TabContent';
 import { EnvironmentData } from '@/types/environment';
 import { mapEnvironmentsToTableRows } from '@/components/Table/adapters/environmentTableAdapter';
 import { environmentTableConfig } from '@/config/environmentTableConfig';

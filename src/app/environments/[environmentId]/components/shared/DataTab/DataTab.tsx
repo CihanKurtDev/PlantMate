@@ -21,8 +21,8 @@ import { formatDate, formatDateShort } from "@/helpers/date";
 import { TimeSeriesEntry } from "@/types/events";
 import { DEVIATION_STYLES, DeviationLevel } from "@/config/icons";
 import { UnitToggle } from "./UnitToggle";
-import TabContent from "../TabContent";
 import { Button } from "@/components/Button/Button";
+import TabContent from "@/components/TabContent/TabContent";
 
 export interface MetricConfig {
     key: string;

@@ -1,7 +1,7 @@
 "use client";
 
 import { EnvironmentEvent } from '@/types/environment';
-import TabContent from "./shared/TabContent";
+import TabContent from "@/components/TabContent/TabContent";
 import EventsList from "./shared/EventsList";
 import { Card } from "@/components/Card/Card";
 import { getEventConfig } from "@/config/icons";

@@ -9,8 +9,8 @@ import styles from "./RecentActivity.module.scss";
 import { getRecentActivity } from "@/helpers/getRecentActivity";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
 import { Card } from "@/components/Card/Card";
-import TabContent from "@/app/environments/[environmentId]/components/shared/TabContent";
-import EmptyState from "@/app/environments/[environmentId]/components/shared/EmptyState";
+import TabContent from "@/components/TabContent/TabContent";
+import EmptyState from "@/components/EmptyState/EmptyState";
 
 interface RecentActivityProps {
     environments: EnvironmentData[];

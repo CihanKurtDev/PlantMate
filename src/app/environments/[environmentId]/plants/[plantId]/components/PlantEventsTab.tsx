@@ -1,8 +1,8 @@
-import TabContent from '../../../components/shared/TabContent';
 import EventsList from '../../../components/shared/EventsList';
 import { PlantEvent } from '@/types/plant';
 import { Card } from '@/components/Card/Card';
 import { getEventConfig } from '@/config/icons';
+import TabContent from '@/components/TabContent/TabContent';
 
 interface PlantEventsTabProps {
     events?: PlantEvent[];

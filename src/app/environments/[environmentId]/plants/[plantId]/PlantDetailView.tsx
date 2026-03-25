@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { Pencil, Sprout } from "lucide-react";
-import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
 import DataTab from "../../components/shared/DataTab/DataTab";
 import Modal from "@/components/Modal/Modal";
@@ -16,6 +15,7 @@ import { PlantTimeSeriesEntry } from "@/types/plant";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
 import { getProfile } from "@/config/profiles";
+import TabContent from "@/components/TabContent/TabContent";
 
 type ModalType = "none" | "event" | "edit";
 
