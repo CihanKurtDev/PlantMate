@@ -1,18 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import { BaseEvent } from "@/types/events";
 import { iconMap } from "@/types/icons";
-import EmptyState from "./EmptyState";
 import styles from "./EventsList.module.scss";
 import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
-import { Leaf } from "lucide-react";
+import { Leaf, TrendingUp } from "lucide-react";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
 import { getEventConfig } from "@/config/icons";
+import { Button } from "@/components/Button/Button";
 
 interface EventsListProps<T extends BaseEvent> {
     events: T[];
     emptyMessage: string;
     getTitle: (event: T) => string;
+    onAddEvent?: () => void;
     children?: (event: T) => React.ReactNode;
 }
 
@@ -55,45 +57,109 @@ const EventCard = ({ event, title }: EventCardProps) => {
     );
 };
 
+function generateExampleEvents(): BaseEvent[] {
+    const now = Date.now();
+    const day = 86_400_000;
+
+    return [
+        {
+            id: "ghost-1",
+            type: "Cleaning",
+            timestamp: now,
+            notes: "Substrate gewechselt",
+        },
+        {
+            id: "ghost-2",
+            type: "Equipment_Change",
+            timestamp: now,
+            notes: undefined,
+        },
+        {
+            id: "ghost-3",
+            type: "Maintenance",
+            timestamp: now - day * 3,
+            notes: "Filter gereinigt",
+        },
+        {
+            id: "ghost-4",
+            type: "Cleaning",
+            timestamp: now - day * 7,
+            notes: undefined,
+        },
+    ];
+}
+
+interface ExampleOverlayProps {
+    message: string;
+    onAddEvent?: () => void;
+}
+
+function ExampleOverlay({ message, onAddEvent }: ExampleOverlayProps) {
+    return (
+        <div className={styles.exampleOverlay}>
+            <div className={styles.exampleOverlayCard}>
+                <TrendingUp size={28} strokeWidth={1.5} />
+                <p>Verlauf aktivieren</p>
+                <p className={styles.exampleOverlayDescription}>{message}</p>
+                {onAddEvent && (
+                    <Button variant="secondary" type="button" onClick={onAddEvent}>
+                        Event eintragen
+                    </Button>
+                )}
+            </div>
+        </div>
+    );
+}
+
 export default function EventsList<T extends BaseEvent>({
     events,
     emptyMessage,
     getTitle,
+    onAddEvent,
     children,
 }: EventsListProps<T>) {
-    if (!events || events.length === 0) {
-        return <EmptyState message={emptyMessage} />;
-    }
+    const isEmpty = !events || events.length === 0;
 
-    const groups = groupEventsByDate(events);
+    const displayEvents = useMemo(
+        () => (isEmpty ? (generateExampleEvents() as unknown as T[]) : events),
+        [isEmpty, events]
+    );
+
+    const groups = groupEventsByDate(displayEvents);
 
     return (
-        <>
-            {groups.map(([date, groupedEvents]) => (
-                <section key={date}>
-                    <header className={styles.dateHeader}>
-                        <h3 className={styles.dateTitle}>
-                            {formatDate(new Date(date).getTime())}
-                        </h3>
-                        <div className={styles.dateLine} />
-                    </header>
+        <div className={styles.container}>
+            <div className={isEmpty ? styles.ghostContent : undefined}>
+                {groups.map(([date, groupedEvents]) => (
+                    <section key={date}>
+                        <header className={styles.dateHeader}>
+                            <h3 className={styles.dateTitle}>
+                                {formatDate(new Date(date).getTime())}
+                            </h3>
+                            <div className={styles.dateLine} />
+                        </header>
 
-                    <ol className={styles.eventsGrid}>
-                        {groupedEvents.map(event => (
-                            <li key={event.id} className={styles.timelineItem}>
-                                {children ? (
-                                    children(event)
-                                ) : (
-                                    <EventCard
-                                        event={event}
-                                        title={getTitle(event)}
-                                    />
-                                )}
-                            </li>
-                        ))}
-                    </ol>
-                </section>
-            ))}
-        </>
+                        <ol className={styles.eventsGrid}>
+                            {groupedEvents.map((event) => (
+                                <li key={event.id} className={styles.timelineItem}>
+                                    {children ? (
+                                        children(event)
+                                    ) : (
+                                        <EventCard
+                                            event={event}
+                                            title={getTitle(event)}
+                                        />
+                                    )}
+                                </li>
+                            ))}
+                        </ol>
+                    </section>
+                ))}
+            </div>
+
+            {isEmpty && (
+                <ExampleOverlay message={emptyMessage} onAddEvent={onAddEvent} />
+            )}
+        </div>
     );
 }
