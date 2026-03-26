@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect, useCallback, useMemo } from "react";
+import { createContext, useContext, ReactNode, useCallback, useMemo } from "react";
 import type { PlantData, PlantData_Historical, PlantEvent } from "@/types/plant";
+import { useLocalStorageState } from "@/hooks/useLocalStorage";
 
 interface PlantContextType {
     plants: PlantData[];
@@ -16,60 +17,39 @@ interface PlantContextType {
 const PlantContext = createContext<PlantContextType | undefined>(undefined);
 
 export const PlantProvider = ({ children }: { children: ReactNode }) => {
-    const [plants, setPlants] = useState<PlantData[]>([]);
-
-    useEffect(() => {
-        const stored = localStorage.getItem("plants");
-        if (stored) setPlants(JSON.parse(stored));
-    }, []);
+    const [plants, setPlants] = useLocalStorageState<PlantData[]>("plants", []);
 
     const addPlant = useCallback((plant: PlantData) => {
-        setPlants(prev => {
-            const updated = [...prev, plant];
-            localStorage.setItem("plants", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+        setPlants(prev => [...prev, plant]);
+    }, [setPlants]);
 
     const updatePlant = useCallback((plant: PlantData) => {
-        setPlants(prev => {
-            const updated = prev.map(p => (p.id === plant.id ? plant : p));
-            localStorage.setItem("plants", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+        setPlants(prev => prev.map(p => (p.id === plant.id ? plant : p)));
+    }, [setPlants]);
 
     const deletePlants = useCallback((ids: string[]) => {
-        setPlants(prev => {
-            const updated = prev.filter(p => !ids.includes(p.id!));
-            localStorage.setItem("plants", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+        setPlants(prev => prev.filter(p => !ids.includes(p.id!)));
+    }, [setPlants]);
 
     const addEventToPlant = useCallback((plantId: string, event: PlantEvent) => {
-        setPlants(prev => {
-            const updated = prev.map(plant =>
+        setPlants(prev =>
+            prev.map(plant =>
                 plant.id === plantId
-                    ? { ...plant, events: [...(plant.events || []), event] }
+                    ? { ...plant, events: [...(plant.events ?? []), event] }
                     : plant
-            );
-            localStorage.setItem("plants", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+            )
+        );
+    }, [setPlants]);
 
     const addPlantHistoryData = useCallback((plantId: string, entry: PlantData_Historical) => {
-        setPlants(prev => {
-            const updated = prev.map(plant =>
+        setPlants(prev =>
+            prev.map(plant =>
                 plant.id === plantId
                     ? { ...plant, historical: [...(plant.historical ?? []), entry] }
                     : plant
-            );
-            localStorage.setItem("plants", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+            )
+        );
+    }, [setPlants]);
 
     const getPlantsByEnvironment = useCallback(
         (envId: string) => plants.filter(p => p.environmentId === envId),

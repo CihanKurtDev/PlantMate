@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect, useCallback, useMemo } from "react";
+import { createContext, useContext, ReactNode, useCallback, useMemo } from "react";
 import type { EnvironmentData, EnvironmentData_Historical, EnvironmentEvent } from "@/types/environment";
+import { useLocalStorageState } from "@/hooks/useLocalStorage";
 
 interface EnvironmentContextType {
     environments: EnvironmentData[];
@@ -16,64 +17,43 @@ interface EnvironmentContextType {
 const EnvironmentContext = createContext<EnvironmentContextType | undefined>(undefined);
 
 export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
-    const [environments, setEnvironments] = useState<EnvironmentData[]>([]);
-
-    useEffect(() => {
-        const stored = localStorage.getItem("environments");
-        if (stored) setEnvironments(JSON.parse(stored));
-    }, []);
+    const [environments, setEnvironments] = useLocalStorageState<EnvironmentData[]>("environments", []);
 
     const addEnvironment = useCallback((env: EnvironmentData) => {
-        setEnvironments(prev => {
-            const updated = [...prev, env];
-            localStorage.setItem("environments", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+        setEnvironments(prev => [...prev, env]);
+    }, [setEnvironments]);
 
     const updateEnvironment = useCallback((env: EnvironmentData) => {
-        setEnvironments(prev => {
-            const updated = prev.map(e => (e.id === env.id ? env : e));
-            localStorage.setItem("environments", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+        setEnvironments(prev => prev.map(e => (e.id === env.id ? env : e)));
+    }, [setEnvironments]);
 
     const deleteEnvironments = useCallback((ids: string[]) => {
-        setEnvironments(prev => {
-            const updated = prev.filter(env => !ids.includes(env.id!));
-            localStorage.setItem("environments", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+        setEnvironments(prev => prev.filter(env => !ids.includes(env.id!)));
+    }, [setEnvironments]);
 
     const addEventToEnvironment = useCallback((environmentId: string, event: EnvironmentEvent) => {
-        setEnvironments(prev => {
-            const updated = prev.map(env =>
+        setEnvironments(prev =>
+            prev.map(env =>
                 env.id === environmentId
                     ? { ...env, events: [...(env.events ?? []), event] }
                     : env
-            );
-            localStorage.setItem("environments", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+            )
+        );
+    }, [setEnvironments]);
 
     const addHistoryData = useCallback((environmentId: string, entry: EnvironmentData_Historical) => {
-        setEnvironments(prev => {
-            const updated = prev.map(env =>
+        setEnvironments(prev =>
+            prev.map(env =>
                 env.id === environmentId
                     ? { ...env, historical: [...(env.historical ?? []), entry] }
                     : env
-            );
-            localStorage.setItem("environments", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+            )
+        );
+    }, [setEnvironments]);
 
     const updateHistoryData = useCallback((environmentId: string, entry: EnvironmentData_Historical) => {
-        setEnvironments(prev => {
-            const updated = prev.map(env =>
+        setEnvironments(prev =>
+            prev.map(env =>
                 env.id === environmentId
                     ? {
                           ...env,
@@ -82,11 +62,9 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
                           ),
                       }
                     : env
-            );
-            localStorage.setItem("environments", JSON.stringify(updated));
-            return updated;
-        });
-    }, []);
+            )
+        );
+    }, [setEnvironments]);
 
     const value = useMemo(
         () => ({
