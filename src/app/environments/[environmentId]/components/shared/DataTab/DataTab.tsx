@@ -47,6 +47,8 @@ interface Trend {
     pct: string;
 }
 
+const GHOST_BASE_TIMESTAMP = Date.UTC(2024, 0, 1, 12, 0, 0, 0);
+
 interface MetricRowProps {
     metric: MetricConfig;
     data: TimeSeriesEntry[];
@@ -265,9 +267,8 @@ function generateGhostData(idealMin: number, idealMax: number): ChartDatum[] {
     const mid = (idealMin + idealMax) / 2;
     const range = (idealMax - idealMin) * 0.4;
     const offsets = [0.2, -0.1, 0.4, 0.1, -0.2, 0.5, 0.3, -0.15, 0.35, 0.2, -0.05, 0.25];
-    const now = Date.now();
     return offsets.map((o, i) => ({
-        t: now - (offsets.length - 1 - i) * 3600000,
+        t: GHOST_BASE_TIMESTAMP - (offsets.length - 1 - i) * 3600000,
         v: mid + o * range,
     }));
 }

@@ -31,7 +31,7 @@ export default function EnvironmentEventForm({ environmentId }: EnvironmentEvent
                     ? {
                         equipment: extra.equipment as string,
                         action: extra.action as "ADDED" | "REMOVED" | "REPLACED",
-                      }
+                    }
                     : undefined,
         };
 
