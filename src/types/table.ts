@@ -11,7 +11,7 @@ export type TableColumn<T> = {
         key: K;
         displayText: string;
         sortable?: boolean;
-        sortBy?: (row: T) => any;
+        sortBy?: (row: T) => unknown;
         render?: (
             value: T[K],
             row?: RenderContext<T>,

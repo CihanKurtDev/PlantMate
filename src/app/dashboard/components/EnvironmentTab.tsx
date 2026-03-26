@@ -8,6 +8,7 @@ import { environmentTableConfig } from '@/config/environmentTableConfig';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { EnvironmentMobileList } from './EnvironmentMobileCard';
 import { useEnvironment } from '@/context/EnvironmentContext';
+import { usePlant } from '@/context/PlantContext';
 
 interface EnvironmentTabProps {
     environments: EnvironmentData[];
@@ -16,9 +17,10 @@ interface EnvironmentTabProps {
 
 export default function EnvironmentTab({ environments, onAddNew }: EnvironmentTabProps) {
     const { deleteEnvironments } = useEnvironment();
+    const { plants } = usePlant();
     const router = useRouter();
     const isMobile = useIsMobile();
-    const rows = mapEnvironmentsToTableRows(environments);
+    const rows = mapEnvironmentsToTableRows(environments, plants);
 
     return (
         <TabContent id="environments">
