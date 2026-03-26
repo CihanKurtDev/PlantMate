@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { type SortConfig, type TableConfig } from "../types/table";
 import { createSorter, getNextSortState } from "@/helpers/sortUtils";
 
@@ -39,16 +39,12 @@ export function useTable<RowType extends { key: string }>({
     const { filter, search, page, limit, sortConfig } = tableState;
     const searchTerm = search.toLowerCase();
 
-    useEffect(() => {
-        setTableState(prev => ({ ...prev, page: 1 }));
-    }, [filter, search]);
-
     const setFilter = useCallback((newFilter: string) => {
-        setTableState(prev => ({ ...prev, filter: newFilter }));
+        setTableState(prev => ({ ...prev, filter: newFilter, page: 1 }));
     }, []);
 
     const setSearch = useCallback((newSearch: string) => {
-        setTableState(prev => ({ ...prev, search: newSearch }));
+        setTableState(prev => ({ ...prev, search: newSearch, page: 1 }));
     }, []);
 
     const handleSort = useCallback((key: keyof RowType) => {
