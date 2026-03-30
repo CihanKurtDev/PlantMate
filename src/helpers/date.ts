@@ -1,42 +1,85 @@
-export const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: 'short' });
-};
+const LOCALE = "de-DE";
+const APP_TIME_ZONE = "Europe/Berlin";
+
+const dateFormatter = new Intl.DateTimeFormat(LOCALE, {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    timeZone: APP_TIME_ZONE,
+});
+
+const timeFormatter = new Intl.DateTimeFormat(LOCALE, {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: APP_TIME_ZONE,
+});
+
+const dateShortFormatter = new Intl.DateTimeFormat(LOCALE, {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: APP_TIME_ZONE,
+});
+
+const monthYearFormatter = new Intl.DateTimeFormat(LOCALE, {
+    month: "long",
+    year: "numeric",
+    timeZone: APP_TIME_ZONE,
+});
+
+const dayMonthFormatter = new Intl.DateTimeFormat(LOCALE, {
+    day: "2-digit",
+    month: "2-digit",
+    timeZone: APP_TIME_ZONE,
+});
+
+const dayKeyFormatter = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: APP_TIME_ZONE,
+});
+
+export const formatDate = (timestamp: number) => dateFormatter.format(new Date(timestamp));
 
 export const formatTime = (timestamp: number) =>
-    new Date(timestamp).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    timeFormatter.format(new Date(timestamp));
 
 export interface Timestamped {
     timestamp: number;
 }
 
+export const toDateKey = (timestamp: number): string => {
+    const parts = dayKeyFormatter.formatToParts(new Date(timestamp));
+    const year = parts.find((part) => part.type === "year")?.value ?? "1970";
+    const month = parts.find((part) => part.type === "month")?.value ?? "01";
+    const day = parts.find((part) => part.type === "day")?.value ?? "01";
+    return `${year}-${month}-${day}`;
+};
+
+export const dateKeyToTimestamp = (dateKey: string): number => {
+    const [year, month, day] = dateKey.split("-").map(Number);
+    return Date.UTC(year, (month || 1) - 1, day || 1, 12, 0, 0, 0);
+};
+
 export const groupEventsByDate = <T extends Timestamped>(events: T[]) => {
     const groups: Record<string, T[]> = {};
 
     events.forEach(e => {
-        const key = new Date(e.timestamp).toDateString();
+        const key = toDateKey(e.timestamp);
         groups[key] = groups[key] || [];
         groups[key].push(e);
     });
 
-    return Object.entries(groups).sort(
-        (a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime()
-    );
+    return Object.entries(groups).sort((a, b) => b[0].localeCompare(a[0]));
 };
 
 export const formatDateShort = (date: Date) => {
-    return date.toLocaleDateString('de-DE', { 
-        day: '2-digit', 
-        month: '2-digit', 
-        year: 'numeric' 
-    });
+    return dateShortFormatter.format(date);
 };
 
 export const formatMonthYear = (date: Date) => {
-    return date.toLocaleDateString('de-DE', { 
-        month: 'long', 
-        year: 'numeric' 
-    });
+    return monthYearFormatter.format(date);
 };
 
 export const getDaysInMonth = (date: Date): (Date | null)[] => {
@@ -78,7 +121,7 @@ export const isDateInRange = (date: Date, minDate: Date, maxDate: Date): boolean
 };
 
 export const isSameDay = (date1: Date, date2: Date): boolean => {
-    return date1.toDateString() === date2.toDateString();
+    return toDateKey(date1.getTime()) === toDateKey(date2.getTime());
 };
 
 export const setTimeToNoon = (date: Date): Date => {
@@ -91,10 +134,5 @@ export const daysSince = (timestamp: number) =>
     (Date.now() - timestamp) / (1000 * 60 * 60 * 24);
 
 export const formatTimestamp = (timestamp: number): string => {
-    const diffMin = Math.floor((Date.now() - timestamp) / 60_000);
-    if (diffMin < 1)  return 'Gerade eben';
-    if (diffMin < 60) return `vor ${diffMin} Min`;
-    const diffH = Math.floor(diffMin / 60);
-    if (diffH < 24)   return `vor ${diffH} Std`;
-    return new Date(timestamp).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+    return dayMonthFormatter.format(new Date(timestamp));
 };

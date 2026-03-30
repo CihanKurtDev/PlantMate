@@ -1,5 +1,8 @@
+"use client";
+
 import { CSSProperties, ReactElement } from "react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
+import { useHasMounted } from "@/hooks/useHasMounted";
 import styles from "./Sparkline.module.scss";
 
 export interface SparklineProps {
@@ -25,6 +28,7 @@ export default function Sparkline({
     className,
     style,
 }: SparklineProps): ReactElement {
+    const hasMounted = useHasMounted();
     const hasHeader = Boolean(label || currentValue);
     const gradId = `spark_${id}`;
 
@@ -61,28 +65,32 @@ export default function Sparkline({
         >
             {header}
             <div style={{ width, height }}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart
-                        data={chartData}
-                        margin={{ top: 2, right: 0, bottom: 2, left: 0 }}
-                    >
-                        <defs>
-                            <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%"   stopColor={color} stopOpacity={0.2} />
-                                <stop offset="100%" stopColor={color} stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <Area
-                            type="monotone"
-                            dataKey="v"
-                            stroke={color}
-                            strokeWidth={1.7}
-                            fill={`url(#${gradId})`}
-                            dot={false}
-                            isAnimationActive={false}
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
+                {hasMounted ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart
+                            data={chartData}
+                            margin={{ top: 2, right: 0, bottom: 2, left: 0 }}
+                        >
+                            <defs>
+                                <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%"   stopColor={color} stopOpacity={0.2} />
+                                    <stop offset="100%" stopColor={color} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <Area
+                                type="monotone"
+                                dataKey="v"
+                                stroke={color}
+                                strokeWidth={1.7}
+                                fill={`url(#${gradId})`}
+                                dot={false}
+                                isAnimationActive={false}
+                            />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div style={{ width: "100%", height: "100%" }} aria-hidden />
+                )}
             </div>
         </div>
     );

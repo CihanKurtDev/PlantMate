@@ -7,10 +7,10 @@ import { PlantData } from "@/types/plant";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
 import styles from "./RecentActivity.module.scss";
 import { getRecentActivity } from "@/helpers/getRecentActivity";
-import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
+import { dateKeyToTimestamp, formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
 import { Card } from "@/components/Card/Card";
-import TabContent from "@/app/environments/[environmentId]/components/shared/TabContent";
-import EmptyState from "@/app/environments/[environmentId]/components/shared/EmptyState";
+import TabContent from "@/components/TabContent/TabContent";
+import EmptyState from "@/components/EmptyState/EmptyState";
 
 interface RecentActivityProps {
     environments: EnvironmentData[];
@@ -39,9 +39,9 @@ const RecentActivityTab = ({ environments, plants, limit}: RecentActivityProps) 
                             <section key={dateKey} className={styles.group}>
                                 <time
                                     className={styles.dateLabel}
-                                    dateTime={new Date(dateKey).toISOString()}
+                                    dateTime={new Date(dateKeyToTimestamp(dateKey)).toISOString()}
                                 >
-                                    {formatDate(new Date(dateKey).getTime())}
+                                    {formatDate(dateKeyToTimestamp(dateKey))}
                                 </time>
                                 <ul className={styles.list}>
                                     {items.map(entry => (

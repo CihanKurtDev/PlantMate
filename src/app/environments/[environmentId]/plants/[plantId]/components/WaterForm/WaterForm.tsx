@@ -1,7 +1,6 @@
 import Form, { FormField, FormSectionTitle } from "@/components/Form/Form";
 import { getProfile } from "@/config/profiles";
 import { useModal } from "@/context/ModalContext";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { convertWaterInputToData } from "@/helpers/waterConverter";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useWaterValidation } from "@/hooks/useWaterValidation";
@@ -10,9 +9,12 @@ import { useState } from "react";
 import { Button } from "@/components/Button/Button";
 import { WaterInputs } from "@/app/environments/[environmentId]/plants/[plantId]/components/WaterForm/WaterInputs";
 import { WateringGroup } from "./WateringGroup";
+import { usePlant } from "@/context/PlantContext";
+import { useEnvironment } from "@/context/EnvironmentContext";
 
 export default function WaterForm({ plantId }: { plantId: string }) {
-    const { addPlantHistoryData, plants, environments } = usePlantMonitor();
+    const { addPlantHistoryData, plants } = usePlant();
+    const { environments } = useEnvironment();
     const { waterInput, setWaterInput } = usePlantForm();
     const { closeModal } = useModal();
     const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);

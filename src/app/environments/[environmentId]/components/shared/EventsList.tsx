@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { BaseEvent } from "@/types/events";
 import { iconMap } from "@/types/icons";
 import styles from "./EventsList.module.scss";
-import { formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
+import { dateKeyToTimestamp, formatDate, formatTime, groupEventsByDate } from "@/helpers/date";
 import { Leaf, TrendingUp } from "lucide-react";
 import TypeIcon from "@/components/TypeIcon/TypeIcon";
 import { getEventConfig } from "@/config/icons";
@@ -22,6 +22,8 @@ interface EventCardProps {
     event: BaseEvent;
     title: string;
 }
+
+const EXAMPLE_BASE_TIMESTAMP = Date.UTC(2024, 0, 8, 12, 0, 0, 0);
 
 const EventCard = ({ event, title }: EventCardProps) => {
     const eventConfig = getEventConfig(event.type);
@@ -58,32 +60,31 @@ const EventCard = ({ event, title }: EventCardProps) => {
 };
 
 function generateExampleEvents(): BaseEvent[] {
-    const now = Date.now();
     const day = 86_400_000;
 
     return [
         {
             id: "ghost-1",
             type: "Cleaning",
-            timestamp: now,
+            timestamp: EXAMPLE_BASE_TIMESTAMP,
             notes: "Substrate gewechselt",
         },
         {
             id: "ghost-2",
             type: "Equipment_Change",
-            timestamp: now,
+            timestamp: EXAMPLE_BASE_TIMESTAMP,
             notes: undefined,
         },
         {
             id: "ghost-3",
             type: "Maintenance",
-            timestamp: now - day * 3,
+            timestamp: EXAMPLE_BASE_TIMESTAMP - day * 3,
             notes: "Filter gereinigt",
         },
         {
             id: "ghost-4",
             type: "Cleaning",
-            timestamp: now - day * 7,
+            timestamp: EXAMPLE_BASE_TIMESTAMP - day * 7,
             notes: undefined,
         },
     ];
@@ -134,7 +135,7 @@ export default function EventsList<T extends BaseEvent>({
                     <section key={date}>
                         <header className={styles.dateHeader}>
                             <h3 className={styles.dateTitle}>
-                                {formatDate(new Date(date).getTime())}
+                                {formatDate(dateKeyToTimestamp(date))}
                             </h3>
                             <div className={styles.dateLine} />
                         </header>

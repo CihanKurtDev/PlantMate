@@ -3,7 +3,7 @@
 import { CLIMATE_COLORS } from '@/config/icons';
 import { ENVIRONMENT_LABELS } from '@/config/environment';
 import { EnvironmentTableRow } from '@/components/Table/adapters/environmentTableAdapter';
-import { MobileList, MobileCardData, HealthStatus, getMetricStatus } from '@/components/MobileCard/MobileCard';
+import { MobileList, MobileCardData, HealthStatus } from '@/components/MobileCard/MobileCard';
 
 function getHealth(row: EnvironmentTableRow): HealthStatus {
     if (row.tempBad || row.co2Bad) return 'danger';

@@ -11,7 +11,12 @@ export function buildHistory<T extends { timestamp: number }>(
 ): number[] {
     if (!historical) return [];
 
-    const cutoff = Date.now() - HISTORY_WINDOW_MS;
+    const latestTimestamp = historical.reduce(
+        (latest, entry) => Math.max(latest, entry.timestamp),
+        0
+    );
+    const referenceNow = latestTimestamp || Date.now();
+    const cutoff = referenceNow - HISTORY_WINDOW_MS;
 
     return historical
         .filter(h => h.timestamp >= cutoff)

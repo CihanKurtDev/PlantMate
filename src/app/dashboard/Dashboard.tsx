@@ -1,18 +1,24 @@
-"use client"
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
+"use client";
+
+import { useState, useMemo } from "react";
 import Modal from "@/components/Modal/Modal";
-import { useState } from "react";
 import { MultiStepForm } from "./components/MultiStepForm";
 import EnvironmentTab from "./components/EnvironmentTab";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import MetricGrid from "@/components/MetricGrid/MetricGrid";
 import RecentActivityTab from "./components/RecentActivity";
 import { getDashboardMetrics } from "@/helpers/getDashboardMetrics";
+import { useEnvironment } from "@/context/EnvironmentContext";
+import { usePlant } from "@/context/PlantContext";
 
 const Dashboard = () => {
-    const { environments, plants } = usePlantMonitor();
+    const { environments } = useEnvironment();
+    const { plants } = usePlant();
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const items = getDashboardMetrics(environments, plants);
+
+    const items = useMemo(() => {
+        return getDashboardMetrics(environments, plants);
+    }, [environments, plants]);
 
     return (
         <PageLayout

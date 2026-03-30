@@ -1,18 +1,18 @@
 "use client";
 
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { PlantEvent } from "@/types/plant";
 import EventForm from "../../../components/shared/EventForm";
 import { EventFormData, extractCustomFields } from "@/types/events";
 import { useModal } from "@/context/ModalContext";
 import { PLANT_EVENT_FORM_CONFIG } from "@/config/plant";
+import { usePlant } from "@/context/PlantContext";
 
 interface PlantEventFormProps {
     plantId: string;
 }
 
 export default function PlantEventForm({ plantId }: PlantEventFormProps) {
-    const { addEventToPlant } = usePlantMonitor();
+    const { addEventToPlant } = usePlant();
     const { closeModal } = useModal();
 
     const handleSubmit = (eventData: EventFormData) => {

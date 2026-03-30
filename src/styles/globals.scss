@@ -3,15 +3,9 @@
 @use './layout';
 @use './recharts';
 
-:root {
-  --color-text: #FAFAFA;
-  --color-text-primary: #212121;
-  --color-bg-primary: #ededed;
-}
-
 body {
   font-family: sans-serif;
-  background: var(--color-bg-primary);
+  background: var(--color-background-primary);
   color: var(--color-text-primary);
   line-height: 1.5;
 }

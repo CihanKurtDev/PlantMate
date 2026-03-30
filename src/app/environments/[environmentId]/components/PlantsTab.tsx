@@ -1,12 +1,13 @@
 import { PlantData } from '@/types/plant';
-import TabContent from './shared/TabContent';
 import { mapPlantsToTableRows } from '@/components/Table/adapters/plantTableAdapter';
-import { usePlantMonitor } from '@/context/PlantMonitorContext';
 import { plantTableConfig } from '@/config/plantTableConfig';
 import { PlantTableCard } from '@/components/Table/TableCard';
 import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { PlantMobileList } from './PlantMobileCard';
+import TabContent from '@/components/TabContent/TabContent';
+import { useEnvironment } from '@/context/EnvironmentContext';
+import { usePlant } from '@/context/PlantContext';
 
 interface PlantsTabProps {
     plants: PlantData[];
@@ -14,7 +15,8 @@ interface PlantsTabProps {
 }
 
 export default function PlantsTab({ plants, onAddNew }: PlantsTabProps) {
-    const { deletePlants, environments } = usePlantMonitor();
+    const { environments } = useEnvironment();
+    const { deletePlants } = usePlant();
     const rows = mapPlantsToTableRows(plants, environments);
     const router = useRouter()
     const isMobile = useIsMobile();

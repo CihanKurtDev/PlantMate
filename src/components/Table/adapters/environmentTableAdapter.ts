@@ -1,14 +1,15 @@
 import { daysSince, formatDateShort } from "@/helpers/date";
 import { EnvironmentData, EnvironmentEvent } from "@/types/environment";
+import { PlantData } from "@/types/plant";
 import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
-import { getProfile, getProfileMetric, ProfileKey } from "@/config/profiles";
+import { getProfile, getProfileMetric, ProfileKey, CultivationProfile } from "@/config/profiles";
 
 export interface EnvironmentTableRow {
     key: string;
     name: string;
     type: string;
     location: string | null;
-    profile: ProfileKey | null;
+    profiles: CultivationProfile[];
 
     lastTemp: number | null;
     lastTempUnit: string | null;
@@ -39,41 +40,52 @@ export interface EnvironmentTableRow {
     co2History: number[];
 }
 
-export const mapEnvironmentsToTableRows = (environments: EnvironmentData[]): EnvironmentTableRow[] => {
+export const mapEnvironmentsToTableRows = (
+    environments: EnvironmentData[],
+    plants: PlantData[]
+): EnvironmentTableRow[] => {
     return environments.map(env => {
+        const envPlants = plants.filter(p => p.environmentId === env.id);
+        const uniqueProfileKeys = [...new Set(envPlants.map(p => p.profile).filter(Boolean))] as ProfileKey[];
+        const profiles: CultivationProfile[] = uniqueProfileKeys.length > 0 
+            ? uniqueProfileKeys.map(getProfile) 
+            : [getProfile("generic")];
+
         const lastHistorical = env.historical?.at(-1);
         const lastEvent = getLastEvent(env.events);
-        const profile = getProfile(env.profile);
 
         const temp = lastHistorical?.climate?.temp?.value ?? null;
         const humidity = lastHistorical?.climate?.humidity?.value ?? null;
         const vpd = lastHistorical?.climate?.vpd?.value ?? null;
         const co2 = lastHistorical?.climate?.co2?.value ?? null;
 
-        const tempMetric = getProfileMetric(profile, 'climate', 'temp');
-        const humidityMetric = getProfileMetric(profile, 'climate', 'humidity');
-        const vpdMetric = getProfileMetric(profile, 'climate', 'vpd');
-        const co2Metric = getProfileMetric(profile, 'climate', 'co2');
+        const isBadForProfiles = (value: number | null, key: string): boolean => {
+            if (value === null) return false;
+            return profiles.some(profile => {
+                const metric = getProfileMetric(profile, "climate", key);
+                return metric && (value < metric.idealMin || value > metric.idealMax);
+            });
+        };
 
         return {
             key: env.id ?? '',
             name: env.name,
             type: env.type,
             location: env.location ?? null,
-            profile: env.profile ?? null,
+            profiles,
 
             lastTemp: temp,
             lastTempUnit: lastHistorical?.climate?.temp?.unit ?? null,
-            tempBad: temp !== null && tempMetric ? (temp < tempMetric.idealMin || temp > tempMetric.idealMax) : false,
+            tempBad: isBadForProfiles(temp, "temp"),
 
             lastHumidity: humidity,
-            humidityBad: humidity !== null && humidityMetric ? (humidity < humidityMetric.idealMin || humidity > humidityMetric.idealMax) : false,
+            humidityBad: isBadForProfiles(humidity, "humidity"),
 
             lastVpd: vpd,
-            vpdBad: vpd !== null && vpdMetric ? (vpd < vpdMetric.idealMin || vpd > vpdMetric.idealMax) : false,
+            vpdBad: isBadForProfiles(vpd, "vpd"),
 
             lastCo2: co2,
-            co2Bad: co2 !== null && co2Metric ? (co2 < co2Metric.idealMin || co2 > co2Metric.idealMax) : false,
+            co2Bad: isBadForProfiles(co2, "co2"),
 
             lastMeasurementTimestamp: lastHistorical?.timestamp ?? 0,
             lastMeasurementDate: lastHistorical

@@ -1,9 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { Pencil, Sprout } from "lucide-react";
-import TabContent from "../../components/shared/TabContent";
 import PlantEventsTab from "./components/PlantEventsTab";
 import DataTab from "../../components/shared/DataTab/DataTab";
 import Modal from "@/components/Modal/Modal";
@@ -16,11 +14,15 @@ import { PlantTimeSeriesEntry } from "@/types/plant";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
 import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
 import { getProfile } from "@/config/profiles";
+import TabContent from "@/components/TabContent/TabContent";
+import { usePlant } from "@/context/PlantContext";
+import { useEnvironment } from "@/context/EnvironmentContext";
 
 type ModalType = "none" | "event" | "edit";
 
 export default function PlantDetailView({ plantId }: { plantId: string }) {
-    const { plants, environments } = usePlantMonitor();
+    const { plants } = usePlant();
+    const { environments } = useEnvironment();
     const [modalType, setModalType] = useState<ModalType>("none");
 
     const plant = plants.find(p => p.id === plantId);

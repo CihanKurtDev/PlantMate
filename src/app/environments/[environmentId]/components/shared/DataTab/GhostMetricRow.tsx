@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer } from "recharts";
 import { MetricConfig } from "./DataTab";
 import { toRangePercent, generateGhostData } from "./dataTabUtils";
+import { useHasMounted } from "@/hooks/useHasMounted";
 import styles from "./DataTab.module.scss";
 
 interface GhostMetricRowProps {
@@ -9,6 +10,7 @@ interface GhostMetricRowProps {
 }
 
 export function GhostMetricRow({ metric }: GhostMetricRowProps) {
+    const chartsMounted = useHasMounted();
     const midValue = (metric.idealMin + metric.idealMax) / 2;
     const ghostData = useMemo(
         () => generateGhostData(metric.idealMin, metric.idealMax),
@@ -59,19 +61,23 @@ export function GhostMetricRow({ metric }: GhostMetricRowProps) {
             </div>
 
             <div className={styles.metricChart}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={ghostData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                        <defs>
-                            <linearGradient id={`ghost-grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
-                                <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#ghost-grad-${metric.key})`} dot={false} isAnimationActive={false} />
-                        <YAxis domain={["auto", "auto"]} hide />
-                        <XAxis dataKey="t" hide />
-                    </AreaChart>
-                </ResponsiveContainer>
+                {chartsMounted ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={ghostData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id={`ghost-grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
+                                    <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#ghost-grad-${metric.key})`} dot={false} isAnimationActive={false} />
+                            <YAxis domain={["auto", "auto"]} hide />
+                            <XAxis dataKey="t" hide />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div className={styles.chartMountPlaceholder} aria-hidden />
+                )}
             </div>
         </div>
     );

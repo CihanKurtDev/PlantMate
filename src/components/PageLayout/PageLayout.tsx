@@ -16,7 +16,7 @@ interface PageLayoutProps {
 
 export const PageLayout = ({ title, subtitle, icon, iconVariant, backLink, actions, children }: PageLayoutProps) => {
     return (
-        <div className={styles.container}>
+        <>
             {title && (
                 <header className={styles.header}>
                     <div className={styles.info}>
@@ -36,6 +36,6 @@ export const PageLayout = ({ title, subtitle, icon, iconVariant, backLink, actio
                 </header>
             )}
             <main>{children}</main>
-        </div>
+        </>
     );
 };

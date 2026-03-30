@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useHasMounted } from "@/hooks/useHasMounted";
 import {
     AreaChart,
     Area,
@@ -21,8 +22,8 @@ import { formatDate, formatDateShort } from "@/helpers/date";
 import { TimeSeriesEntry } from "@/types/events";
 import { DEVIATION_STYLES, DeviationLevel } from "@/config/icons";
 import { UnitToggle } from "./UnitToggle";
-import TabContent from "../TabContent";
 import { Button } from "@/components/Button/Button";
+import TabContent from "@/components/TabContent/TabContent";
 
 export interface MetricConfig {
     key: string;
@@ -47,10 +48,13 @@ interface Trend {
     pct: string;
 }
 
+const GHOST_BASE_TIMESTAMP = Date.UTC(2024, 0, 1, 12, 0, 0, 0);
+
 interface MetricRowProps {
     metric: MetricConfig;
     data: TimeSeriesEntry[];
     hasHistory: boolean;
+    chartsMounted: boolean;
     useFahrenheit?: boolean;
     onToggleFahrenheit?: (v: boolean) => void;
 }
@@ -120,7 +124,7 @@ function AreaTooltip({ active, payload, label, metric }: AreaTooltipProps) {
     );
 }
 
-function MetricRow({ metric, data, hasHistory, useFahrenheit = false, onToggleFahrenheit }: MetricRowProps) {
+function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = false, onToggleFahrenheit }: MetricRowProps) {
     const rawLatest = getMetricValue(data[data.length - 1], metric.key);
     if (rawLatest === undefined) return null;
 
@@ -223,38 +227,46 @@ function MetricRow({ metric, data, hasHistory, useFahrenheit = false, onToggleFa
 
                 {hasHistory && (
                     <div className={styles.metricSparkline}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={chartData} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
-                                <defs>
-                                    <linearGradient id={`spark-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
-                                        <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={1.5} fill={`url(#spark-${metric.key})`} dot={false} isAnimationActive={false} />
-                                <YAxis domain={["auto", "auto"]} hide />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        {chartsMounted ? (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={chartData} margin={{ top: 2, right: 0, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id={`spark-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
+                                            <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={1.5} fill={`url(#spark-${metric.key})`} dot={false} isAnimationActive={false} />
+                                    <YAxis domain={["auto", "auto"]} hide />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className={styles.chartMountPlaceholder} aria-hidden />
+                        )}
                     </div>
                 )}
             </div>
 
             {hasHistory && (
                 <div className={styles.metricChart}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                            <defs>
-                                <linearGradient id={`grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
-                                    <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#grad-${metric.key})`} dot={false} isAnimationActive={false} />
-                            <YAxis domain={["auto", "auto"]} hide />
-                            <XAxis dataKey="t" hide={false} tickFormatter={value => formatDate(value)} />
-                            <Tooltip content={props => <AreaTooltip {...props} metric={displayMetric} />} />
-                        </AreaChart>
-                    </ResponsiveContainer>
+                    {chartsMounted ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                                <defs>
+                                    <linearGradient id={`grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
+                                        <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#grad-${metric.key})`} dot={false} isAnimationActive={false} />
+                                <YAxis domain={["auto", "auto"]} hide />
+                                <XAxis dataKey="t" hide={false} tickFormatter={value => formatDate(value)} />
+                                <Tooltip content={props => <AreaTooltip {...props} metric={displayMetric} />} />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className={styles.chartMountPlaceholder} aria-hidden />
+                    )}
                 </div>
             )}
         </div>
@@ -265,18 +277,18 @@ function generateGhostData(idealMin: number, idealMax: number): ChartDatum[] {
     const mid = (idealMin + idealMax) / 2;
     const range = (idealMax - idealMin) * 0.4;
     const offsets = [0.2, -0.1, 0.4, 0.1, -0.2, 0.5, 0.3, -0.15, 0.35, 0.2, -0.05, 0.25];
-    const now = Date.now();
     return offsets.map((o, i) => ({
-        t: now - (offsets.length - 1 - i) * 3600000,
+        t: GHOST_BASE_TIMESTAMP - (offsets.length - 1 - i) * 3600000,
         v: mid + o * range,
     }));
 }
 
 interface GhostMetricRowProps {
     metric: MetricConfig;
+    chartsMounted: boolean;
 }
 
-function GhostMetricRow({ metric }: GhostMetricRowProps) {
+function GhostMetricRow({ metric, chartsMounted }: GhostMetricRowProps) {
     const mid = (metric.idealMin + metric.idealMax) / 2;
     const ghostData = useMemo(() => generateGhostData(metric.idealMin, metric.idealMax), [metric.idealMin, metric.idealMax]);
     const valuePct = toRangePercent(mid, metric.min, metric.max);
@@ -322,19 +334,23 @@ function GhostMetricRow({ metric }: GhostMetricRowProps) {
             </div>
 
             <div className={styles.metricChart}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={ghostData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-                        <defs>
-                            <linearGradient id={`ghost-grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
-                                <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-                        <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#ghost-grad-${metric.key})`} dot={false} isAnimationActive={false} />
-                        <YAxis domain={["auto", "auto"]} hide />
-                        <XAxis dataKey="t" hide />
-                    </AreaChart>
-                </ResponsiveContainer>
+                {chartsMounted ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                        <AreaChart data={ghostData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id={`ghost-grad-${metric.key}`} x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor={metric.color} stopOpacity={0.25} />
+                                    <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#ghost-grad-${metric.key})`} dot={false} isAnimationActive={false} />
+                            <YAxis domain={["auto", "auto"]} hide />
+                            <XAxis dataKey="t" hide />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div className={styles.chartMountPlaceholder} aria-hidden />
+                )}
             </div>
         </div>
     );
@@ -355,6 +371,7 @@ export default function DataTab({ data, metrics, onAddMeasurement, title, emptyT
     const hasHistory = data.length > 1;
     const isEmpty = data.length < 2;
     const [useFahrenheit, setUseFahrenheit] = useState(false);
+    const chartsMounted = useHasMounted();
 
     return (
         <TabContent>
@@ -364,7 +381,7 @@ export default function DataTab({ data, metrics, onAddMeasurement, title, emptyT
                         <div className={styles.ghostContent}>
                             <div className={styles.metricList}>
                                 {metrics.map(metric => (
-                                    <GhostMetricRow key={metric.key} metric={metric} />
+                                    <GhostMetricRow key={metric.key} metric={metric} chartsMounted={chartsMounted} />
                                 ))}
                             </div>
                         </div>
@@ -393,6 +410,7 @@ export default function DataTab({ data, metrics, onAddMeasurement, title, emptyT
                                 metric={metric}
                                 data={data}
                                 hasHistory={hasHistory}
+                                chartsMounted={chartsMounted}
                                 useFahrenheit={useFahrenheit}
                                 onToggleFahrenheit={metric.key === "temp" ? setUseFahrenheit : undefined}
                             />

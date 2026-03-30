@@ -1,13 +1,14 @@
 "use client"
-import { usePlantMonitor } from '@/context/PlantMonitorContext';
 import { EnvironmentTableCard } from '@/components/Table/TableCard';
 import { useRouter } from 'next/navigation';
-import TabContent from '@/app/environments/[environmentId]/components/shared/TabContent';
+import TabContent from '@/components/TabContent/TabContent';
 import { EnvironmentData } from '@/types/environment';
 import { mapEnvironmentsToTableRows } from '@/components/Table/adapters/environmentTableAdapter';
 import { environmentTableConfig } from '@/config/environmentTableConfig';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { EnvironmentMobileList } from './EnvironmentMobileCard';
+import { useEnvironment } from '@/context/EnvironmentContext';
+import { usePlant } from '@/context/PlantContext';
 
 interface EnvironmentTabProps {
     environments: EnvironmentData[];
@@ -15,10 +16,11 @@ interface EnvironmentTabProps {
 }
 
 export default function EnvironmentTab({ environments, onAddNew }: EnvironmentTabProps) {
-    const { deleteEnvironments } = usePlantMonitor();
+    const { deleteEnvironments } = useEnvironment();
+    const { plants } = usePlant();
     const router = useRouter();
     const isMobile = useIsMobile();
-    const rows = mapEnvironmentsToTableRows(environments);
+    const rows = mapEnvironmentsToTableRows(environments, plants);
 
     return (
         <TabContent id="environments">

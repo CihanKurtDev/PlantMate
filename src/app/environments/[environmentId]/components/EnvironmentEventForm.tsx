@@ -1,18 +1,18 @@
 "use client";
 
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { EnvironmentEvent } from "@/types/environment";
 import EventForm from "./shared/EventForm";
 import { EventFormData, extractCustomFields } from "@/types/events";
 import { useModal } from "@/context/ModalContext";
 import { ENVIRONMENT_EVENT_FORM_CONFIG } from "@/config/environment";
+import { useEnvironment } from "@/context/EnvironmentContext";
 
 interface EnvironmentEventFormProps {
     environmentId: string;
 }
 
 export default function EnvironmentEventForm({ environmentId }: EnvironmentEventFormProps) {
-    const { addEventToEnvironment } = usePlantMonitor();
+    const { addEventToEnvironment } = useEnvironment();
     const { closeModal } = useModal();
 
     const handleSubmit = (eventData: EventFormData) => {
@@ -31,7 +31,7 @@ export default function EnvironmentEventForm({ environmentId }: EnvironmentEvent
                     ? {
                         equipment: extra.equipment as string,
                         action: extra.action as "ADDED" | "REMOVED" | "REPLACED",
-                      }
+                    }
                     : undefined,
         };
 

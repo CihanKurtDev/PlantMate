@@ -5,53 +5,53 @@
 
 .label {
     display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 0.25rem;
+    font-size: var(--font-size-s);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xs);
 }
 
 .input {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 0.375rem;
-    font-size: 0.875rem;
+    gap: var(--spacing-s);
+    padding: var(--spacing-s) var(--spacing-m);
+    background: var(--color-background-primary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-s);
+    font-size: var(--font-size-s);
     cursor: pointer;
     transition: all 0.2s;
     
     &:hover {
-        border-color: #9ca3af;
+        border-color: var(--color-border-secondary);
     }
     
     &:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: var(--color-text-info);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-text-info) 14%, transparent);
     }
 }
 
 .icon {
     width: 1rem;
     height: 1rem;
-    color: #6b7280;
+    color: var(--color-text-tertiary);
     flex-shrink: 0;
 }
 
 .dropdown {
     position: absolute;
-    top: calc(100% + 0.25rem);
+    top: calc(100% + var(--spacing-xs));
     left: 0;
     z-index: 50;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
+    background: var(--color-background-primary);
+    border: 1px solid var(--color-border-primary);
+    border-radius: var(--radius-m);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
+    padding: var(--spacing-m);
     width: 20rem;
 }
 
@@ -59,16 +59,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-m);
 }
 
 .navButton {
-    padding: 0.25rem;
+    padding: var(--spacing-xs);
     background: transparent;
     border: none;
-    border-radius: 0.25rem;
+    border-radius: var(--radius-s);
     cursor: pointer;
-    color: #374151;
+    color: var(--color-text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,7 +80,7 @@
     }
     
     &:hover:not(:disabled) {
-        background-color: #f3f4f6;
+        background-color: var(--color-background-secondary);
     }
     
     &:disabled {
@@ -90,45 +90,45 @@
 }
 
 .monthYear {
-    font-size: 0.875rem;
+    font-size: var(--font-size-s);
     font-weight: 600;
-    color: #111827;
+    color: var(--color-text-primary);
 }
 
 .weekdays {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.25rem;
-    margin-bottom: 0.5rem;
+    gap: var(--spacing-xs);
+    margin-bottom: var(--spacing-s);
 }
 
 .weekday {
     text-align: center;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #6b7280;
-    padding: 0.25rem 0;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-tertiary);
+    padding: var(--spacing-xs) 0;
 }
 
 .calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 0.25rem;
+    gap: var(--spacing-xs);
 }
 
 .day {
     aspect-ratio: 1;
-    padding: 0.25rem;
-    font-size: 0.875rem;
+    padding: var(--spacing-xs);
+    font-size: var(--font-size-s);
     background: transparent;
     border: 1px solid transparent;
-    border-radius: 0.375rem;
+    border-radius: var(--radius-s);
     cursor: pointer;
     transition: all 0.2s;
-    color: #374151;
+    color: var(--color-text-secondary);
     
     &:hover:not(:disabled) {
-        background-color: #f3f4f6;
+        background-color: var(--color-background-secondary);
     }
     
     &.empty {
@@ -137,7 +137,7 @@
     }
     
     &.disabled {
-        color: #d1d5db;
+        color: var(--color-border-primary);
         cursor: not-allowed;
         
         &:hover {
@@ -147,16 +147,16 @@
     
     &.today {
         font-weight: 600;
-        color: #3b82f6;
+        color: var(--color-text-info);
     }
     
     &.selected {
-        background-color: #3b82f6;
-        color: white;
+        background-color: var(--color-text-info);
+        color: var(--button-primary-text);
         font-weight: 600;
         
         &:hover {
-            background-color: #2563eb;
+            background-color: var(--color-border-info);
         }
     }
 }

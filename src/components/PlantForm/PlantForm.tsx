@@ -2,7 +2,6 @@
 
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
-import { usePlantMonitor } from "@/context/PlantMonitorContext";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
 import { hasValidationErrors } from "@/helpers/validationUtils";
 import Form, { FormField } from "@/components/Form/Form";
@@ -12,6 +11,8 @@ import { useEffect, useState } from "react";
 import { useModal } from "@/context/ModalContext";
 import { ProfileKey, PROFILES } from "@/config/profiles";
 import { MAX_PLANT_COUNT } from "@/helpers/validationUtils";
+import { usePlant } from "@/context/PlantContext";
+import { useEnvironment } from "@/context/EnvironmentContext";
 
 interface PlantFormProps {
     environmentId?: string;
@@ -20,7 +21,8 @@ interface PlantFormProps {
 }
 
 export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) => {
-    const { addPlant, updatePlant, environments, plants } = usePlantMonitor();
+    const { addPlant, updatePlant, plants } = usePlant();
+    const { environments } = useEnvironment();
     const { validate } = usePlantValidation();
     const [plantCount, setPlantCount] = useState<number>(1);
     const { closeModal } = useModal();
