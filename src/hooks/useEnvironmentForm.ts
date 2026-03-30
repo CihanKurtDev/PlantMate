@@ -3,7 +3,7 @@ import type { EnvironmentData, EnvironmentFormData} from "@/types/environment";
 
 export const useEnvironmentForm = (initialData?: EnvironmentData) => {
     const [formState, setFormState] = useState<EnvironmentFormData>(() => ({
-        id: initialData?.id ?? crypto.randomUUID(),
+        id: initialData?.id ?? "",
         name: initialData?.name ?? "",
         type: initialData?.type ?? "ROOM",
         location: initialData?.location,
@@ -17,7 +17,7 @@ export const useEnvironmentForm = (initialData?: EnvironmentData) => {
 
     const resetForm = () => {
         setFormState({
-            id: crypto.randomUUID(),
+            id: "",
             name: "",
             type: "ROOM",
             location: "",

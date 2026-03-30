@@ -1,26 +1,26 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 
 const DEBOUNCE_MS = 300;
 
 export function useLocalStorageState<T>(key: string, fallback: T): [T, React.Dispatch<React.SetStateAction<T>>] {
-    const [state, setState] = useState<T>(() => {
-        if (typeof window === "undefined") return fallback;
+    const [state, setState] = useState<T>(fallback);
+    const canPersistRef = useRef(false);
+
+    useLayoutEffect(() => {
+        canPersistRef.current = false;
         try {
             const stored = localStorage.getItem(key);
-            return stored ? (JSON.parse(stored) as T) : fallback;
+            setState(stored ? (JSON.parse(stored) as T) : fallback);
         } catch {
-            return fallback;
+            setState(fallback);
         }
-    });
+        canPersistRef.current = true;
+    }, [key]);
 
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const isMounted = useRef(false);
 
     useEffect(() => {
-        if (!isMounted.current) {
-            isMounted.current = true;
-            return;
-        }
+        if (!canPersistRef.current) return;
 
         if (timerRef.current) clearTimeout(timerRef.current);
 

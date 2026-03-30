@@ -7,7 +7,7 @@ export const usePlantForm = (initialData?: PlantData) => {
     const latestWater = historical?.at(-1)?.water;
 
     const [formState, setFormState] = useState<PlantFormData>({
-        id: initialData?.id ?? crypto.randomUUID(),
+        id: initialData?.id ?? "",
         title: initialData?.title ?? "",
         species: initialData?.species ?? "",
         environmentId: initialData?.environmentId ?? "",
