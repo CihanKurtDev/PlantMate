@@ -72,11 +72,11 @@
 .chevron {
   display: flex;
   align-items: center;
-  color: var(--text-tertiary);
+  color: var(--color-text-tertiary);
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
 
   .header.collapsible:hover & {
-    color: var(--text-primary);
+    color: var(--color-text-primary);
   }
 
   &.chevronOpen {

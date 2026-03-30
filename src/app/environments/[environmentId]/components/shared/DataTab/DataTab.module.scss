@@ -1,3 +1,5 @@
+@use "../../../../../../styles/mixins" as *;
+
 .customTooltip {
   background: var(--color-background-primary);
   border: 1px solid var(--color-border-primary);
@@ -32,7 +34,7 @@
   background-color: var(--color-background-secondary);
   border-radius: var(--radius-s);
 
-  @media (min-width: 768px) {
+  @include mq-up(md) {
     gap: var(--spacing-xl);
     display: grid;
     grid-template-columns: minmax(180px, 25%) 1fr;
@@ -97,7 +99,7 @@
   font-weight: var(--font-weight-bold);
   line-height: 1;
 
-  @media (min-width: 768px) {
+  @include mq-up(md) {
     font-size: var(--font-size-xxl);
   }
 }
@@ -115,7 +117,7 @@
 .metricSparkline {
   height: 120px;
 
-  @media (min-width: 768px) {
+  @include mq-up(md) {
     display: none;
   }
 }
@@ -152,11 +154,16 @@
 .metricChart {
   display: none;
 
-  @media (min-width: 768px) {
+  @include mq-up(md) {
     display: block;
     height: 100%;
     min-height: 120px;
   }
+}
+
+.chartMountPlaceholder {
+  width: 100%;
+  height: 100%;
 }
 
 .ghostWrapper {
@@ -187,7 +194,7 @@
   gap: var(--spacing-m);
   text-align: center;
   background-color: var(--color-background-primary);
-  border: 1px solid #c8c8c8;
+  border: 1px solid var(--color-border-primary);
   border-radius: var(--radius-l);
   padding: var(--spacing-xl);
   max-width: 320px;
@@ -196,15 +203,15 @@
 }
 
 .ghostOverlayTitle {
-  font-size: 15px;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-size: var(--font-size-m);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
   margin: 0;
 }
 
 .ghostOverlayText {
   font-size: var(--font-size-xs);
-  color: #555;
+  color: var(--color-text-tertiary);
   max-width: 240px;
   line-height: 1.5;
   margin: 0;

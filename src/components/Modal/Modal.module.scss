@@ -11,7 +11,7 @@
 }
 
 .modal {
-  border-radius: 12px;
+  border-radius: var(--radius-l);
   max-width: 600px;
   width: 90%;
   max-height: 90vh;
@@ -38,14 +38,14 @@
   line-height: 1;
   background: none;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-s);
   cursor: pointer;
-  color: #6b8f72;
+  color: var(--color-text-secondary);
   transition: background 0.15s, color 0.15s;
 
   &:hover {
-    background: rgba(0, 0, 0, 0.06);
-    color: #1a2e1e;
+    background: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+    color: var(--color-text-primary);
   }
 }
 

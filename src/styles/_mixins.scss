@@ -1,3 +1,18 @@
+@use "sass:map";
+@use "./variables" as v;
+
+@mixin mq-up($breakpoint) {
+  @media (min-width: map.get(v.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+@mixin mq-down($breakpoint) {
+  @media (max-width: map.get(v.$breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
 @mixin input-base {
   padding: var(--spacing-m);
   font-size: var(--font-size-m);

@@ -44,14 +44,14 @@
 .dateHeader {
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    gap: var(--spacing-m);
+    margin-bottom: var(--spacing-m);
 }
 
 .dateTitle {
     font-size: var(--font-size-l);
-    font-weight: 700;
-    color: #111827;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
     margin: 0;
     white-space: nowrap;
 }
@@ -59,7 +59,7 @@
 .dateLine {
     flex: 1;
     height: 1px;
-    background-color: #e5e7eb;
+    background-color: var(--color-border-primary);
 }
 
 .eventsGrid {
@@ -68,11 +68,11 @@
     list-style-type: none;
     gap: var(--spacing-m);
 
-    @media (min-width: 768px) {
+    @include mq-up(md) {
         grid-template-columns: repeat(2, 1fr);
     }
 
-    @media (min-width: 1200px) {
+    @include mq-up(xl) {
         grid-template-columns: repeat(3, 1fr);
     }
 }
@@ -95,7 +95,7 @@
     gap: var(--spacing-m);
     text-align: center;
     background-color: var(--color-background-primary);
-    border: 1px solid #c8c8c8;
+    border: 1px solid var(--color-border-primary);
     border-radius: var(--radius-l);
     padding: var(--spacing-xl);
     max-width: 320px;
@@ -109,7 +109,7 @@
 
 .exampleOverlayDescription {
     font-size: var(--font-size-xs);
-    color: #555;
+    color: var(--color-text-tertiary);
     max-width: 240px;
     line-height: 1.5;
     margin: 0;

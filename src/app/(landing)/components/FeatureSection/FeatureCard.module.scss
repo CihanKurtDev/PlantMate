@@ -5,11 +5,11 @@
   background-color: var(--color-background-primary);
 
   .icon {
-    background: linear-gradient(135deg, #10b981, #059669);
-    border-radius: 0.75rem;
+    background: linear-gradient(135deg, var(--color-background-accent), var(--color-background-accent-hover));
+    border-radius: var(--radius-l);
     display: flex;
     align-items: center;
     font-size: 1.75rem;
-    margin-bottom: 1rem;
+    margin-bottom: var(--spacing-m);
   }
 }

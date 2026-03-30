@@ -29,15 +29,15 @@
 
     &.active {
         background-color: var(--color-background-tertiary);
-        color: white;
+        color: var(--button-primary-text);
         border-color: var(--color-border-secondary);
         transform: scale(1.1);
     }
 
     &.completed {
-        background-color: var(--color-success, #10b981);
-        color: white;
-        border-color: var(--color-success, #10b981);
+        background-color: var(--color-background-success);
+        color: var(--button-primary-text);
+        border-color: var(--color-border-success);
     }
 }
 
