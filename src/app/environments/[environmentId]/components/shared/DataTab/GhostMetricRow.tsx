@@ -31,7 +31,7 @@ export function GhostMetricRow({ metric }: GhostMetricRowProps) {
                         <Icon size={14} color={metric.color} />
                     </div>
                     <span className={styles.metricLabel}>{metric.label}</span>
-                    <span className={styles.metricBadge} style={{ color: "#1D9E75", background: "#1D9E7520" }}>
+                    <span className={styles.metricBadge}>
                         OK
                     </span>
                 </div>

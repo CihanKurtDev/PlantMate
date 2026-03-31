@@ -7,12 +7,12 @@ import { ActivityIcon, AlertCircle, CalendarClock, Inbox } from "lucide-react";
 import styles from "@/components/Table/Table.module.scss";
 import Sparkline from "@/components/Sparkline/Sparkline";
 import { THRESHOLDS } from "@/config/thresholds";
-import { PROFILES } from "@/config/profiles";
+import { PROFILES } from "./profiles";
 
-const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
+const EMPTY = <span style={{ color: "var(--color-text-tertiary)" }}>—</span>;
 
-const warnColor = "#b45309";
-const dangerColor = "#b91c1c";
+const warnColor = "var(--color-text-alert)";
+const dangerColor = "var(--color-text-error)";
 
 const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
@@ -178,7 +178,7 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
                                 <eventCfg.icon size={14} />
                             </span>
                         )}
-                        <span style={{ fontSize: "11px", color: "#6b7280" }}>
+                        <span style={{ fontSize: "11px", color: "var(--color-text-tertiary)" }}>
                             {formatDateShort(new Date(value))}
                         </span>
                     </span>

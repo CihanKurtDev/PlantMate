@@ -27,6 +27,16 @@
     justify-content: center;
     font-size: var(--font-size-xl);
     flex-shrink: 0;
+
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-l);
+    background: linear-gradient(
+      135deg,
+      var(--color-background-accent) 0%,
+      var(--color-background-accent-hover) 100%
+    );
+    color: var(--color-text-primary);
   }
 
   &.inline {

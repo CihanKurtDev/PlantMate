@@ -23,6 +23,7 @@
     font-size: var(--font-size-s);
     cursor: pointer;
     transition: all 0.2s;
+    color: var(--color-text-primary);
     
     &:hover {
         border-color: var(--color-border-secondary);

@@ -7,10 +7,10 @@ import styles from "@/components/Table/Table.module.scss";
 import Sparkline from "@/components/Sparkline/Sparkline";
 import { THRESHOLDS } from "@/config/thresholds";
 
-const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
+const EMPTY = <span style={{ color: "var(--color-text-tertiary)" }}>—</span>;
 
-const warnColor = "#b45309";
-const dangerColor = "#b91c1c";
+const warnColor = "var(--color-text-alert)";
+const dangerColor = "var(--color-text-error)";
 const PH_COLOR = "#087a6d";
 const EC_COLOR = "#d3893e";
 
@@ -149,7 +149,7 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
                                 <eventCfg.icon size={14} />
                             </span>
                         )}
-                        <span style={{ fontSize: "11px", color: "#6b7280" }}>
+                        <span style={{ fontSize: "11px", color: "var(--color-text-tertiary)" }}>
                             {formatDateShort(new Date(value))}
                         </span>
                     </span>
