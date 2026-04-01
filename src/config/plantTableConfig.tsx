@@ -1,8 +1,7 @@
 import { PlantTableRow } from "@/components/Table/adapters/plantTableAdapter";
-import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
-import { getEventConfig } from "./icons";
 import { ActivityIcon, AlertCircle, Droplet, Inbox } from "lucide-react";
+import { LastEventTableCell } from "@/components/Table/LastEventTableCell";
 import styles from "@/components/Table/Table.module.scss";
 import Sparkline from "@/components/Sparkline/Sparkline";
 import { THRESHOLDS } from "@/config/thresholds";
@@ -48,9 +47,10 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             displayText: "Ungesund",
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
-                const waterNeeded = row.daysSinceWatering > plant.daysSinceWatering.warn;
-                const noEvents = !row.events || row.events.length === 0;
-                return waterNeeded || row.phBad || row.ecBad || noEvents;
+                const waterStale =
+                    row.lastWateringTimestamp > 0 &&
+                    row.daysSinceWatering > plant.daysSinceWatering.warn;
+                return waterStale || row.phBad || row.ecBad;
             },
         },
     ],
@@ -124,37 +124,8 @@ export const plantTableConfig: TableConfig<PlantTableRow> = {
             key: "lastEventTimestamp",
             displayText: "Event",
             sortable: true,
-            render: (value: number, row) => {
-                if (!value || !row?.lastEventFormatted) return EMPTY;
-
-                const eventCfg = getEventConfig(row.lastEventFormatted);
-
-                return (
-                    <span
-                        style={{ display: "flex", alignItems: "center", gap: 6 }}
-                        title={eventCfg?.label ?? row.lastEventFormatted}
-                    >
-                        {eventCfg && (
-                            <span style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: 26,
-                                height: 26,
-                                borderRadius: 6,
-                                background: eventCfg.colors.soft,
-                                color: eventCfg.colors.base,
-                                flexShrink: 0,
-                            }}>
-                                <eventCfg.icon size={14} />
-                            </span>
-                        )}
-                        <span style={{ fontSize: "11px", color: "var(--color-text-tertiary)" }}>
-                            {formatDateShort(new Date(value))}
-                        </span>
-                    </span>
-                );
-            },
+            render: (_value: number, row) =>
+                row ? <LastEventTableCell row={row} /> : EMPTY,
         },
         {
             key: "lastWateringTimestamp",

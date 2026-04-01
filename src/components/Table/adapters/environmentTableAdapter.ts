@@ -3,6 +3,7 @@ import { EnvironmentData, EnvironmentEvent } from "@/types/environment";
 import { PlantData } from "@/types/plant";
 import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
 import { getProfile, getProfileMetric, ProfileKey, CultivationProfile } from "@/config/profiles";
+import type { IconMapKey } from "@/types/icons";
 
 export interface EnvironmentTableRow {
     key: string;
@@ -31,6 +32,12 @@ export interface EnvironmentTableRow {
     lastEventType: string | null;
     lastEventTimestamp: number;
     lastEventFormatted: string | null;
+    lastEventCustomIconName?: IconMapKey;
+    lastEventCustomBgColor?: string;
+    lastEventCustomTextColor?: string;
+    lastEventCustomBorderColor?: string;
+
+    profilesLabel: string;
 
     events?: EnvironmentEvent[];
 
@@ -50,6 +57,7 @@ export const mapEnvironmentsToTableRows = (
         const profiles: CultivationProfile[] = uniqueProfileKeys.length > 0 
             ? uniqueProfileKeys.map(getProfile) 
             : [getProfile("generic")];
+        const profilesLabel = profiles.map(p => p.label).join(", ");
 
         const lastHistorical = env.historical?.at(-1);
         const lastEvent = getLastEvent(env.events);
@@ -98,6 +106,12 @@ export const mapEnvironmentsToTableRows = (
             lastEventType: lastEvent?.type ?? null,
             lastEventTimestamp: lastEvent?.timestamp ?? 0,
             lastEventFormatted: lastEvent?.type ?? null,
+            lastEventCustomIconName: lastEvent?.customIconName,
+            lastEventCustomBgColor: lastEvent?.customBgColor,
+            lastEventCustomTextColor: lastEvent?.customTextColor,
+            lastEventCustomBorderColor: lastEvent?.customBorderColor,
+
+            profilesLabel,
 
             events: env.events,
 

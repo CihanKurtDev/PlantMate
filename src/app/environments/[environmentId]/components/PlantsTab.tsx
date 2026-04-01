@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useIsMobile } from '@/hooks/useIsMobile';
 import { PlantMobileList } from './PlantMobileCard';
 import TabContent from '@/components/TabContent/TabContent';
-import { useEnvironment } from '@/context/EnvironmentContext';
 import { usePlant } from '@/context/PlantContext';
 
 interface PlantsTabProps {
@@ -15,9 +14,8 @@ interface PlantsTabProps {
 }
 
 export default function PlantsTab({ plants, onAddNew }: PlantsTabProps) {
-    const { environments } = useEnvironment();
     const { deletePlants } = usePlant();
-    const rows = mapPlantsToTableRows(plants, environments);
+    const rows = mapPlantsToTableRows(plants);
     const router = useRouter()
     const isMobile = useIsMobile();
     
