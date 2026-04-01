@@ -34,7 +34,8 @@
 }
 
 .inputReadOnly {
-    background-color: lightgray;
-    border-color: gray;
+    background-color: var(--color-background-tertiary);
+    border-color: var(--color-border-secondary);
+    color: var(--color-text-tertiary);
     cursor: not-allowed;
 }
