@@ -1,6 +1,7 @@
 import { ClimateDataInput, EnvironmentFormData, TempUnit } from "@/types/environment";
 import { WaterDataInput } from "@/types/plant";
 import { LoginFormData, LoginFormErrors } from "@/types/auth";
+import { EventFormData, EventTypeConfig, ExtraFieldConfig } from "@/types/events";
 import { LIMITS } from "@/config/thresholds";
 import { CultivationProfile, getProfile, getProfileMetric } from "@/config/profiles";
 
@@ -83,6 +84,45 @@ export const validateClimate = (climate?: ClimateDataInput, profile?: Cultivatio
     return { errors, warnings };
 };
 
+export const validateClimateForProfiles = (
+    climate?: ClimateDataInput,
+    profiles?: CultivationProfile | CultivationProfile[]
+): { errors: ClimateErrors; warnings: ClimateWarnings } => {
+    const profileList = Array.isArray(profiles)
+        ? profiles
+        : ([profiles].filter(Boolean) as CultivationProfile[]);
+
+    if (profileList.length <= 1) {
+        return validateClimate(climate, profileList[0]);
+    }
+
+    const { errors } = validateClimate(climate, profileList[0]);
+
+    const warningMessages: { temp: string[]; humidity: string[]; co2: string[]; vpd: string[] } = {
+        temp: [],
+        humidity: [],
+        co2: [],
+        vpd: [],
+    };
+
+    for (const profile of profileList) {
+        const { warnings } = validateClimate(climate, profile);
+        if (warnings.temp) warningMessages.temp.push(`${profile.label}: ${warnings.temp}`);
+        if (warnings.humidity) warningMessages.humidity.push(`${profile.label}: ${warnings.humidity}`);
+        if (warnings.co2) warningMessages.co2.push(`${profile.label}: ${warnings.co2}`);
+        if (warnings.vpd) warningMessages.vpd.push(`${profile.label}: ${warnings.vpd}`);
+    }
+
+    const warnings: ClimateWarnings = {
+        temp: [...new Set(warningMessages.temp)].join(" | ") || undefined,
+        humidity: [...new Set(warningMessages.humidity)].join(" | ") || undefined,
+        co2: [...new Set(warningMessages.co2)].join(" | ") || undefined,
+        vpd: [...new Set(warningMessages.vpd)].join(" | ") || undefined,
+    };
+
+    return { errors, warnings };
+};
+
 export interface WaterErrors {
     ph?: string;
     ec?: string;
@@ -130,6 +170,156 @@ export const validateWater = (water?: WaterDataInput, profile?: CultivationProfi
 
     return { errors, warnings };
 };
+
+interface RangeWarningDetail {
+    severity: string;
+    min: number;
+    max: number;
+}
+
+const RANGE_PATTERN = /^(.+?):\s*Idealbereich\s+([\d.]+)[–-]([\d.]+)/;
+
+function parseRangeWarning(warning: string): RangeWarningDetail | null {
+    const match = warning.match(RANGE_PATTERN);
+    if (!match) return null;
+    return {
+        severity: match[1].trim(),
+        min: parseFloat(match[2]),
+        max: parseFloat(match[3]),
+    };
+}
+
+function mergeRangeWarnings(
+    profileWarnings: Array<{ label: string; warning: string }>
+): string | undefined {
+    if (profileWarnings.length === 0) return undefined;
+    if (profileWarnings.length === 1) return profileWarnings[0].warning;
+
+    const parsed = profileWarnings.map(({ warning }) => parseRangeWarning(warning));
+    const allParsed = parsed.every((entry): entry is RangeWarningDetail => entry !== null);
+
+    if (allParsed) {
+        const globalMin = Math.min(...parsed.map((entry) => entry.min));
+        const globalMax = Math.max(...parsed.map((entry) => entry.max));
+        return `${parsed[0].severity}: Idealbereich ${globalMin}–${globalMax} (alle Profile)`;
+    }
+
+    return profileWarnings.map(({ label, warning }) => `${label}: ${warning}`).join(" | ");
+}
+
+export const validateWaterForProfiles = (
+    water?: WaterDataInput,
+    profiles?: CultivationProfile | CultivationProfile[]
+): { errors: WaterErrors; warnings: WaterWarnings } => {
+    const profileList = Array.isArray(profiles)
+        ? profiles
+        : ([profiles].filter(Boolean) as CultivationProfile[]);
+
+    if (profileList.length <= 1) {
+        return validateWater(water, profileList[0]);
+    }
+
+    const { errors } = validateWater(water, profileList[0]);
+
+    const collected: Record<"ph" | "ec" | "amount", Array<{ label: string; warning: string }>> = {
+        ph: [],
+        ec: [],
+        amount: [],
+    };
+
+    for (const profile of profileList) {
+        const { warnings } = validateWater(water, profile);
+        if (warnings.ph) collected.ph.push({ label: profile.label, warning: warnings.ph });
+        if (warnings.ec) collected.ec.push({ label: profile.label, warning: warnings.ec });
+        if (warnings.amount) collected.amount.push({ label: profile.label, warning: warnings.amount });
+    }
+
+    return {
+        errors,
+        warnings: {
+            ph: mergeRangeWarnings(collected.ph),
+            ec: mergeRangeWarnings(collected.ec),
+            amount: collected.amount[0]?.warning,
+        },
+    };
+};
+
+export interface EventFormErrors {
+    timestamp?: string;
+    type?: string;
+    notes?: string;
+    extra: Record<string, string | undefined>;
+}
+
+function isBlank(value: unknown): boolean {
+    return value === undefined || value === null || (typeof value === "string" && value.trim() === "");
+}
+
+function validateExtraField(
+    field: ExtraFieldConfig,
+    value: string | number | undefined
+): string | undefined {
+    if (field.required && isBlank(value)) {
+        return `${field.label} ist erforderlich`;
+    }
+
+    if (isBlank(value)) {
+        return undefined;
+    }
+
+    if (field.type === "number") {
+        const parsed = typeof value === "number" ? value : Number(value);
+        if (!Number.isFinite(parsed)) {
+            return `${field.label} muss eine Zahl sein`;
+        }
+    }
+
+    if (field.type === "select" && field.options?.length) {
+        const raw = String(value);
+        const isAllowed = field.options.some((option) => option.value === raw);
+        if (!isAllowed) {
+            return `${field.label} hat einen ungueltigen Wert`;
+        }
+    }
+
+    if (field.type === "color") {
+        const raw = String(value);
+        if (!/^#[0-9a-fA-F]{6}$/.test(raw)) {
+            return `${field.label} muss ein gueltiger Hex-Farbwert sein`;
+        }
+    }
+
+    return undefined;
+}
+
+export function validateEventForm(
+    formData: EventFormData,
+    eventFormConfig: EventTypeConfig[]
+): EventFormErrors {
+    const errors: EventFormErrors = { extra: {} };
+    const activeConfig = eventFormConfig.find((config) => config.value === formData.type);
+
+    if (!activeConfig) {
+        errors.type = "Bitte waehle einen gueltigen Event-Typ";
+    }
+
+    if (!Number.isFinite(formData.timestamp) || formData.timestamp <= 0) {
+        errors.timestamp = "Bitte waehle ein gueltiges Datum";
+    }
+
+    if (formData.notes && formData.notes.length > 1000) {
+        errors.notes = "Notizen duerfen maximal 1000 Zeichen enthalten";
+    }
+
+    for (const field of activeConfig?.extraFields ?? []) {
+        const error = validateExtraField(field, formData.extra[field.key]);
+        if (error) {
+            errors.extra[field.key] = error;
+        }
+    }
+
+    return errors;
+}
 
 export interface EnvironmentErrors {
     name?: string;

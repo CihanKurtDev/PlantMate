@@ -27,6 +27,12 @@
     justify-content: center;
     font-size: var(--font-size-xl);
     flex-shrink: 0;
+
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-l);
+    background: var(--color-background-tertiary);
+    color: var(--color-text-primary);
   }
 
   &.inline {

@@ -27,13 +27,14 @@
         cursor: pointer;
         transition: all 0.2s ease-in-out;
         position: relative;
-
+        
         svg {
             display: inline-block;
         }
-
+        
         &.selected {
             color: var(--color-text-primary);
+            background-color: var(--button-secondary-bg);
  
             > div {
                 color: var(--color-text-info);

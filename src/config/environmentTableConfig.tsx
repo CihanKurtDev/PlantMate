@@ -1,18 +1,18 @@
 import { EnvironmentTableRow } from "@/components/Table/adapters/environmentTableAdapter";
 import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
-import { CLIMATE_COLORS, getEventConfig } from "./icons";
+import { CLIMATE_COLORS } from "./icons";
 import { ENVIRONMENT_LABELS } from "./environment";
 import { ActivityIcon, AlertCircle, CalendarClock, Inbox } from "lucide-react";
 import styles from "@/components/Table/Table.module.scss";
 import Sparkline from "@/components/Sparkline/Sparkline";
 import { THRESHOLDS } from "@/config/thresholds";
-import { PROFILES } from "@/config/profiles";
+import { LastEventTableCell } from "@/components/Table/LastEventTableCell";
 
-const EMPTY = <span style={{ color: "#6b7280" }}>—</span>;
+const EMPTY = <span style={{ color: "var(--color-text-tertiary)" }}>—</span>;
 
-const warnColor = "#b45309";
-const dangerColor = "#b91c1c";
+const warnColor = "var(--color-text-alert)";
+const dangerColor = "var(--color-text-error)";
 
 const getWarnStyle = (condition: boolean) =>
     condition ? { color: warnColor } : undefined;
@@ -21,7 +21,7 @@ const { measurement } = THRESHOLDS;
 
 export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
     title: "Environments",
-    searchKeys: ["name", "type", "location"],
+    searchKeys: ["name", "type", "location", "profilesLabel"],
 
     filters: [
         {
@@ -48,8 +48,17 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             displayText: "Ungesund",
             icon: <ActivityIcon size={16} />,
             customSearchFunc: (row) => {
-                const stale = row.daysSinceLastMeasurement > measurement.daysSinceLastMeasurement.warn;
-                return row.tempBad || row.humidityBad || row.vpdBad || row.co2Bad || stale ;
+                const stale =
+                    row.lastMeasurementTimestamp > 0 &&
+                    row.daysSinceLastMeasurement >
+                        measurement.daysSinceLastMeasurement.warn;
+                return (
+                    row.tempBad ||
+                    row.humidityBad ||
+                    row.vpdBad ||
+                    row.co2Bad ||
+                    stale
+                );
             },
         },
     ],
@@ -72,11 +81,11 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
                     : EMPTY,
         },
         {
-            key: "profile",
+            key: "profilesLabel",
             displayText: "Profil",
             sortable: true,
-            render: (value) =>
-                value ? <span>{PROFILES[value]?.label ?? value}</span> : EMPTY,
+            render: (value: string) =>
+                value ? <span>{value}</span> : EMPTY,
         },
         {
             key: "location",
@@ -153,37 +162,8 @@ export const environmentTableConfig: TableConfig<EnvironmentTableRow> = {
             key: "lastEventTimestamp",
             displayText: "Event",
             sortable: true,
-            render: (value: number, row) => {
-                if (!value || !row?.lastEventFormatted) return EMPTY;
-
-                const eventCfg = getEventConfig(row.lastEventFormatted);
-
-                return (
-                    <span
-                        style={{ display: "flex", alignItems: "center", gap: 6 }}
-                        title={eventCfg?.label ?? row.lastEventFormatted}
-                    >
-                        {eventCfg && (
-                            <span style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                width: 26,
-                                height: 26,
-                                borderRadius: 6,
-                                background: eventCfg.colors.soft,
-                                color: eventCfg.colors.base,
-                                flexShrink: 0,
-                            }}>
-                                <eventCfg.icon size={14} />
-                            </span>
-                        )}
-                        <span style={{ fontSize: "11px", color: "#6b7280" }}>
-                            {formatDateShort(new Date(value))}
-                        </span>
-                    </span>
-                );
-            },
+            render: (_value: number, row) =>
+                row ? <LastEventTableCell row={row} /> : EMPTY,
         },
         {
             key: "lastMeasurementTimestamp",

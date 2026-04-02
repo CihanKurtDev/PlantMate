@@ -37,6 +37,5 @@ export function useLocalStorageState<T>(key: string, fallback: T): [T, React.Dis
     }, [key, state]);
 
     const setStateStable = useCallback(setState, [setState]);
-
     return [state, setStateStable];
 }

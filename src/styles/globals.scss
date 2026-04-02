@@ -33,6 +33,13 @@ body {
   @include generate-vars(v.$icon-sizes, "icon");
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    @include generate-vars(v.$colors-dark, "color");
+    @include generate-vars(v.$buttons-dark, "button");
+  }
+}
+
 :root[data-theme="dark"] {
   @include generate-vars(v.$colors-dark, "color");
   @include generate-vars(v.$buttons-dark, "button");

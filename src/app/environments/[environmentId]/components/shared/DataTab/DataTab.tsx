@@ -49,6 +49,9 @@ interface Trend {
 }
 
 const GHOST_BASE_TIMESTAMP = Date.UTC(2024, 0, 1, 12, 0, 0, 0);
+const GHOST_OK_TEXT = "var(--color-text-success)";
+const GHOST_OK_BG = "var(--color-flag-success)";
+const GHOST_ICON_COLOR = "var(--color-text-tertiary)";
 
 interface MetricRowProps {
     metric: MetricConfig;
@@ -304,7 +307,7 @@ function GhostMetricRow({ metric, chartsMounted }: GhostMetricRowProps) {
                         <Icon size={14} color={metric.color} />
                     </div>
                     <span className={styles.metricLabel}>{metric.label}</span>
-                    <span className={styles.metricBadge} style={{ color: "#1D9E75", background: "#1D9E7520" }}>
+                    <span className={styles.metricBadge} style={{ color: GHOST_OK_TEXT, background: GHOST_OK_BG }}>
                         OK
                     </span>
                 </div>
@@ -387,7 +390,7 @@ export default function DataTab({ data, metrics, onAddMeasurement, title, emptyT
                         </div>
                         <div className={styles.ghostOverlay}>
                             <div className={styles.ghostOverlayCard}>
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#555555" }}>
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: GHOST_ICON_COLOR }}>
                                     <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                                 </svg>
                                 <p className={styles.ghostOverlayTitle}>{emptyTitle}</p>

@@ -1,8 +1,8 @@
 import { daysSince, formatDateShort } from "@/helpers/date";
 import { PlantData, PlantEvent } from "@/types/plant";
-import { EnvironmentData } from "@/types/environment";
 import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
 import { getProfile, getProfileMetric } from "@/config/profiles";
+import type { IconMapKey } from "@/types/icons";
 
 export interface PlantTableRow {
     key: string;
@@ -21,6 +21,10 @@ export interface PlantTableRow {
     lastEventType: string | null;
     lastEventTimestamp: number;
     lastEventFormatted: string | null;
+    lastEventCustomIconName?: IconMapKey;
+    lastEventCustomBgColor?: string;
+    lastEventCustomTextColor?: string;
+    lastEventCustomBorderColor?: string;
 
     lastWateringTimestamp: number;
     lastWateringDate: string | null;
@@ -32,13 +36,12 @@ export interface PlantTableRow {
     ecHistory: number[];
 }
 
-export const mapPlantsToTableRows = (plants: PlantData[], environments: EnvironmentData[]): PlantTableRow[] => {
+export const mapPlantsToTableRows = (plants: PlantData[]): PlantTableRow[] => {
     return plants.map(plant => {
         const lastHistorical = plant.historical?.at(-1);
         const lastEvent = getLastEvent(plant.events);
 
-        const environment = environments.find(e => e.id === plant.environmentId);
-        const profile = getProfile(environment?.profile);
+        const profile = getProfile(plant.profile);
 
         const ph = lastHistorical?.water?.ph?.value ?? null;
         const ec = lastHistorical?.water?.ec?.value ?? null;
@@ -63,6 +66,10 @@ export const mapPlantsToTableRows = (plants: PlantData[], environments: Environm
             lastEventType: lastEvent?.type ?? null,
             lastEventTimestamp: lastEvent?.timestamp ?? 0,
             lastEventFormatted: lastEvent?.type ?? null,
+            lastEventCustomIconName: lastEvent?.customIconName,
+            lastEventCustomBgColor: lastEvent?.customBgColor,
+            lastEventCustomTextColor: lastEvent?.customTextColor,
+            lastEventCustomBorderColor: lastEvent?.customBorderColor,
 
             lastWateringTimestamp: lastHistorical?.timestamp ?? 0,
             lastWateringDate: lastHistorical

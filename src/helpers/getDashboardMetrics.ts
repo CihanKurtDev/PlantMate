@@ -2,7 +2,7 @@ import { EnvironmentData } from "@/types/environment";
 import { PlantData } from "@/types/plant";
 import { MetricItem } from "@/components/MetricGrid/MetricGrid";
 import { formatTimestamp } from "./date";
-import { getProfile, getProfileMetric } from "@/config/profiles";
+import { getProfile, getProfileMetric, ProfileKey } from "@/config/profiles";
 
 export function getDashboardMetrics(
     environments: EnvironmentData[],
@@ -14,17 +14,26 @@ export function getDashboardMetrics(
             .sort((a, b) => b.timestamp - a.timestamp)[0];
         if (!latest) return false;
 
-        const profile = getProfile(env.profile);
+        const envPlants = plants.filter(p => p.environmentId === env.id);
+        const uniqueProfileKeys = [...new Set(envPlants.map(p => p.profile).filter(Boolean))] as ProfileKey[];
+        const profiles = uniqueProfileKeys.length > 0
+            ? uniqueProfileKeys.map(getProfile)
+            : [getProfile("generic")];
+
         const { temp, humidity, co2 } = latest.climate;
 
-        const tempMetric = getProfileMetric(profile, 'climate', 'temp');
-        const humidityMetric = getProfileMetric(profile, 'climate', 'humidity');
-        const co2Metric = getProfileMetric(profile, 'climate', 'co2');
+        const isBadForProfiles = (value: number | null | undefined, key: "temp" | "humidity" | "co2"): boolean => {
+            if (value === null || value === undefined) return false;
+            return profiles.some(profile => {
+                const metric = getProfileMetric(profile, "climate", key);
+                return metric !== undefined && (value < metric.idealMin || value > metric.idealMax);
+            });
+        };
 
         return (
-            (temp && tempMetric && (temp.value < tempMetric.idealMin || temp.value > tempMetric.idealMax)) ||
-            (humidity && humidityMetric && (humidity.value < humidityMetric.idealMin || humidity.value > humidityMetric.idealMax)) ||
-            (co2 && co2Metric && (co2.value < co2Metric.idealMin || co2.value > co2Metric.idealMax))
+            isBadForProfiles(temp?.value ?? null, "temp") ||
+            isBadForProfiles(humidity?.value ?? null, "humidity") ||
+            isBadForProfiles(co2?.value ?? null, "co2")
         );
     }).length;
 
@@ -34,8 +43,7 @@ export function getDashboardMetrics(
             .sort((a, b) => b.timestamp - a.timestamp)[0];
         if (!latest?.water) return false;
 
-        const environment = environments.find(e => e.id === plant.environmentId);
-        const profile = getProfile(environment?.profile);
+        const profile = getProfile(plant.profile);
 
         const phMetric = getProfileMetric(profile, 'water', 'ph');
         const ecMetric = getProfileMetric(profile, 'water', 'ec');

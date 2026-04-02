@@ -1,4 +1,6 @@
 .header {
+    --header-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -6,9 +8,14 @@
     background-color: var(--color-background-primary);
     position: sticky;
     top: 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     z-index: 1;
+    box-shadow: var(--header-shadow);
 }
+
+:global(html[data-theme="dark"]) .header {
+    --header-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
 .logo{
     color: var(--color-text-primary);
     text-decoration: none;
@@ -24,8 +31,44 @@
     color: var(--color-text-primary);
     text-decoration: none;
     font-weight: bold;
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
-.link:hover {
-    text-decoration: underline;
+.right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-m);
+}
+
+.themeToggleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-circle);
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    box-shadow: none;
+    transition: color 0.15s ease, transform 0.05s ease;
+
+    &:hover {
+        background: transparent;
+        color: var(--color-text-primary);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--color-border-info);
+        outline-offset: 2px;
+    }
 }
