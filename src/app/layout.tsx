@@ -4,6 +4,7 @@ import "@/styles/globals.scss";
 import Header from "@/components/Header/Header";
 import { EnvironmentProvider } from "@/context/EnvironmentContext";
 import { PlantProvider } from "@/context/PlantContext";
+import { ThemeProvider } from "next-themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,18 +26,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="de">
+    <html lang="de" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <div className="appWrapper">
-          <Header />
-          <EnvironmentProvider>
-            <PlantProvider>
-              <main className="pageContainer">
+        <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem storageKey="plantmate-theme">
+          <div className="appWrapper">
+            <Header />
+            <EnvironmentProvider>
+              <PlantProvider>
+                <main className="pageContainer">
                   {children}
-              </main>
-            </PlantProvider>
-          </EnvironmentProvider>
-        </div>
+                </main>
+              </PlantProvider>
+            </EnvironmentProvider>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
