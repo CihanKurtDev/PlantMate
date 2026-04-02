@@ -52,8 +52,8 @@
             }
 
             &.active {
-                background-color: var(--color-background-accent);
-                color: var(--color-text-primary);
+                background-color: var(--button-primary-bg);
+                color: var(--button-primary-text);
             }
         }
     }

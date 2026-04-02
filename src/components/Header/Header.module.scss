@@ -53,14 +53,14 @@
     border: none;
     border-radius: var(--radius-circle);
     background: transparent;
-    color: var(--color-background-accent);
+    color: var(--color-text-secondary);
     cursor: pointer;
     box-shadow: none;
     transition: color 0.15s ease, transform 0.05s ease;
 
     &:hover {
         background: transparent;
-        color: var(--color-background-accent-hover);
+        color: var(--color-text-primary);
     }
 
     &:active {
