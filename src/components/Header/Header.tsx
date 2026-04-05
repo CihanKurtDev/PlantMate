@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from "./Header.module.scss";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "../Button/Button";
+import { DemoButton } from "@/demo/DemoButton";
 
 export default function Header() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -29,6 +30,7 @@ export default function Header() {
           </ul>
         </nav>
 
+        <DemoButton />
         <Button
           type="button"
           className={styles.themeToggleButton}

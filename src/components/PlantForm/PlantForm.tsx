@@ -36,7 +36,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
         if (!existingPlant && environmentId) {
             setField("environmentId", environmentId);
         }
-    }, [environmentId, existingPlant]);
+    }, [environmentId, existingPlant, setField]);
 
     const validationErrors = validate(formState, plantId ? undefined : plantCount);
 
@@ -61,6 +61,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
     return (
         <Form onSubmit={handleSubmit}>
             <Input
+                data-demo="plant-name"
                 label="Name"
                 value={formState.title}
                 onChange={(e) => setField("title", e.target.value)}
@@ -70,6 +71,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
             />
 
             <Input
+                data-demo="plant-species"
                 label="Art / Sorte"
                 value={formState.species}
                 onChange={(e) => setField("species", e.target.value)}
@@ -80,6 +82,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
 
             <FormField>
                 <Select
+                    data-demo="plant-environment"
                     label="Environment"
                     value={formState.environmentId}
                     onChange={(e) => setField("environmentId", e.target.value)}
@@ -94,6 +97,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
 
             <FormField>
                 <Select
+                    data-demo="plant-profile"
                     label="Profil"
                     value={formState.profile ?? "generic"}
                     onChange={(e) => setField("profile", e.target.value as ProfileKey)}
@@ -107,6 +111,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
 
             {!plantId && (
                 <Input
+                    data-demo="plant-count"
                     label="Anzahl Pflanzen"
                     type="number"
                     value={plantCount}

@@ -6,6 +6,8 @@ import { EnvironmentProvider } from "@/context/EnvironmentContext";
 import { PlantProvider } from "@/context/PlantContext";
 import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@/context/ToastContext";
+import { DemoProvider } from "@/context/DemoContext";
+import { DemoOverlay } from "@/demo/DemoOverlay";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,13 +33,16 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem storageKey="plantmate-theme">
           <div className="appWrapper">
-            <Header />
             <EnvironmentProvider>
               <PlantProvider>
                 <ToastProvider>
-                  <main className="pageContainer">
-                    {children}
-                  </main>
+                    <main className="pageContainer">
+                      <DemoProvider>
+                      <Header />
+                      {children}
+                        <DemoOverlay />
+                      </DemoProvider>
+                    </main>
                 </ToastProvider>
               </PlantProvider>
             </EnvironmentProvider>

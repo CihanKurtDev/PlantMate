@@ -61,6 +61,7 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
     return (
         <>
             <Input
+                id="demo-climate-temperature"
                 label="Temperatur"
                 value={safeClimate.temp?.value ?? ""}
                 onChange={(e) => handleValueChange("temp", e.target.value)}
@@ -77,6 +78,7 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
             </Select>
 
             <Input
+                id="demo-climate-humidity"
                 label="Luftfeuchtigkeit"
                 value={safeClimate.humidity ?? ""}
                 onChange={(e) => handleValueChange("humidity", e.target.value)}
@@ -86,6 +88,7 @@ export const ClimateInputs = ({ climate, onChange, errors, warnings }: ClimateIn
             />
 
             <Input
+                id="demo-climate-co2"
                 label="CO₂"
                 value={safeClimate.co2 ?? ""}
                 onChange={(e) => handleValueChange("co2", e.target.value)}

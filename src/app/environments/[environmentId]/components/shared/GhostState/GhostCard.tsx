@@ -7,16 +7,21 @@ interface GhostCardProps {
     text: string;
     cta?: string;
     onClick?: () => void;
+    demoId?: string;
 }
 
-export function GhostCard({ title, text, cta, onClick }: GhostCardProps) {
+export function GhostCard({ title, text, cta, onClick, demoId }: GhostCardProps) {
     return (
         <div className={styles.ghostOverlayCard}>
             <Sprout size={28} strokeWidth={1.5} aria-hidden />
             <h3 className={styles.ghostOverlayTitle}>{title}</h3>
             <p className={styles.ghostOverlayText}>{text}</p>
             {cta && onClick && (
-                <Button variant="secondary" onClick={onClick}>
+                <Button
+                    variant="secondary"
+                    onClick={onClick}
+                    data-demo={demoId}
+                >
                     {cta}
                 </Button>
             )}

@@ -12,7 +12,6 @@ import { Pencil } from "lucide-react";
 import { EnvironmentTimeSeriesEntry } from "@/types/environment";
 import { EnvironmentForm } from "@/components/EnvironmentForm/EnvironmentForm";
 import { PlantForm } from "@/components/PlantForm/PlantForm";
-import styles from './EnvironmentDetailView.module.scss';
 import EnvironmentEventForm from "./components/EnvironmentEventForm";
 import ClimateForm from "./components/ClimateForm/ClimateForm";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
@@ -78,30 +77,37 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     <Button variant="secondary" onClick={() => setModalType("edit")}>
                         <span><Pencil size={16} />Bearbeiten</span>
                     </Button>
-                    <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
+                    <Button onClick={() => setModalType("event")} data-demo="add-event-btn">
+                        Ereignis hinzufügen
+                    </Button>
                 </>
             }
             backLink={{ label: "Zurück zum Dashboard", href: "/dashboard" }}
         >
-            <div className={styles.climateGridWrapper}>
-                <MetricGrid items={items} />
+            <MetricGrid items={items} />
+
+            <div data-demo="plants-tab">
+                <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             </div>
 
-            <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
-            <EnvironmentEventTab
-                events={environment.events}
-                onAddEvent={() => setModalType("event")}
-            />
+            <div data-demo="event-tab">
+                <EnvironmentEventTab 
+                    events={environment.events} 
+                    onAddEvent={() => setModalType("event")} 
+                />
+            </div>
 
-            <DataTab
-                data={chartData}
-                metrics={climateMetrics}
-                onAddMeasurement={() => setModalType("event")}
-                title="Klimadaten"
-                emptyTitle="Klimaverlauf aktivieren"
-                emptyText="Trage mindestens 2 Messungen ein um Trends, Abweichungen und Verläufe zu sehen."
-                ctaLabel="Messung eintragen"
-            />
+            <div data-demo="data-tab">
+                <DataTab
+                    data={chartData}
+                    metrics={climateMetrics}
+                    onAddMeasurement={() => setModalType("event")}
+                    title="Klimadaten"
+                    emptyTitle="Klimaverlauf aktivieren"
+                    emptyText="Trage mindestens 2 Messungen ein um Trends, Abweichungen und Verläufe zu sehen."
+                    ctaLabel="Messung eintragen"
+                />
+            </div>
 
             <Modal
                 isOpen={modalType === "event"}

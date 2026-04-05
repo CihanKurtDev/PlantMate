@@ -71,7 +71,7 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                     <Button variant="secondary" onClick={() => setModalType("edit")}>
                         <span><Pencil size={16} />Bearbeiten</span>
                     </Button>
-                    <Button onClick={() => setModalType("event")}>
+                    <Button onClick={() => setModalType("event")} data-demo="add-event-btn">
                         Ereignis hinzufügen
                     </Button>
                 </>
@@ -85,17 +85,21 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                 </Card>
             </TabContent>
 
-            <DataTab
-                data={chartData}
-                metrics={profile.water}
-                onAddMeasurement={() => setModalType("event")}
-                title="Wasserwerte"
-                emptyTitle="Wasserverlauf aktivieren"
-                emptyText="Trage mindestens 2 Wässerungen ein um pH, EC und Trends zu sehen."
-                ctaLabel="Wässerung eintragen"
-            />
+            <div data-demo="data-tab">
+                <DataTab
+                    data={chartData}
+                    metrics={profile.water}
+                    onAddMeasurement={() => setModalType("event")}
+                    title="Wasserwerte"
+                    emptyTitle="Wasserverlauf aktivieren"
+                    emptyText="Trage mindestens 2 Wässerungen ein um pH, EC und Trends zu sehen."
+                    ctaLabel="Wässerung eintragen"
+                />
+            </div>
 
-            <PlantEventsTab events={plant.events} />
+            <div data-demo="event-tab">
+                <PlantEventsTab events={plant.events} />
+            </div>
 
             <Modal isOpen={modalType === "edit"} onClose={closeModal}>
                 <PlantForm plantId={plant.id} />

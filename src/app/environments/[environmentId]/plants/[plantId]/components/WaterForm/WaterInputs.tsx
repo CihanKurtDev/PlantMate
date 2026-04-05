@@ -30,6 +30,7 @@ export const WaterInputs = ({ water, onChange, errors, warnings, hideAmountInput
     return (
         <>
             <Input
+                id="demo-water-ph"
                 label="pH-Wert"
                 type="text"
                 value={water?.ph ?? ""}
@@ -38,6 +39,7 @@ export const WaterInputs = ({ water, onChange, errors, warnings, hideAmountInput
                 warning={warnings?.ph}
             />
             <Input
+                id="demo-water-ec"
                 label="EC-Wert"
                 type="text"
                 value={water?.ec ?? ""}
@@ -47,6 +49,7 @@ export const WaterInputs = ({ water, onChange, errors, warnings, hideAmountInput
             />
             {!hideAmountInput && (
                 <Input
+                    id="demo-water-amount"
                     label="Menge"
                     type="text"
                     value={water?.amount ?? ""}

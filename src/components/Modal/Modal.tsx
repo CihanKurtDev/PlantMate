@@ -20,6 +20,10 @@ const Modal = ({ isOpen, onClose, children, tabs }: ModalProps) => {
     const [activeTab, setActiveTab] = useState(tabs?.[0]?.key);
 
     useEffect(() => {
+        setActiveTab(tabs?.[0]?.key);
+    }, [tabs, isOpen]);
+
+    useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === "Escape") onClose();
         };
@@ -32,9 +36,13 @@ const Modal = ({ isOpen, onClose, children, tabs }: ModalProps) => {
     return (
         <ModalProvider closeModal={onClose}>
             <div className={styles.overlay} onClick={onClose}>
-                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <div className={styles.modal} onClick={(e) => e.stopPropagation()} data-demo="modal">
                     <div className={styles.modalHeader}>
-                        <button className={styles.closeButton} onClick={onClose}>
+                        <button
+                            className={styles.closeButton}
+                            onClick={onClose}
+                            data-demo="modal-close"
+                        >
                             &times;
                         </button>
                     </div>
@@ -44,7 +52,11 @@ const Modal = ({ isOpen, onClose, children, tabs }: ModalProps) => {
                             {tabs.map((tab, i) => (
                                 <Button
                                     key={tab.key}
-                                    style={{ width: "100%", ...(i === 0 ? { border: "none" } : {}) }}
+                                    data-demo={`modal-tab-${tab.key}`}
+                                    style={{
+                                        width: "100%",
+                                        ...(i === 0 ? { border: "none" } : {}),
+                                    }}
                                     isActive={activeTab === tab.key}
                                     onClick={() => setActiveTab(tab.key)}
                                 >
@@ -55,7 +67,7 @@ const Modal = ({ isOpen, onClose, children, tabs }: ModalProps) => {
                     )}
 
                     <div className={styles.content}>
-                        {tabs ? tabs.find(t => t.key === activeTab)?.content : children}
+                        {tabs ? tabs.find((t) => t.key === activeTab)?.content : children}
                     </div>
                 </div>
             </div>

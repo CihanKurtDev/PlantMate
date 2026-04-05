@@ -34,6 +34,7 @@ export default function PlantsTab({ plants, onAddNew }: PlantsTabProps) {
                         text="Füge deine erste Pflanze hinzu und verfolge pH, EC und Gießverlauf."
                         cta="Pflanze anlegen"
                         onClick={onAddNew}
+                        demoId="add-plant-values-btn"
                     />
                 }
             >
