@@ -81,7 +81,7 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                     <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
                 </>
             }
-            backLink={{ label: "Zurück zum Dashboard", href: "/" }}
+            backLink={{ label: "Zurück zum Dashboard", href: "/dashboard" }}
         >
             <div className={styles.climateGridWrapper}>
                 <MetricGrid items={items} />
