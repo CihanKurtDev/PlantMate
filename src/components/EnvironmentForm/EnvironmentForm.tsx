@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
-import Form, { FormField } from "@/components/Form/Form";
+import Form, { FormField, FormHint } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import type { EnvironmentType } from "@/types/environment";
 import styles from "./EnvironmentForm.module.scss";
@@ -11,6 +11,7 @@ import { useEnvironmentForm } from "@/hooks/useEnvironmentForm";
 import { useEnvironmentValidation } from "@/hooks/useEnvironmentValidation";
 import { hasValidationErrors } from "@/helpers/validationUtils";
 import { useEnvironment } from "@/context/EnvironmentContext";
+import { useToast } from "@/context/ToastContext";
 
 interface EnvironmentFormProps {
     onSaved?: (envId: string, nextStep: "plant" | "dashboard") => void;
@@ -21,6 +22,7 @@ interface EnvironmentFormProps {
 export const EnvironmentForm = ({ onSaved, environmentId, existingId }: EnvironmentFormProps) => {
     const { environments, addEnvironment, updateEnvironment } = useEnvironment();
     const { validate } = useEnvironmentValidation();
+    const { addToast } = useToast();
     const searchParams = useSearchParams();
     const editId = environmentId ?? searchParams.get("editId");
 
@@ -41,8 +43,10 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
 
         if (!existingEnvironment) {
             addEnvironment({ ...formState, id: finalId });
+            addToast("Umgebung erfolgreich erstellt");
         } else {
             updateEnvironment({ ...existingEnvironment, ...formState });
+            addToast("Änderungen gespeichert");
         }
 
         onSaved?.(finalId, nextStep);
@@ -55,6 +59,7 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
                 value={formState.name}
                 onChange={(e) => setField("name", e.target.value)}
                 error={validationErrors.name}
+                placeholder="z.B. Gewächshaus Nord, Anzuchtzelt"
             />
 
             <FormField>
@@ -63,9 +68,9 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
                     value={formState.type}
                     onChange={(e) => setField("type", e.target.value as EnvironmentType)}
                 >
-                    <option value="ROOM">🏠 Room</option>
-                    <option value="TENT">⛺ Tent</option>
-                    <option value="GREENHOUSE">🌱 Greenhouse</option>
+                    <option value="ROOM">🏠 Room — offener Raum, natürliche Belüftung</option>
+                    <option value="TENT">⛺ Tent — geschlossenes Growzelt, kontrolliertes Klima</option>
+                    <option value="GREENHOUSE">🌱 Greenhouse — Gewächshaus mit Tageslicht</option>
                 </Select>
             </FormField>
 
@@ -74,7 +79,9 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
                 value={formState.location ?? ""}
                 onChange={(e) => setField("location", e.target.value)}
                 error={validationErrors.location}
+                placeholder="z.B. Keller, Dachboden, Garage"
             />
+            <FormHint>Hilft dir später dabei, mehrere Umgebungen auseinanderzuhalten.</FormHint>
 
             <div className={styles.buttonRow}>
                 {editId ? (

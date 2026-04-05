@@ -5,6 +5,7 @@ import Header from "@/components/Header/Header";
 import { EnvironmentProvider } from "@/context/EnvironmentContext";
 import { PlantProvider } from "@/context/PlantContext";
 import { ThemeProvider } from "next-themes";
+import { ToastProvider } from "@/context/ToastContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,9 +34,11 @@ export default function RootLayout({
             <Header />
             <EnvironmentProvider>
               <PlantProvider>
-                <main className="pageContainer">
-                  {children}
-                </main>
+                <ToastProvider>
+                  <main className="pageContainer">
+                    {children}
+                  </main>
+                </ToastProvider>
               </PlantProvider>
             </EnvironmentProvider>
           </div>

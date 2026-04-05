@@ -11,12 +11,14 @@ import { WaterInputs } from "@/app/environments/[environmentId]/plants/[plantId]
 import { WateringGroup } from "./WateringGroup";
 import { usePlant } from "@/context/PlantContext";
 import { useEnvironment } from "@/context/EnvironmentContext";
+import { useToast } from "@/context/ToastContext";
 
 export default function WaterForm({ plantId }: { plantId: string }) {
     const { addPlantHistoryData, plants } = usePlant();
     const { environments } = useEnvironment();
     const { waterInput, setWaterInput } = usePlantForm();
     const { closeModal } = useModal();
+    const { addToast } = useToast();
     const [selectedPlantIds, setSelectedPlantIds] = useState<string[]>([]);
 
     const plant = plants.find((plant) => plant.id === plantId);
@@ -57,6 +59,10 @@ export default function WaterForm({ plantId }: { plantId: string }) {
         });
 
         closeModal();
+        addToast(allSelectedIds.length > 1
+            ? `Wässerung für ${allSelectedIds.length} Pflanzen eingetragen`
+            : "Wässerung eingetragen"
+        );
     };
 
     return (

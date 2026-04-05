@@ -25,3 +25,10 @@
     font-weight: var(--font-weight-bold);
     font-size: var(--font-size-l);
 }
+
+.formHint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-tertiary);
+  margin: calc(var(--spacing-xs) * -1) 0 0;
+  line-height: 1.5;
+}
