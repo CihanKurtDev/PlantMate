@@ -27,28 +27,34 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     const [modalType, setModalType] = useState<ModalType>("none");
 
     const plant = plants.find(p => p.id === plantId);
+    
+    const items = useMemo(() => {
+        if (!plant) return [];
+        return getPlantMetrics(plant);
+    }, [plant]);
+    
+    const chartData: PlantTimeSeriesEntry[] = useMemo(() =>  {
+        if (!plant) return [];
+        
+        return (plant.historical ?? []).map(entry => ({
+            timestamp: entry.timestamp,
+            entryKind: 'historical',
+            metrics: {
+                ph: entry.water?.ph?.value,
+                ec: entry.water?.ec?.value,
+                height: entry.height?.value,
+            },
+            notes: entry.notes,
+        }))
+    }, [plant])
+    
+    const closeModal = () => setModalType("none");
+    
     if (!plant) return null;
 
     const environment = environments.find(e => e.id === plant.environmentId);
     const profile = getProfile(plant.profile);
-
-    const items = useMemo(() => {
-        return getPlantMetrics(plant);
-    }, [plant]);
-
-    const chartData: PlantTimeSeriesEntry[] = (plant.historical ?? []).map(entry => ({
-        timestamp: entry.timestamp,
-        entryKind: 'historical',
-        metrics: {
-            ph: entry.water?.ph?.value,
-            ec: entry.water?.ec?.value,
-            height: entry.height?.value,
-        },
-        notes: entry.notes,
-    }));
-
-    const closeModal = () => setModalType("none");
-
+    
     return (
         <PageLayout
             title={plant.title}
