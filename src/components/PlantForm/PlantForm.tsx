@@ -4,7 +4,7 @@ import { Input } from "@/components/Form/Input";
 import { Button } from "@/components/Button/Button";
 import { usePlantValidation } from "@/hooks/usePlantValidation";
 import { hasValidationErrors } from "@/helpers/validationUtils";
-import Form, { FormField } from "@/components/Form/Form";
+import Form, { FormField, FormHint } from "@/components/Form/Form";
 import { Select } from "@/components/Form/Select";
 import { usePlantForm } from "@/hooks/usePlantForm";
 import { useEffect, useState } from "react";
@@ -13,6 +13,7 @@ import { ProfileKey, PROFILES } from "@/config/profiles";
 import { MAX_PLANT_COUNT } from "@/helpers/validationUtils";
 import { usePlant } from "@/context/PlantContext";
 import { useEnvironment } from "@/context/EnvironmentContext";
+import { useToast } from "@/context/ToastContext";
 
 interface PlantFormProps {
     environmentId?: string;
@@ -24,6 +25,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
     const { addPlant, updatePlant, plants } = usePlant();
     const { environments } = useEnvironment();
     const { validate } = usePlantValidation();
+    const { addToast } = useToast();
     const [plantCount, setPlantCount] = useState<number>(1);
     const { closeModal } = useModal();
 
@@ -44,10 +46,12 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
 
         if (existingPlant) {
             updatePlant({ ...existingPlant, ...formState });
+            addToast("Pflanze aktualisiert");
         } else {
             for (let i = 0; i < plantCount; i++) {
                 addPlant({ ...formState, id: crypto.randomUUID() });
             }
+            addToast(plantCount > 1 ? `${plantCount} Pflanzen angelegt` : "Pflanze angelegt");
             resetForm();
         }
 
@@ -61,16 +65,18 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
                 value={formState.title}
                 onChange={(e) => setField("title", e.target.value)}
                 error={validationErrors.title}
+                placeholder="z.B. Tomate Cherry, Basilikum #3"
                 required
             />
 
             <Input
-                label="Art/Sorte"
+                label="Art / Sorte"
                 value={formState.species}
                 onChange={(e) => setField("species", e.target.value)}
                 error={validationErrors.species}
                 placeholder="z.B. Solanum lycopersicum"
             />
+            <FormHint>Optional — hilft bei sortenspezifischen Richtwerten.</FormHint>
 
             <FormField>
                 <Select
@@ -81,9 +87,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
                 >
                     <option value="">Bitte wählen...</option>
                     {environments.map(env => (
-                        <option key={env.id} value={env.id}>
-                            {env.name}
-                        </option>
+                        <option key={env.id} value={env.id}>{env.name}</option>
                     ))}
                 </Select>
             </FormField>
@@ -99,6 +103,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
                     ))}
                 </Select>
             </FormField>
+            <FormHint>Das Profil legt Zielwerte für pH, EC und Klima fest.</FormHint>
 
             {!plantId && (
                 <Input

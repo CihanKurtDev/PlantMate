@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Sprout } from "lucide-react";
 import PlantEventsTab from "./components/PlantEventsTab";
 import DataTab from "../../components/shared/DataTab/DataTab";
@@ -12,11 +12,12 @@ import WaterForm from "./components/WaterForm/WaterForm";
 import PlantEventForm from "./components/PlantEventForm";
 import { PlantTimeSeriesEntry } from "@/types/plant";
 import { PageLayout } from "@/components/PageLayout/PageLayout";
-import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
+import MetricGrid from "@/components/MetricGrid/MetricGrid";
 import { getProfile } from "@/config/profiles";
 import TabContent from "@/components/TabContent/TabContent";
 import { usePlant } from "@/context/PlantContext";
 import { useEnvironment } from "@/context/EnvironmentContext";
+import { getPlantMetrics } from "@/helpers/getPlantMetrics";
 
 type ModalType = "none" | "event" | "edit";
 
@@ -26,43 +27,43 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     const [modalType, setModalType] = useState<ModalType>("none");
 
     const plant = plants.find(p => p.id === plantId);
+    
+    const items = useMemo(() => {
+        if (!plant) return [];
+        return getPlantMetrics(plant);
+    }, [plant]);
+    
+    const chartData: PlantTimeSeriesEntry[] = useMemo(() =>  {
+        if (!plant) return [];
+        
+        return (plant.historical ?? []).map(entry => ({
+            timestamp: entry.timestamp,
+            entryKind: 'historical',
+            metrics: {
+                ph: entry.water?.ph?.value,
+                ec: entry.water?.ec?.value,
+                height: entry.height?.value,
+            },
+            notes: entry.notes,
+        }))
+    }, [plant])
+    
+    const closeModal = () => setModalType("none");
+    
     if (!plant) return null;
 
     const environment = environments.find(e => e.id === plant.environmentId);
     const profile = getProfile(plant.profile);
-
-    const latestHistorical = plant.historical?.at(-1);
-
-    const phItem: MetricItem | null = latestHistorical?.water?.ph
-        ? { key: 'ph', value: `${latestHistorical.water.ph.value} pH` }
-        : null;
-
-    const ecItem: MetricItem | null = latestHistorical?.water?.ec
-        ? { key: 'ec', value: `${latestHistorical.water.ec.value} mS/cm` }
-        : null;
-
-    const waterItems: MetricItem[] = [phItem, ecItem].filter((item): item is MetricItem => item !== null);
-
-    const chartData: PlantTimeSeriesEntry[] = (plant.historical ?? []).map(entry => ({
-        timestamp: entry.timestamp,
-        entryKind: 'historical',
-        metrics: {
-            ph: entry.water?.ph?.value,
-            ec: entry.water?.ec?.value,
-            height: entry.height?.value,
-        },
-        notes: entry.notes,
-    }));
-
-    const closeModal = () => setModalType("none");
-
+    
     return (
         <PageLayout
             title={plant.title}
             icon={Sprout}
             iconVariant="sprout"
             backLink={{
-                label: environment?.name ? `Zurück zum Environment: ${environment.name}` : "Zurück zum Environment",
+                label: environment?.name
+                    ? `Zurück zum Environment: ${environment.name}`
+                    : "Zurück zum Environment",
                 href: `/environments/${plant.environmentId}`,
             }}
             actions={
@@ -70,13 +71,13 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                     <Button variant="secondary" onClick={() => setModalType("edit")}>
                         <span><Pencil size={16} />Bearbeiten</span>
                     </Button>
-                    <Button onClick={() => setModalType("event")}>Ereignis hinzufügen</Button>
+                    <Button onClick={() => setModalType("event")}>
+                        Ereignis hinzufügen
+                    </Button>
                 </>
             }
         >
-            {waterItems.length > 0 && (
-                <MetricGrid items={waterItems} />
-            )}
+            <MetricGrid items={items} />
 
             <TabContent id="basicInfo">
                 <Card title="Basisinformationen" collapsible>

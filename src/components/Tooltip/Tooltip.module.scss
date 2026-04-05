@@ -1,0 +1,30 @@
+.wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+
+    &:hover .tip,
+    &:focus-within .tip {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: auto;
+    }
+}
+
+.tip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--color-background-inverse, #1e1e1e);
+    color: var(--color-text-inverse, #fff);
+    font-size: var(--font-size-xs);
+    line-height: 1.5;
+    padding: var(--spacing-s);
+    border-radius: var(--radius-s);
+    max-width: 220px;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}

@@ -297,21 +297,24 @@ export type DeviationLevel = 'ok' | 'warn' | 'critical';
 
 export const DEVIATION_STYLES: Record<
     DeviationLevel,
-    { color: string; background: string; statusText: string }
+    { color: string; background: string; statusText: string; description: string }
 > = {
     ok: {
         color: '#2d7a3e',
         background: '#e8f5e9',
         statusText: 'OK',
+        description: 'Wert liegt im optimalen Bereich',
     },
     warn: {
         color: '#8a5a00',
         background: '#fff3cd',
         statusText: '±',
+        description: 'Wert leicht außerhalb des optimalen Bereichs',
     },
     critical: {
         color: '#b83232',
         background: '#ffeaea',
         statusText: '!',
+        description: 'Wert deutlich außerhalb des optimalen Bereichs',
     },
 };

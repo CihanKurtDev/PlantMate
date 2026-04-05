@@ -21,3 +21,6 @@ export const FormSectionTitle = ({children}: {children: React.ReactNode}) => (
 export const FormField = ({children,}: {children: React.ReactNode;}) => (
     <div className={styles.field}>{children}</div>
 );
+export const FormHint = ({children,}: {children: React.ReactNode;}) => (
+    <p className={styles.formHint}>{children}</p>
+);

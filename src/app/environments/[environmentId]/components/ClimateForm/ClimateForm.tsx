@@ -12,6 +12,7 @@ import { getProfile, ProfileKey } from "@/config/profiles";
 import { ClimateProfileInfo } from "./ClimateProfileInfo";
 import { useEnvironment } from "@/context/EnvironmentContext";
 import { usePlant } from "@/context/PlantContext";
+import { useToast } from "@/context/ToastContext";
 
 interface ClimateFormProps {
     environmentId: string;
@@ -22,6 +23,7 @@ export default function ClimateForm({ environmentId, entryId }: ClimateFormProps
     const { environments, addHistoryData, updateHistoryData } = useEnvironment();
     const { getPlantsByEnvironment } = usePlant();
     const { closeModal } = useModal();
+    const { addToast } = useToast();
 
     const environment = environments.find((e) => e.id === environmentId);
     const plants = getPlantsByEnvironment(environmentId);
@@ -67,6 +69,7 @@ export default function ClimateForm({ environmentId, entryId }: ClimateFormProps
         }
 
         closeModal();
+        addToast("Klimamessung eingetragen")
     };
 
     return (

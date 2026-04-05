@@ -21,6 +21,7 @@ import { UnitToggle } from "./UnitToggle";
 import TabContent from "@/components/TabContent/TabContent";
 import { GhostState } from "../GhostState/GhostState";
 import { GhostCard } from "../GhostState/GhostCard";
+import { Tooltip as BadgeTooltip } from "@/components/Tooltip/Tooltip";
 
 export interface MetricConfig {
     key: string;
@@ -261,9 +262,14 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
                             onChange={(v) => onToggleFahrenheit(v === "f")}
                         />
                     )}
-                    <span className={styles.metricBadge} style={{ color: deviationStyle.color, background: deviationStyle.background }}>
-                        {deviationStyle.statusText}
-                    </span>
+                    <BadgeTooltip content={deviationStyle.description}>
+                        <span
+                            className={styles.metricBadge}
+                            style={{ color: deviationStyle.color, background: deviationStyle.background }}
+                        >
+                            {deviationStyle.statusText}
+                        </span>
+                    </BadgeTooltip>
                 </div>
 
                 <div className={styles.metricValueRow}>
