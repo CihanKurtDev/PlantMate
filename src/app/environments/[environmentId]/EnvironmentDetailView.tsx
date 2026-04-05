@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab/DataTab";
 import { ENVIRONMENT_ICONS } from "@/config/environment";
-import MetricGrid, { MetricItem } from "@/components/MetricGrid/MetricGrid";
+import MetricGrid from "@/components/MetricGrid/MetricGrid";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
@@ -20,25 +20,10 @@ import { toC } from "@/helpers/validationUtils";
 import { getIntersectedClimateMetrics } from "./components/shared/DataTab/dataTabUtils";
 import { useEnvironment } from "@/context/EnvironmentContext";
 import { usePlant } from "@/context/PlantContext";
+import { getEnvironmentMetrics } from "@/helpers/getEnvironmentMetrics";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-}
-
-function getLatestClimateValues(historical: EnvironmentData_Historical[]) {
-    const result: Partial<EnvironmentData_Historical["climate"]> = {};
-
-    for (const entry of [...historical].reverse()) {
-        for (const [key, value] of Object.entries(entry.climate)) {
-            const climateKey = key as keyof EnvironmentData_Historical["climate"];
-            const alreadyFound = climateKey in result;
-            if (!alreadyFound && value != null) {
-                result[climateKey] = value;
-            }
-        }
-    }
-
-    return result;
 }
 
 type ModalType = "none" | "event" | "edit" | "newPlant";
@@ -46,38 +31,41 @@ type ModalType = "none" | "event" | "edit" | "newPlant";
 export default function EnvironmentDetailView({ environmentId }: { environmentId: string }) {
     const { environments } = useEnvironment();
     const { getPlantsByEnvironment } = usePlant();
-    const environment = environments.find(e => e.id === environmentId);
     const [modalType, setModalType] = useState<ModalType>("none");
+    const environment = environments.find(e => e.id === environmentId);
     const plants = getPlantsByEnvironment(environmentId);
-    const climateMetrics = getIntersectedClimateMetrics(plants);
 
-    if (!environment) return null;
+    const items = useMemo(() => {
+        if (!environment) return [];
+        return getEnvironmentMetrics(environment);
+    }, [environment]);
 
-    const lastClimateValues = getLatestClimateValues(environment.historical ?? []);
+    const climateMetrics = useMemo(() => {
+        return getIntersectedClimateMetrics(plants);
+    }, [plants]);
 
-    const climateItems: MetricItem[] = Object.entries(lastClimateValues)
-        .filter(([, value]) => value != null)
-        .map(([key, value]) => ({
-            key,
-            value: `${value!.value}${value!.unit}`,
-        }));
+    const chartData: EnvironmentTimeSeriesEntry[] = useMemo(() => {
+        if (!environment) return [];
 
-    const chartData: EnvironmentTimeSeriesEntry[] = (environment.historical ?? [])
-        .map(entry => ({
-            timestamp: entry.timestamp,
-            entryKind: 'historical' as const,
-            metrics: {
-                temp: entry.climate.temp?.value !== undefined
-                    ? toC(entry.climate.temp.value, entry.climate.temp.unit)
-                    : undefined,
-                humidity: entry.climate.humidity?.value,
-                vpd: entry.climate.vpd?.value,
-                co2: entry.climate.co2?.value,
-            },
-        }))
-        .sort((a, b) => a.timestamp - b.timestamp);
+        return (environment.historical ?? [])
+            .map(entry => ({
+                timestamp: entry.timestamp,
+                entryKind: 'historical' as const,
+                metrics: {
+                    temp: entry.climate.temp?.value !== undefined
+                        ? toC(entry.climate.temp.value, entry.climate.temp.unit)
+                        : undefined,
+                    humidity: entry.climate.humidity?.value,
+                    vpd: entry.climate.vpd?.value,
+                    co2: entry.climate.co2?.value,
+                },
+            }))
+            .sort((a, b) => a.timestamp - b.timestamp);
+    }, [environment]);
 
     const closeModal = () => setModalType("none");
+
+    if (!environment) return null;
 
     return (
         <PageLayout
@@ -94,11 +82,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 </>
             }
         >
-            {climateItems.length > 0 && (
-                <div className={styles.climateGridWrapper}>
-                    <MetricGrid items={climateItems} />
-                </div>
-            )}
+            <div className={styles.climateGridWrapper}>
+                <MetricGrid items={items} />
+            </div>
+
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
             <EnvironmentEventTab
                 events={environment.events}

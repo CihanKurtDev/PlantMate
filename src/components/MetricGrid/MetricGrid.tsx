@@ -13,8 +13,6 @@ interface MetricGridProps {
 }
 
 const MetricGrid = ({ items }: MetricGridProps) => {
-    if (!items.length) return null;
-
     return (
         <dl
             className={styles.metricGrid}
