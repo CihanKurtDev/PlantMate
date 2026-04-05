@@ -1,5 +1,4 @@
 import { EnvironmentTableRow } from "@/components/Table/adapters/environmentTableAdapter";
-import { formatDateShort } from "@/helpers/date";
 import type { TableConfig } from "@/types/table";
 import { CLIMATE_COLORS } from "./icons";
 import { ENVIRONMENT_LABELS } from "./environment";

@@ -13,10 +13,6 @@ function getHealth(row: EnvironmentTableRow): HealthStatus {
 }
 
 function mapRowToCardData(row: EnvironmentTableRow): MobileCardData {
-    const tempDisplay = row.lastTemp !== null
-        ? `${row.lastTemp} ${row.lastTempUnit ?? '°C'}`
-        : '—';
-
     return {
         key: row.key,
         href: `/environments/${row.key}`,
@@ -27,34 +23,52 @@ function mapRowToCardData(row: EnvironmentTableRow): MobileCardData {
         ].filter(Boolean).join(' · '),
         health: getHealth(row),
         metrics: [
-            { label: 'TEMP', value: row.lastTemp, display: row.lastTemp !== null ? `${row.lastTemp}°` : '—', status: row.tempBad ? 'warn' : 'ok' },
-            { label: 'RLF', value: row.lastHumidity, display: row.lastHumidity !== null ? `${row.lastHumidity}%` : '—', status: row.humidityBad ? 'warn' : 'ok' },
-            { label: 'VPD', value: row.lastVpd, display: row.lastVpd !== null ? `${row.lastVpd}` : '—', status: row.vpdBad ? 'warn' : 'ok' },
-            { label: 'CO₂', value: row.lastCo2, display: row.lastCo2 !== null ? `${row.lastCo2}` : '—', status: row.co2Bad ? 'warn' : 'ok' },
+            {
+                label: 'TEMP',
+                value: row.lastTemp,
+                display: row.lastTemp !== null ? `${row.lastTemp}°` : '—',
+                status: row.tempBad ? 'warn' : 'ok',
+            },
+            {
+                label: 'RLF',
+                value: row.lastHumidity,
+                display: row.lastHumidity !== null ? `${row.lastHumidity}%` : '—',
+                status: row.humidityBad ? 'warn' : 'ok',
+            },
+            {
+                label: 'VPD',
+                value: row.lastVpd,
+                display: row.lastVpd !== null ? `${row.lastVpd}` : '—',
+                status: row.vpdBad ? 'warn' : 'ok',
+            },
+            {
+                label: 'CO₂',
+                value: row.lastCo2,
+                display: row.lastCo2 !== null ? `${row.lastCo2}` : '—',
+                status: row.co2Bad ? 'warn' : 'ok',
+            },
         ],
         sparkline: {
             data: row.tempHistory,
             color: CLIMATE_COLORS.temp.base,
             id: `spark_${row.key}`,
             label: 'TEMPERATUR · 30 TAGE',
-            currentValue: tempDisplay,
+            currentValue: row.lastTemp !== null ? `${row.lastTemp}°` : '—',
         },
         footerLabel: row.lastMeasurementDate,
     };
 }
 
-interface EnvironmentMobileListProps {
+interface Props {
     rows: EnvironmentTableRow[];
     onAddNew?: () => void;
 }
 
-export function EnvironmentMobileList({ rows, onAddNew }: EnvironmentMobileListProps) {
-    const items = rows.map(mapRowToCardData);
-
+export function EnvironmentMobileList({ rows, onAddNew }: Props) {
     return (
         <MobileList
             title="Environments"
-            items={items}
+            items={rows.map(mapRowToCardData)}
             searchFields={item => [item.title, item.subtitle]}
             onAddNew={onAddNew}
         />

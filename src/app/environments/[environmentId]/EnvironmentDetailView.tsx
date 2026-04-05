@@ -100,7 +100,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
                 </div>
             )}
             <PlantsTab plants={plants} onAddNew={() => setModalType("newPlant")} />
-            <EnvironmentEventTab events={environment.events} />
+            <EnvironmentEventTab
+                events={environment.events}
+                onAddEvent={() => setModalType("event")}
+            />
 
             <DataTab
                 data={chartData}
