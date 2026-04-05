@@ -9,7 +9,7 @@ import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
 import { Button } from "@/components/Button/Button";
 import { Pencil } from "lucide-react";
-import { EnvironmentData_Historical, EnvironmentTimeSeriesEntry } from "@/types/environment";
+import { EnvironmentTimeSeriesEntry } from "@/types/environment";
 import { EnvironmentForm } from "@/components/EnvironmentForm/EnvironmentForm";
 import { PlantForm } from "@/components/PlantForm/PlantForm";
 import styles from './EnvironmentDetailView.module.scss';
