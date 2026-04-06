@@ -26,6 +26,15 @@ export function DemoOverlay() {
             <DemoSpotlight selector={currentStep?.targetSelector} />
 
             <div
+                className={styles.interactionBlocker}
+                aria-hidden="true"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                onTouchStart={(e) => e.stopPropagation()}
+            />
+
+            <div
                 className={styles.card}
                 role="dialog"
                 aria-modal="true"

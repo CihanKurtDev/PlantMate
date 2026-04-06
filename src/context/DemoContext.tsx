@@ -6,6 +6,7 @@ import {
     useState,
     useCallback,
     useRef,
+    useEffect,
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { DEMO_STEPS, DemoActionContext } from "../demo/demoScript";
@@ -58,6 +59,17 @@ export function DemoProvider({ children }: DemoProviderProps) {
     });
 
     const ctxRef = useRef<DemoActionContext>({} as DemoActionContext);
+
+    useEffect(() => {
+        if (!isRunning) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [isRunning]);
 
     ctxRef.current = {
         router,
