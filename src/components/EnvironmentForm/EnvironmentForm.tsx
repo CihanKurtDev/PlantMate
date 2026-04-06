@@ -19,7 +19,11 @@ interface EnvironmentFormProps {
     existingId?: string;
 }
 
-export const EnvironmentForm = ({ onSaved, environmentId, existingId }: EnvironmentFormProps) => {
+export const EnvironmentForm = ({
+    onSaved,
+    environmentId,
+    existingId,
+}: EnvironmentFormProps) => {
     const { environments, addEnvironment, updateEnvironment } = useEnvironment();
     const { validate } = useEnvironmentValidation();
     const { addToast } = useToast();
@@ -27,10 +31,10 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
     const editId = environmentId ?? searchParams.get("editId");
 
     const existingEnvironment = editId
-        ? environments.find(e => e.id === editId)
+        ? environments.find((e) => e.id === editId)
         : existingId
-        ? environments.find(e => e.id === existingId)
-        : undefined;
+          ? environments.find((e) => e.id === existingId)
+          : undefined;
 
     const { formState, setField } = useEnvironmentForm(existingEnvironment);
     const { errors: validationErrors } = validate(formState);
@@ -55,6 +59,7 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
     return (
         <Form onSubmit={(e) => handleSubmit(e, "dashboard")}>
             <Input
+                data-demo="environment-name"
                 label="Name"
                 value={formState.name}
                 onChange={(e) => setField("name", e.target.value)}
@@ -64,6 +69,7 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
 
             <FormField>
                 <Select
+                    data-demo="environment-type"
                     label="Typ"
                     value={formState.type}
                     onChange={(e) => setField("type", e.target.value as EnvironmentType)}
@@ -75,6 +81,7 @@ export const EnvironmentForm = ({ onSaved, environmentId, existingId }: Environm
             </FormField>
 
             <Input
+                data-demo="environment-location"
                 label="Location"
                 value={formState.location ?? ""}
                 onChange={(e) => setField("location", e.target.value)}

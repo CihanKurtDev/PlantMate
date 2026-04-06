@@ -25,6 +25,7 @@ export const TableActionBar: React.FC<TableActionBarProps> = memo(({ onSearch, i
                 <Button
                     onClick={onAddNew}
                     variant="rounded"
+                    data-demo="create-btn"
                 >
                     Neu
                 </Button>

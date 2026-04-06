@@ -171,6 +171,7 @@ export default function EventForm({
 
             <FormField>
                 <Select
+                    data-demo="event-type"
                     label="Event Typ"
                     id="event-type"
                     value={formData.type}
@@ -225,6 +226,7 @@ export default function EventForm({
             <FormField>
                 <label htmlFor="event-notes" className={styles.label}>Notizen</label>
                 <textarea
+                    data-demo="event-notes"
                     id="event-notes"
                     className={`${styles.textarea} ${errors.notes ? styles.textareaError : ""}`}
                     value={formData.notes ?? ""}

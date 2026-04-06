@@ -122,6 +122,7 @@ export default function EventsList<T extends BaseEvent>({
                     text={emptyMessage}
                     cta={ctaLabel}
                     onClick={onAddEvent}
+                    demoId="add-event-btn"
                 />
             }
         >

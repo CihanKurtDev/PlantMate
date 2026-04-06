@@ -10,7 +10,9 @@ interface PlantContextType {
     updatePlant: (plant: PlantData) => void;
     deletePlants: (ids: string[]) => void;
     addEventToPlant: (plantId: string, event: PlantEvent) => void;
+    removeEventFromPlant: (plantId: string, eventId: string) => void;
     addPlantHistoryData: (plantId: string, entry: PlantData_Historical) => void;
+    removePlantHistoryData: (plantId: string, entryId: string) => void;
     getPlantsByEnvironment: (envId: string) => PlantData[];
 }
 
@@ -20,20 +22,20 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
     const [plants, setPlants] = useLocalStorageState<PlantData[]>("plants", []);
 
     const addPlant = useCallback((plant: PlantData) => {
-        setPlants(prev => [...prev, plant]);
+        setPlants((prev) => [...prev, plant]);
     }, [setPlants]);
 
     const updatePlant = useCallback((plant: PlantData) => {
-        setPlants(prev => prev.map(p => (p.id === plant.id ? plant : p)));
+        setPlants((prev) => prev.map((p) => (p.id === plant.id ? plant : p)));
     }, [setPlants]);
 
     const deletePlants = useCallback((ids: string[]) => {
-        setPlants(prev => prev.filter(p => !ids.includes(p.id!)));
+        setPlants((prev) => prev.filter((p) => !ids.includes(p.id!)));
     }, [setPlants]);
 
     const addEventToPlant = useCallback((plantId: string, event: PlantEvent) => {
-        setPlants(prev =>
-            prev.map(plant =>
+        setPlants((prev) =>
+            prev.map((plant) =>
                 plant.id === plantId
                     ? { ...plant, events: [...(plant.events ?? []), event] }
                     : plant
@@ -41,9 +43,22 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
         );
     }, [setPlants]);
 
+    const removeEventFromPlant = useCallback((plantId: string, eventId: string) => {
+        setPlants((prev) =>
+            prev.map((plant) =>
+                plant.id === plantId
+                    ? {
+                          ...plant,
+                          events: (plant.events ?? []).filter((event) => event.id !== eventId),
+                      }
+                    : plant
+            )
+        );
+    }, [setPlants]);
+
     const addPlantHistoryData = useCallback((plantId: string, entry: PlantData_Historical) => {
-        setPlants(prev =>
-            prev.map(plant =>
+        setPlants((prev) =>
+            prev.map((plant) =>
                 plant.id === plantId
                     ? { ...plant, historical: [...(plant.historical ?? []), entry] }
                     : plant
@@ -51,8 +66,21 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
         );
     }, [setPlants]);
 
+    const removePlantHistoryData = useCallback((plantId: string, entryId: string) => {
+        setPlants((prev) =>
+            prev.map((plant) =>
+                plant.id === plantId
+                    ? {
+                          ...plant,
+                          historical: (plant.historical ?? []).filter((entry) => entry.id !== entryId),
+                      }
+                    : plant
+            )
+        );
+    }, [setPlants]);
+
     const getPlantsByEnvironment = useCallback(
-        (envId: string) => plants.filter(p => p.environmentId === envId),
+        (envId: string) => plants.filter((p) => p.environmentId === envId),
         [plants]
     );
 
@@ -63,7 +91,9 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
             updatePlant,
             deletePlants,
             addEventToPlant,
+            removeEventFromPlant,
             addPlantHistoryData,
+            removePlantHistoryData,
             getPlantsByEnvironment,
         }),
         [
@@ -72,7 +102,9 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
             updatePlant,
             deletePlants,
             addEventToPlant,
+            removeEventFromPlant,
             addPlantHistoryData,
+            removePlantHistoryData,
             getPlantsByEnvironment,
         ]
     );

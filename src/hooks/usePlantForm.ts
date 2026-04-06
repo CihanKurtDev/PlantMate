@@ -1,6 +1,6 @@
 import { convertWaterDataToInput } from "@/helpers/waterConverter";
 import { PlantData, PlantFormData, WaterDataInput } from "@/types/plant";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 
 export const usePlantForm = (initialData?: PlantData) => {
     const historical = initialData?.historical;
@@ -18,11 +18,11 @@ export const usePlantForm = (initialData?: PlantData) => {
         convertWaterDataToInput(latestWater)
     );
 
-    const setField = <K extends keyof PlantFormData>(field: K, value: PlantFormData[K]) => {
+    const setField = useCallback(<K extends keyof PlantFormData>(field: K, value: PlantFormData[K]) => {
         setFormState((prev) => ({ ...prev, [field]: value }));
-    };
+    }, []);
 
-    const resetForm = () => {
+    const resetForm = useCallback(() => {
         setFormState(prev => ({
             ...prev,
             title: "",
@@ -31,7 +31,7 @@ export const usePlantForm = (initialData?: PlantData) => {
             historical: undefined,
         }));
         setWaterInput(undefined);
-    };
+    }, []);
 
     return { formState, waterInput, setField, setWaterInput, resetForm };
 };
