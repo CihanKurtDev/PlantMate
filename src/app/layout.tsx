@@ -36,7 +36,7 @@ export default function RootLayout({
             <EnvironmentProvider>
               <PlantProvider>
                 <ToastProvider>
-                    <main className="pageContainer">
+                    <main className="pageContainer" data-demo="main-container">
                       <DemoProvider>
                       <Header />
                       {children}

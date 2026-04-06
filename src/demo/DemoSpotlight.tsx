@@ -25,13 +25,20 @@ export function DemoSpotlight({ selector, padding = 12 }: DemoSpotlightProps) {
             return;
         }
 
+        let cancelled = false;
+        let rafId: number | null = null;
+        let observer: MutationObserver | null = null;
+
         const measure = () => {
-            const el = document.querySelector(selector);
-            if (!el) {
-                setRect(null);
-                return;
-            }
+            if (cancelled) return false;
+
+            const el = document.querySelector(selector) as HTMLElement | null;
+            if (!el) return false;
+
             const r = el.getBoundingClientRect();
+
+            if (r.width === 0 && r.height === 0) return false;
+
             hasInitialRect.current = true;
             setRect({
                 top: r.top,
@@ -39,15 +46,61 @@ export function DemoSpotlight({ selector, padding = 12 }: DemoSpotlightProps) {
                 width: r.width,
                 height: r.height,
             });
+
+            return true;
         };
 
-        measure();
-        window.addEventListener("resize", measure);
-        window.addEventListener("scroll", measure, { passive: true });
+        const scrollAndMeasure = () => {
+            const el = document.querySelector(selector) as HTMLElement | null;
+            if (!el) return false;
+
+            el.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "nearest",
+            });
+
+            return measure();
+        };
+
+        const scheduleRetry = () => {
+            if (cancelled) return;
+
+            const found = scrollAndMeasure();
+            if (found) return;
+
+            rafId = window.requestAnimationFrame(scheduleRetry);
+        };
+
+        const handleViewportChange = () => {
+            measure();
+        };
+
+        scheduleRetry();
+
+        observer = new MutationObserver(() => {
+            measure();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+        });
+
+        window.addEventListener("resize", handleViewportChange);
+        window.addEventListener("scroll", handleViewportChange, { passive: true });
 
         return () => {
-            window.removeEventListener("resize", measure);
-            window.removeEventListener("scroll", measure);
+            cancelled = true;
+
+            if (rafId !== null) {
+                window.cancelAnimationFrame(rafId);
+            }
+
+            observer?.disconnect();
+            window.removeEventListener("resize", handleViewportChange);
+            window.removeEventListener("scroll", handleViewportChange);
         };
     }, [selector]);
 

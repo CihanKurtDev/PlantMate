@@ -31,30 +31,38 @@ interface StepState {
     modal: DemoModalState;
     hasEnvironment: boolean;
     hasPlant: boolean;
-    hasEnvironmentClimate: boolean;
-    hasEnvironmentEvent: boolean;
-    hasPlantWater: boolean;
-    hasPlantEvent: boolean;
 }
 
 const STEP_STATES: StepState[] = [
-    { route: "dashboard", modal: null, hasEnvironment: false, hasPlant: false, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "dashboard", modal: "create-environment", hasEnvironment: false, hasPlant: false, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: null, hasEnvironment: true, hasPlant: false, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: null, hasEnvironment: true, hasPlant: false, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: "create-plant", hasEnvironment: true, hasPlant: false, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: "add-event", hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: false, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: false, hasPlantWater: false, hasPlantEvent: false },
-    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: false, hasPlantEvent: false },
-    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: false, hasPlantEvent: false },
-    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: false, hasPlantEvent: false },
-    { route: "plant", modal: "add-event", hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: false, hasPlantEvent: false },
-    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: true, hasPlantEvent: false },
-    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: true, hasPlantEvent: true },
-    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true, hasEnvironmentClimate: true, hasEnvironmentEvent: true, hasPlantWater: true, hasPlantEvent: true },
+    { route: "dashboard", modal: null, hasEnvironment: false, hasPlant: false },
+    { route: "dashboard", modal: "create-environment", hasEnvironment: false, hasPlant: false },
+    { route: "environment", modal: null, hasEnvironment: true, hasPlant: false },
+    { route: "environment", modal: null, hasEnvironment: true, hasPlant: false },
+    { route: "environment", modal: "create-plant", hasEnvironment: true, hasPlant: false },
+    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true },
+    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true },
+    { route: "environment", modal: "add-event", hasEnvironment: true, hasPlant: true },
+    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true },
+    { route: "environment", modal: null, hasEnvironment: true, hasPlant: true },
+    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true  },
+    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true  },
+    { route: "plant", modal: "add-event", hasEnvironment: true,  hasPlant: true },
+    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true },
+    { route: "plant", modal: null, hasEnvironment: true, hasPlant: true },
+    { route: "plant", modal: "add-event", hasEnvironment: true,  hasPlant: true },
 ];
+
+const ROUTE_MAP: Record<DemoRouteState, string> = {
+    dashboard:   "/dashboard",
+    environment: ENV_ROUTE,
+    plant:       PLANT_ROUTE,
+};
+
+const READY_SELECTOR_MAP: Record<DemoRouteState, string> = {
+    dashboard:   '[data-demo="create-btn"]',
+    environment: '[data-demo="main-container"]',
+    plant:       '[data-demo="main-container"]',
+};
 
 const getStepState = (step: number): StepState =>
     STEP_STATES[step] ?? STEP_STATES[0];
@@ -75,49 +83,34 @@ export function useDemoData({
             if (window.location.pathname !== href) {
                 router.push(href);
             }
-
             await waitFor(() => window.location.pathname === href, 1200, 20);
-
             if (readySelector) {
                 await waitForSelector(readySelector, 1200);
             }
-
             await nextFrame();
         },
         [router, waitForSelector]
     );
 
-    const hasEnvironment = useCallback(() => {
-        return !!envCtx.environments?.find((env) => env.id === DEMO_IDS.environmentId);
-    }, [envCtx.environments]);
-
-    const hasPlant = useCallback(() => {
-        return !!plantCtx.plants?.find((plant) => plant.id === DEMO_IDS.plantId);
-    }, [plantCtx.plants]);
-
     const ensureEnvironmentExists = useCallback(async () => {
-        if (hasEnvironment()) return;
-
+        if (envCtx.environments?.find((e) => e.id === DEMO_IDS.environmentId)) return;
         envCtx.addEnvironment(DEMO_ENVIRONMENT);
         await waitFor(
-            () => !!envCtx.environments?.find((env) => env.id === DEMO_IDS.environmentId),
-            800,
-            20
+            () => !!envCtx.environments?.find((e) => e.id === DEMO_IDS.environmentId),
+            800, 20
         );
         await nextFrame();
-    }, [envCtx, hasEnvironment]);
+    }, [envCtx]);
 
     const ensurePlantExists = useCallback(async () => {
-        if (hasPlant()) return;
-
+        if (plantCtx.plants?.find((p) => p.id === DEMO_IDS.plantId)) return;
         plantCtx.addPlant(DEMO_PLANT);
         await waitFor(
-            () => !!plantCtx.plants?.find((plant) => plant.id === DEMO_IDS.plantId),
-            800,
-            20
+            () => !!plantCtx.plants?.find((p) => p.id === DEMO_IDS.plantId),
+            800, 20
         );
         await nextFrame();
-    }, [hasPlant, plantCtx]);
+    }, [plantCtx]);
 
     const seedEnvironmentClimate = useCallback(async () => {
         DEMO_CLIMATE_ENTRIES.forEach((entry) => {
@@ -151,7 +144,7 @@ export function useDemoData({
     }, [ensureModalClosed, envCtx, plantCtx]);
 
     const openModalForState = useCallback(
-        async (modal: DemoModalState, route: DemoRouteState) => {
+        async (modal: DemoModalState) => {
             if (!modal) {
                 await ensureModalClosed();
                 return;
@@ -160,87 +153,25 @@ export function useDemoData({
             if (isModalOpen()) return;
 
             if (modal === "create-environment") {
-                await ensureRoute("/dashboard", '[data-demo="create-btn"]');
                 clickElement('[data-demo="create-btn"]');
-                await waitForSelector('[data-demo="modal"]');
+                await waitForSelector('[data-demo="modal"]', 2000);
                 return;
             }
 
             if (modal === "create-plant") {
-                if (route === "environment") {
-                    await waitForSelector('[data-demo="add-plant-values-btn"]');
-                    clickElement('[data-demo="add-plant-values-btn"]');
-                    await waitForSelector('[data-demo="modal"]');
-                }
+                await waitForSelector('[data-demo="add-plant-values-btn"]', 2000);
+                clickElement('[data-demo="add-plant-values-btn"]');
+                await waitForSelector('[data-demo="modal"]', 2000);
                 return;
             }
 
             if (modal === "add-event") {
-                await waitForSelector('[data-demo="add-event-btn"]');
+                await waitForSelector('[data-demo="add-event-btn"]', 2000);
                 clickElement('[data-demo="add-event-btn"]');
-                await waitForSelector('[data-demo="modal"]');
+                await waitForSelector('[data-demo="modal"]', 2000);
             }
         },
-        [clickElement, ensureModalClosed, ensureRoute, isModalOpen, waitForSelector]
-    );
-
-    const buildStepState = useCallback(
-        async (targetIndex: number) => {
-            const state = getStepState(targetIndex);
-
-            await cleanupDemoData();
-
-            if (state.route === "dashboard") {
-                await ensureRoute("/dashboard", '[data-demo="create-btn"]');
-                await openModalForState(state.modal, state.route);
-                return;
-            }
-
-            if (state.hasEnvironment) {
-                envCtx.addEnvironment(DEMO_ENVIRONMENT);
-                await waitFor(
-                    () => !!envCtx.environments?.find((e) => e.id === DEMO_IDS.environmentId),
-                    800,
-                    20
-                );
-            }
-
-            if (state.route === "environment") {
-                await ensureRoute(ENV_ROUTE, '[data-demo="page-header"]');
-            }
-
-            if (state.hasPlant) {
-                plantCtx.addPlant(DEMO_PLANT);
-                await waitFor(
-                    () => !!plantCtx.plants?.find((p) => p.id === DEMO_IDS.plantId),
-                    800,
-                    20
-                );
-            }
-
-            if (state.hasEnvironmentClimate) await seedEnvironmentClimate();
-            if (state.hasEnvironmentEvent) await seedEnvironmentEvent();
-
-            if (state.route === "plant") {
-                await ensureRoute(PLANT_ROUTE, '[data-demo="page-header"]');
-            }
-
-            if (state.hasPlantWater) await seedPlantWater();
-            if (state.hasPlantEvent) await seedPlantEvent();
-
-            await openModalForState(state.modal, state.route);
-        },
-        [
-            cleanupDemoData,
-            ensureRoute,
-            openModalForState,
-            envCtx,
-            plantCtx,
-            seedEnvironmentClimate,
-            seedEnvironmentEvent,
-            seedPlantEvent,
-            seedPlantWater,
-        ]
+        [clickElement, ensureModalClosed, isModalOpen, waitForSelector]
     );
 
     const goBackToStep = useCallback(
@@ -251,10 +182,35 @@ export function useDemoData({
             setIsRunning: (value: boolean) => void,
             stepIndexRef: MutableRefObject<number>
         ) => {
-            setIsTransitioning(true);
-
             try {
-                await buildStepState(targetIndex);
+                const state = getStepState(targetIndex);
+
+                await ensureModalClosed();
+
+                // Selektiv löschen was im Zielschritt nicht existieren darf
+                if (!state.hasPlant) {
+                    plantCtx.deletePlants([DEMO_IDS.plantId]);
+                    await waitFor(
+                        () => !plantCtx.plants?.find((p) => p.id === DEMO_IDS.plantId),
+                        800, 20
+                    );
+                    await nextFrame();
+                }
+
+                if (!state.hasEnvironment) {
+                    envCtx.deleteEnvironments([DEMO_IDS.environmentId]);
+                    await waitFor(
+                        () => !envCtx.environments?.find((e) => e.id === DEMO_IDS.environmentId),
+                        800, 20
+                    );
+                    await nextFrame();
+                }
+
+                const href = ROUTE_MAP[state.route];
+                const readySelector = READY_SELECTOR_MAP[state.route];
+                await ensureRoute(href, readySelector);
+                await openModalForState(state.modal);
+
                 stepIndexRef.current = targetIndex;
                 setStepIndex(targetIndex);
                 setIsRunning(true);
@@ -262,7 +218,7 @@ export function useDemoData({
                 setIsTransitioning(false);
             }
         },
-        [buildStepState]
+        [ensureModalClosed, ensureRoute, openModalForState, envCtx, plantCtx]
     );
 
     return {

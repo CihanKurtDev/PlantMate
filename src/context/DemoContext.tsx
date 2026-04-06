@@ -11,7 +11,8 @@ import { useRouter, usePathname } from "next/navigation";
 import { DEMO_STEPS, DemoActionContext } from "../demo/demoScript";
 import { useDemoDom } from "@/hooks/useDemoDom";
 import { useDemoData } from "@/hooks/useDemoData";
-import { sleep } from "@/demo/demoAsync";
+import { useDemoNavigationLock } from "@/hooks/useDemoNavigationLock";
+import { nextFrame, sleep } from "@/demo/demoAsync";
 import { DemoContextType, DemoProviderProps } from "@/types/demo";
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
@@ -25,6 +26,12 @@ export function DemoProvider({ children }: DemoProviderProps) {
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const stepIndexRef = useRef(-1);
+    const isTransitioningRef = useRef(false);
+
+    const setTransitioning = useCallback((val: boolean) => {
+        isTransitioningRef.current = val;
+        setIsTransitioning(val);
+    }, []);
 
     const {
         clickElement,
@@ -90,72 +97,76 @@ export function DemoProvider({ children }: DemoProviderProps) {
     const runStep = useCallback(
         async (index: number) => {
             if (index >= DEMO_STEPS.length) {
-                setIsTransitioning(true);
                 await cleanupDemoData();
                 await ensureRoute("/dashboard", '[data-demo="create-btn"]');
                 setIsRunning(false);
                 setStepIndex(-1);
                 stepIndexRef.current = -1;
-                setIsTransitioning(false);
+                setTransitioning(false);
                 return;
             }
 
-            setIsTransitioning(true);
+            stepIndexRef.current = index;
+            setStepIndex(index);
 
-            const step = DEMO_STEPS[index];
+            await nextFrame();
 
-            if (step.highlightAfterAction) {
-                await executeForwardStep(index);
-                stepIndexRef.current = index;
-                setStepIndex(index);
-            } else {
-                stepIndexRef.current = index;
-                setStepIndex(index);
-                await executeForwardStep(index);
-            }
+            await executeForwardStep(index);
 
-            setIsTransitioning(false);
+            setTransitioning(false);
         },
-        [cleanupDemoData, ensureRoute, executeForwardStep]
+        [cleanupDemoData, ensureRoute, executeForwardStep, setTransitioning]
     );
 
     const start = useCallback(() => {
+        if (isTransitioningRef.current) return;
+        isTransitioningRef.current = true;
+        setIsTransitioning(true);
+
         const boot = async () => {
-            setIsTransitioning(true);
             await cleanupDemoData();
             await ensureRoute("/dashboard", '[data-demo="create-btn"]');
             setIsRunning(true);
             stepIndexRef.current = 0;
             setStepIndex(0);
-            setIsTransitioning(false);
+            setTransitioning(false);
         };
         void boot();
-    }, [cleanupDemoData, ensureRoute]);
+    }, [cleanupDemoData, ensureRoute, setTransitioning]);
 
     const next = useCallback(() => {
-        if (isTransitioning) return;
+        if (isTransitioningRef.current) return;
+        isTransitioningRef.current = true;
+        setIsTransitioning(true);
         void runStep(stepIndexRef.current + 1);
-    }, [isTransitioning, runStep]);
+    }, [runStep]);
 
     const prev = useCallback(() => {
-        if (isTransitioning) return;
+        if (isTransitioningRef.current) return;
         const prevIndex = stepIndexRef.current - 1;
         if (prevIndex < 0) return;
-        void goBackToStep(prevIndex, setIsTransitioning, setStepIndex, setIsRunning, stepIndexRef);
-    }, [goBackToStep, isTransitioning]);
+        isTransitioningRef.current = true;
+        setIsTransitioning(true);
+        void goBackToStep(prevIndex, setTransitioning, setStepIndex, setIsRunning, stepIndexRef);
+    }, [goBackToStep, setTransitioning]);
 
     const stop = useCallback(() => {
+        if (isTransitioningRef.current) return;
+        isTransitioningRef.current = true;
+        setIsTransitioning(true);
+
         const shutdown = async () => {
-            setIsTransitioning(true);
             await cleanupDemoData();
             await ensureRoute("/dashboard", '[data-demo="create-btn"]');
             setIsRunning(false);
             setStepIndex(-1);
             stepIndexRef.current = -1;
-            setIsTransitioning(false);
+            setTransitioning(false);
         };
         void shutdown();
-    }, [cleanupDemoData, ensureRoute]);
+    }, [cleanupDemoData, ensureRoute, setTransitioning]);
+
+    useDemoNavigationLock(isRunning, prev, next);
 
     return (
         <DemoContext.Provider

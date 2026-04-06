@@ -44,7 +44,7 @@ export const DEMO_STEPS: DemoStep[] = [
             "Los geht's auf dem Dashboard.",
         targetSelector: '[data-demo="create-btn"]',
     },
-
+    // Schritt 1: Environment anlegen
     {
         title: "Eine Umgebung anlegen",
         description:
@@ -58,13 +58,13 @@ export const DEMO_STEPS: DemoStep[] = [
             await typeIntoField('[data-demo="environment-location"]', "Keller");
         },
     },
-
+    // Schritt 2: Auf der Detailseite der Umgebung
     {
         title: "Die Umgebung ist erstellt",
         description:
             "Nach dem Speichern landest du auf der Detailseite der Umgebung. " +
             "Hier findest du später Klimadaten, Pflanzen und Ereignisse an einem Ort.",
-        targetSelector: '[data-demo="page-header"]',
+        targetSelector: '[data-demo="main-container"]',
         navigationDelay: 80,
         highlightAfterAction: true,
         action: ({ closeTopModal, addEnvironment, router }) => {
@@ -73,15 +73,15 @@ export const DEMO_STEPS: DemoStep[] = [
             router.push(ENV_ROUTE);
         },
     },
-
+    // Schritt 3: Pflanze anlegen
     {
         title: "Erste Pflanze hinzufügen",
         description:
             "Im Pflanzen-Tab siehst du alle Pflanzen dieser Umgebung. " +
-            "Mit dem 'Neu'-Button öffnest du das Formular zum Anlegen einer Pflanze.",
+            "Mit dem 'Pflanze anlegen'-Button öffnest du das Formular zum Anlegen einer Pflanze.",
         targetSelector: '[data-demo="plants-tab"]',
     },
-
+    // Schritt 4: Pflanze anlegen - Formular ausfüllen
     {
         title: "Das Pflanzen-Formular",
         description:
@@ -96,7 +96,7 @@ export const DEMO_STEPS: DemoStep[] = [
             await typeIntoField('[data-demo="plant-species"]', "Ocimum basilicum");
         },
     },
-
+    // Schritt 5: Pflanze angelegt, jetzt auf der Detailseite
     {
         title: "Basilikum hinzugefügt",
         description:
@@ -109,7 +109,7 @@ export const DEMO_STEPS: DemoStep[] = [
             addPlant(DEMO_PLANT);
         },
     },
-
+    // Schritt 6: Klimamessung eintragen
     {
         title: "Klimamessung eintragen",
         description:
@@ -118,7 +118,7 @@ export const DEMO_STEPS: DemoStep[] = [
             "und 'Ereignis' für alles ohne Messwert.",
         targetSelector: '[data-demo="add-event-btn"]',
     },
-
+    // Schritt 7: Klimamessung eintragen - Formular ausfüllen
     {
         title: "Das Klimamessung-Formular",
         description:
@@ -135,7 +135,7 @@ export const DEMO_STEPS: DemoStep[] = [
             await typeIntoField('#demo-climate-co2', "620");
         },
     },
-
+    // Schritt 8: Klimaverlauf im Chart
     {
         title: "Klimaverlauf im Chart",
         description:
@@ -147,7 +147,7 @@ export const DEMO_STEPS: DemoStep[] = [
             DEMO_CLIMATE_ENTRIES.forEach((e) => addHistoryData(DEMO_IDS.environmentId, e));
         },
     },
-
+    // Schritt 9: Ereignis dokumentieren
     {
         title: "Wartung & Ereignisse dokumentieren",
         description:
@@ -158,29 +158,29 @@ export const DEMO_STEPS: DemoStep[] = [
             addEventToEnvironment(DEMO_IDS.environmentId, DEMO_ENVIRONMENT_EVENT);
         },
     },
-
+    // Schritt 10: Auf der Detailseite der Pflanze
     {
         title: "Zur Pflanzen-Detailseite",
         description:
             "Jede Pflanze hat ihre eigene Seite. " +
             "Im Pflanzen-Tab kannst du sie direkt anklicken – " +
             "hier navigieren wir direkt dorthin.",
-        targetSelector: '[data-demo="page-header"]',
+        targetSelector: '[data-demo="plants-tab"]',
         navigationDelay: 160,
         highlightAfterAction: true,
-        action: ({ router }) => {
-            router.push(PLANT_ROUTE);
-        },
     },
-
+    //  Schritt 11: Wässerung eintragen
     {
         title: "Wässerung eintragen",
         description:
             "Auch hier öffnet 'Ereignis hinzufügen' ein Modal. " +
             "Der erste Tab ist die Wässerung: pH-Wert, EC und die Wassermenge in ml.",
         targetSelector: '[data-demo="add-event-btn"]',
+         action: ({ router }) => {
+            router.push(PLANT_ROUTE);
+        },
     },
-
+    // Schritt 12: Wässerung eintragen - Formular ausfüllen
     {
         title: "Das Wässerungs-Formular",
         description:
@@ -197,7 +197,7 @@ export const DEMO_STEPS: DemoStep[] = [
             await typeIntoField('#demo-water-amount', "500");
         },
     },
-
+    // Schritt 13: pH- und EC-Verlauf im Chart
     {
         title: "pH- und EC-Verlauf",
         description:
@@ -210,19 +210,27 @@ export const DEMO_STEPS: DemoStep[] = [
             DEMO_WATER_ENTRIES.forEach((e) => addPlantHistoryData(DEMO_IDS.plantId, e));
         },
     },
-
+    // Schritt 14: Pflanzen-Event dokumentieren
     {
         title: "Pflanzen-Events festhalten",
         description:
             "Umtopfen, Düngung, Schädlingsbehandlung – " +
-            "hier wurde ein Umtopfen von 1L auf 3L dokumentiert. " +
-            "Du kannst auch eigene Event-Typen mit eigenem Icon und Farben anlegen.",
+            "hier wurde ein Umtopfen von 1L auf 3L dokumentiert. ",
         targetSelector: '[data-demo="event-tab"]',
         action: ({ addEventToPlant }) => {
             addEventToPlant(DEMO_IDS.plantId, DEMO_PLANT_EVENT);
         },
     },
-
+    // Schritt 15: Pflanzen-Event dokumentieren
+    {
+        title: "Pflanzen-Events festhalten",
+        description:
+            "Um selber ein Event hinzuzufügen kannst du " +
+            "hier auf den Button clicken. " +
+            "Du kannst auch eigene Event-Typen mit eigenem Icon und Farben anlegen.",
+        targetSelector: '[data-demo="add-event-btn"]',
+    },
+    // Schritt 16: Abschluss
     {
         title: "Das war GrowTrack 🌱",
         description:
@@ -230,5 +238,8 @@ export const DEMO_STEPS: DemoStep[] = [
             "alles an einem Ort, ohne Abo und ohne Cloud. " +
             "Klicke 'Demo beenden' – die Demo-Daten werden gelöscht und du kannst loslegen.",
         targetSelector: undefined,
+        action: ({ closeTopModal }) => {
+            closeTopModal();
+        },
     },
 ];

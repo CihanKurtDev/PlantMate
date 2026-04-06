@@ -18,7 +18,7 @@ export const PageLayout = ({ title, subtitle, icon, iconVariant, backLink, actio
     return (
         <>
             {title && (
-                <header className={styles.header} data-demo="page-header">
+                <header className={styles.header}>
                     <div className={styles.info}>
                         {icon && <TypeIcon icon={icon} variant={iconVariant || ''} />}
                         <div className={styles.title}>
