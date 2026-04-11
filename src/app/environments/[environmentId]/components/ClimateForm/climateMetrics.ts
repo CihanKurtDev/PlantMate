@@ -1,6 +1,7 @@
 import { CultivationProfile, MetricProfile } from "@/config/profiles";
 
 export const CLIMATE_KEYS = ["temp", "humidity", "vpd", "co2"] as const;
+
 export type ClimateKey = typeof CLIMATE_KEYS[number];
 
 export const CLIMATE_KEY_LABELS: Record<ClimateKey, string> = {
@@ -9,6 +10,11 @@ export const CLIMATE_KEY_LABELS: Record<ClimateKey, string> = {
     vpd: "VPD",
     co2: "CO₂",
 };
+
+export interface ResolvedClimateProfile {
+    profile: CultivationProfile;
+    metrics: MetricProfile[];
+}
 
 export interface PreparedMetric {
     key: ClimateKey;
@@ -20,25 +26,47 @@ export interface PreparedMetric {
 }
 
 export function prepareMetrics(
-    profiles: CultivationProfile[],
+    profiles: ResolvedClimateProfile[],
     intersectedMetrics: MetricProfile[],
     genericClimate: MetricProfile[]
 ): PreparedMetric[] {
     return CLIMATE_KEYS.flatMap((key) => {
-        const intersected = intersectedMetrics.find((m) => m.key === key);
-        const base = genericClimate.find((m) => m.key === key);
+        const intersected = intersectedMetrics.find((metric) => metric.key === key);
+        const base = genericClimate.find((metric) => metric.key === key);
 
-        if (!intersected || !base) return [];
+        if (!intersected || !base) {
+            return [];
+        }
 
-        const perProfile = profiles.flatMap((profile) => {
-            const metric = profile.climate.find((m) => m.key === key);
-            return metric ? [{ profile, metric }] : [];
+        const perProfile = profiles.flatMap(({ profile, metrics }) => {
+            const metric = metrics.find((entry) => entry.key === key);
+
+            if (!metric) {
+                return [];
+            }
+
+            return [{ profile, metric }];
         });
 
         const rangesConflict =
-            intersected.idealMin !== base.idealMin &&
-            intersected.idealMax === base.idealMax;
+            intersected.idealMin === base.idealMin &&
+            intersected.idealMax === base.idealMax &&
+            perProfile.some(({ metric }) => {
+                return (
+                    metric.idealMin !== base.idealMin ||
+                    metric.idealMax !== base.idealMax
+                );
+            });
 
-        return [{ key, label: CLIMATE_KEY_LABELS[key], intersected, base, perProfile, rangesConflict }];
+        return [
+            {
+                key,
+                label: CLIMATE_KEY_LABELS[key],
+                intersected,
+                base,
+                perProfile,
+                rangesConflict,
+            },
+        ];
     });
 }

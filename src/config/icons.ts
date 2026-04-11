@@ -15,6 +15,10 @@ import {
     Zap,
     Clock,
     TriangleAlert,
+    Sun,
+    Moon,
+    SunDim,
+    Flower2,
 } from 'lucide-react';
 
 export const LOCATION_COLORS = {
@@ -90,6 +94,36 @@ export const EVENT_COLORS = {
     cleaning: {
         base: '#2d7a3e',
         soft: 'rgba(45, 122, 62, 0.18)',
+    },
+} as const;
+
+export const STAGE_COLORS = {
+    seedling: {
+        base: '#4caf50',
+        soft: 'rgba(76, 175, 80, 0.12)',
+    },
+    vegetative: {
+        base: '#388e3c',
+        soft: 'rgba(56, 142, 60, 0.12)',
+    },
+    flowering: {
+        base: '#d84382',
+        soft: 'rgba(216, 67, 130, 0.12)',
+    },
+} as const;
+
+export const LIGHT_CYCLE_COLORS = {
+    lightDay: {
+        base: '#f0a830',
+        soft: 'rgba(240, 168, 48, 0.15)',
+    },
+    lightNight: {
+        base: '#6882c8',
+        soft: 'rgba(104, 130, 200, 0.15)',
+    },
+    lightNone: {
+        base: '#9c978e',
+        soft: 'rgba(156, 151, 142, 0.12)',
     },
 } as const;
 
@@ -254,12 +288,56 @@ export const ALL_EVENT_CONFIG: Record<string, IconConfig> = {
     cleaning: ENVIRONMENT_EVENT_CONFIG.Cleaning,
 };
 
+export const STAGE_CONFIG = {
+    seedling: {
+        label: 'Keimling',
+        icon: Sprout,
+        colors: STAGE_COLORS.seedling,
+    },
+    vegetative: {
+        label: 'Vegetativ',
+        icon: Leaf,
+        colors: STAGE_COLORS.vegetative,
+    },
+    flowering: {
+        label: 'Blüte',
+        icon: Flower2,
+        colors: STAGE_COLORS.flowering,
+    },
+} as const satisfies Record<string, IconConfig>;
+
+export const LIGHT_CYCLE_CONFIG = {
+    lightday: {
+        label: 'Lichtphase',
+        icon: Sun,
+        colors: LIGHT_CYCLE_COLORS.lightDay,
+    },
+    lightnight: {
+        label: 'Dunkelphase',
+        icon: Moon,
+        colors: LIGHT_CYCLE_COLORS.lightNight,
+    },
+    lightnone: {
+        label: 'Kein Lichtzyklus',
+        icon: SunDim,
+        colors: LIGHT_CYCLE_COLORS.lightNone,
+    },
+} as const satisfies Record<string, IconConfig>;
+
 export const ALL_ICON_CONFIG: Record<string, IconConfig> = {
     ...ALL_EVENT_CONFIG,
 
     greenhouse: LOCATION_CONFIG.greenhouse,
     tent: LOCATION_CONFIG.tent,
     room: LOCATION_CONFIG.room,
+
+    seedling: STAGE_CONFIG.seedling,
+    vegetative: STAGE_CONFIG.vegetative,
+    flowering: STAGE_CONFIG.flowering,
+
+    lightday: LIGHT_CYCLE_CONFIG.lightday,
+    lightnight: LIGHT_CYCLE_CONFIG.lightnight,
+    lightnone: LIGHT_CYCLE_CONFIG.lightnone,
 
     temp: CLIMATE_CONFIG.temp,
     humidity: CLIMATE_CONFIG.humidity,

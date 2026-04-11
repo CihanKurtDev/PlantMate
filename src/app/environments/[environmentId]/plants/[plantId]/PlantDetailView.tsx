@@ -1,23 +1,26 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Pencil, Sprout } from "lucide-react";
-import PlantEventsTab from "./components/PlantEventsTab";
-import DataTab from "../../components/shared/DataTab/DataTab";
-import Modal from "@/components/Modal/Modal";
+import { useMemo, useState } from "react";
+import { Pencil } from "lucide-react";
 import { Button } from "@/components/Button/Button";
-import { Card } from "@/components/Card/Card";
-import { PlantForm } from "@/components/PlantForm/PlantForm";
-import WaterForm from "./components/WaterForm/WaterForm";
-import PlantEventForm from "./components/PlantEventForm";
-import { PlantTimeSeriesEntry } from "@/types/plant";
-import { PageLayout } from "@/components/PageLayout/PageLayout";
 import MetricGrid from "@/components/MetricGrid/MetricGrid";
-import { getProfile } from "@/config/profiles";
-import TabContent from "@/components/TabContent/TabContent";
-import { usePlant } from "@/context/PlantContext";
+import Modal from "@/components/Modal/Modal";
+import { PageLayout } from "@/components/PageLayout/PageLayout";
+import { PlantForm } from "@/components/PlantForm/PlantForm";
 import { useEnvironment } from "@/context/EnvironmentContext";
+import { usePlant } from "@/context/PlantContext";
 import { getPlantMetrics } from "@/helpers/getPlantMetrics";
+import {
+    getCurrentPlantStage,
+    getWaterMetricForPlantAtTimestamp,
+    getWaterMetricsForPlantStage,
+} from "@/helpers/plantStages";
+import type { PlantTimeSeriesEntry } from "@/types/plant";
+import { STAGE_ICON, PlantStatusInfo } from "./components/PlantStatusHero/PlantStatusHero";
+import PlantEventForm from "./components/PlantEventForm";
+import PlantEventsTab from "./components/PlantEventsTab";
+import WaterForm from "./components/WaterForm/WaterForm";
+import DataTab from "../../components/shared/DataTab/DataTab";
 
 type ModalType = "none" | "event" | "edit";
 
@@ -26,47 +29,55 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     const { environments } = useEnvironment();
     const [modalType, setModalType] = useState<ModalType>("none");
 
-    const plant = plants.find(p => p.id === plantId);
-    
+    const plant = plants.find((entry) => entry.id === plantId);
+    const environment = environments.find((entry) => entry.id === plant?.environmentId);
+
     const items = useMemo(() => {
-        if (!plant) return [];
+        if (!plant) {
+            return [];
+        }
+
         return getPlantMetrics(plant);
     }, [plant]);
-    
-    const chartData: PlantTimeSeriesEntry[] = useMemo(() =>  {
-        if (!plant) return [];
-        
-        return (plant.historical ?? []).map(entry => ({
+
+    const chartData: PlantTimeSeriesEntry[] = useMemo(() => {
+        if (!plant) {
+            return [];
+        }
+
+        return (plant.historical ?? []).map((entry) => ({
             timestamp: entry.timestamp,
-            entryKind: 'historical',
+            entryKind: "historical",
             metrics: {
                 ph: entry.water?.ph?.value,
                 ec: entry.water?.ec?.value,
                 height: entry.height?.value,
             },
             notes: entry.notes,
-        }))
-    }, [plant])
-    
-    const closeModal = () => setModalType("none");
-    
-    if (!plant) return null;
+        }));
+    }, [plant]);
 
-    const environment = environments.find(e => e.id === plant.environmentId);
-    const profile = getProfile(plant.profile);
-    
+    if (!plant) {
+        return null;
+    }
+
+    const waterMetrics = getWaterMetricsForPlantStage(plant, environment);
+    const currentStage = getCurrentPlantStage(plant, environment);
+    const closeModal = () => setModalType("none");
+
     return (
         <PageLayout
             title={plant.title}
-            icon={Sprout}
-            iconVariant="sprout"
+            icon={STAGE_ICON[currentStage]}
+            iconVariant={currentStage.toLowerCase()}
+            statusInfo={<PlantStatusInfo plant={plant} environment={environment} />}
             backLink={{
                 label: environment?.name
                     ? `Zurück zum Environment: ${environment.name}`
                     : "Zurück zum Environment",
                 href: `/environments/${plant.environmentId}`,
             }}
-            actions={
+            actions={(
                 <>
                     <Button variant="secondary" onClick={() => setModalType("edit")}>
                         <span><Pencil size={16} />Bearbeiten</span>
@@ -75,20 +86,17 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
                         Ereignis hinzufügen
                     </Button>
                 </>
-            }
+            )}
         >
             <MetricGrid items={items} />
-
-            <TabContent id="basicInfo">
-                <Card title="Basisinformationen" collapsible>
-                    <p><strong>Art / Spezies:</strong> {plant.species || '-'}</p>
-                </Card>
-            </TabContent>
 
             <div data-demo="data-tab">
                 <DataTab
                     data={chartData}
-                    metrics={profile.water}
+                    metrics={waterMetrics}
+                    resolveMetricForTimestamp={(metricKey, timestamp) =>
+                        getWaterMetricForPlantAtTimestamp(plant, metricKey, timestamp, environment)
+                    }
                     onAddMeasurement={() => setModalType("event")}
                     title="Wasserwerte"
                     emptyTitle="Wasserverlauf aktivieren"

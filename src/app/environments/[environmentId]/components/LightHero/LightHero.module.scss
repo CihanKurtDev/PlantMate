@@ -1,0 +1,52 @@
+.statusInfo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.primaryRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    flex-wrap: wrap;
+}
+
+.phaseLabel {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    background: var(--color-background-tertiary);
+    padding: 2px 10px;
+    border-radius: 999px;
+}
+
+.locationLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.secondaryRow {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
+    flex-wrap: wrap;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
+
+.scheduleBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--color-background-tertiary);
+}
+
+
+.emptyLabel {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-tertiary);
+}
