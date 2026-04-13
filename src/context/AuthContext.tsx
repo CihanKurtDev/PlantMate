@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import type { AuthUser, LoginFormData, RegisterFormData } from "@/types/auth";
 import {
     AUTH_CHANGED_EVENT,
@@ -19,9 +19,12 @@ interface AuthContextType {
     user: AuthUser | null;
     status: AuthStatus;
     isAuthenticated: boolean;
+    isDemoSession: boolean;
     login: (data: LoginFormData) => Promise<{ success: boolean; error?: string }>;
     register: (data: RegisterFormData) => Promise<{ success: boolean; error?: string }>;
     logout: () => void;
+    startDemoSession: () => void;
+    endDemoSession: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,21 +60,34 @@ const getClientSnapshot = () =>
 
 const getServerSnapshot = () => SERVER_SNAPSHOT;
 
+const DEMO_USER: AuthUser = {
+    id: "demo-user",
+    email: "demo@plantmate.local",
+    name: "Demo User",
+    createdAt: 0,
+};
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const authSnapshot = useSyncExternalStore(subscribeToAuth, getClientSnapshot, getServerSnapshot);
+    const [isDemoSession, setIsDemoSession] = useState(false);
 
-    const { user, status } = useMemo(() => {
+    const { storageUser, storageStatus } = useMemo(() => {
         if (authSnapshot === SERVER_SNAPSHOT) {
-            return { user: null, status: "loading" as AuthStatus };
+            return { storageUser: null, storageStatus: "loading" as AuthStatus };
         }
 
         const user = getCurrentUser();
         return user
-            ? { user, status: "authenticated" as AuthStatus }
-            : { user: null, status: "unauthenticated" as AuthStatus };
+            ? { storageUser: user, storageStatus: "authenticated" as AuthStatus }
+            : { storageUser: null, storageStatus: "unauthenticated" as AuthStatus };
     }, [authSnapshot]);
 
+    const user = isDemoSession ? DEMO_USER : storageUser;
+    const status = isDemoSession ? "authenticated" : storageStatus;
+    const isAuthenticated = isDemoSession || status === "authenticated";
+
     const login = useCallback(async (data: LoginFormData) => {
+        setIsDemoSession(false);
         const result = loginUser(data.email, data.password, Boolean(data.rememberMe));
         if (!result.user) {
             return { success: false, error: result.error ?? "Login fehlgeschlagen" };
@@ -81,6 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const register = useCallback(async (data: RegisterFormData) => {
+        setIsDemoSession(false);
         const result = registerUser(data.name, data.email, data.password);
         if (!result.user) {
             return { success: false, error: result.error ?? "Registrierung fehlgeschlagen" };
@@ -90,19 +107,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const logout = useCallback(() => {
+        setIsDemoSession(false);
         clearSession();
+    }, []);
+
+    const startDemoSession = useCallback(() => {
+        setIsDemoSession(true);
+    }, []);
+
+    const endDemoSession = useCallback(() => {
+        setIsDemoSession(false);
     }, []);
 
     const value = useMemo(
         () => ({
             user,
             status,
-            isAuthenticated: status === "authenticated",
+            isAuthenticated,
+            isDemoSession,
             login,
             register,
             logout,
+            startDemoSession,
+            endDemoSession,
         }),
-        [login, logout, register, status, user]
+        [endDemoSession, isAuthenticated, isDemoSession, login, logout, register, startDemoSession, status, user]
     );
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

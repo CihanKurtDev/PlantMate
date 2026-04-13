@@ -21,7 +21,7 @@ export default function Header() {
       </h1>
 
       <div className={styles.right}>
-        <nav>
+        <nav className={styles.nav}>
           <ul className={styles.navList}>
             <li><Link className={styles.link} href="/">Home</Link></li>
             {status === "loading" ? null : isAuthenticated ? (
@@ -35,25 +35,27 @@ export default function Header() {
           </ul>
         </nav>
 
-        <DemoButton />
-        {status !== "loading" && isAuthenticated && (
-          <Button variant="secondary" size="sm" onClick={logout}>
-            Logout
+        <div className={styles.actions}>
+          <DemoButton />
+          {status !== "loading" && isAuthenticated && (
+            <Button variant="secondary" size="sm" onClick={logout}>
+              Logout
+            </Button>
+          )}
+          <Button
+            type="button"
+            className={styles.themeToggleButton}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+            aria-label="Theme wechseln"
+          >
+            <span className={styles.themeIconLight} aria-hidden="true">
+              <Moon size={18} />
+            </span>
+            <span className={styles.themeIconDark} aria-hidden="true">
+              <Sun size={18} />
+            </span>
           </Button>
-        )}
-        <Button
-          type="button"
-          className={styles.themeToggleButton}
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-          aria-label="Theme wechseln"
-        >
-          <span className={styles.themeIconLight} aria-hidden="true">
-            <Moon size={18} />
-          </span>
-          <span className={styles.themeIconDark} aria-hidden="true">
-            <Sun size={18} />
-          </span>
-        </Button>
+        </div>
       </div>
     </header>
   );

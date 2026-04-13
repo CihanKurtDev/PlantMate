@@ -22,7 +22,7 @@ const DemoContext = createContext<DemoContextType | undefined>(undefined);
 export function DemoProvider({ children }: DemoProviderProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const { isAuthenticated, status } = useAuth();
+    const { isAuthenticated, isDemoSession, status, startDemoSession, endDemoSession } = useAuth();
 
     const [isRunning, setIsRunning] = useState(false);
     const [stepIndex, setStepIndex] = useState(-1);
@@ -66,6 +66,20 @@ export function DemoProvider({ children }: DemoProviderProps) {
         isModalOpen,
         ensureModalClosed,
     });
+
+    const routeAfterDemo = useCallback(async () => {
+        if (isDemoSession) {
+            endDemoSession();
+            await nextFrame();
+            await ensureRoute("/", '[data-demo="main-container"]');
+            return;
+        }
+        if (isAuthenticated) {
+            await ensureRoute("/dashboard", '[data-demo="create-btn"]');
+            return;
+        }
+        await ensureRoute("/", '[data-demo="main-container"]');
+    }, [endDemoSession, ensureRoute, isAuthenticated, isDemoSession]);
 
     const ctxRef = useRef<DemoActionContext>({} as DemoActionContext);
 
@@ -135,9 +149,7 @@ export function DemoProvider({ children }: DemoProviderProps) {
         async (index: number) => {
             if (index >= DEMO_STEPS.length) {
                 await cleanupDemoData();
-                if (isAuthenticated) {
-                    await ensureRoute("/dashboard", '[data-demo="create-btn"]');
-                }
+                await routeAfterDemo();
                 resetDemoState();
                 return;
             }
@@ -151,19 +163,25 @@ export function DemoProvider({ children }: DemoProviderProps) {
 
             setTransitioning(false);
         },
-        [cleanupDemoData, ensureRoute, executeForwardStep, isAuthenticated, resetDemoState, setTransitioning]
+        [cleanupDemoData, executeForwardStep, resetDemoState, routeAfterDemo, setTransitioning]
     );
 
     const start = useCallback(() => {
         if (isTransitioningRef.current) return;
-        if (status !== "authenticated" || !isAuthenticated) {
-            void router.push("/login");
-            return;
-        }
         isTransitioningRef.current = true;
         setIsTransitioning(true);
+        // Activate demo mode immediately so auth guards do not interrupt route transitions.
+        setIsRunning(true);
 
         const boot = async () => {
+            if (status === "loading") {
+                resetDemoState();
+                return;
+            }
+            if (!isAuthenticated) {
+                startDemoSession();
+            }
+            await nextFrame();
             await cleanupDemoData();
             const routeReady = await ensureRoute("/dashboard", '[data-demo="create-btn"]');
             if (!routeReady) {
@@ -176,7 +194,7 @@ export function DemoProvider({ children }: DemoProviderProps) {
             setTransitioning(false);
         };
         void boot();
-    }, [cleanupDemoData, ensureRoute, isAuthenticated, resetDemoState, router, setTransitioning, status]);
+    }, [cleanupDemoData, ensureRoute, isAuthenticated, resetDemoState, setTransitioning, startDemoSession, status]);
 
     const next = useCallback(() => {
         if (isTransitioningRef.current) return;
@@ -201,27 +219,38 @@ export function DemoProvider({ children }: DemoProviderProps) {
 
         const shutdown = async () => {
             await cleanupDemoData();
-            if (isAuthenticated) {
-                await ensureRoute("/dashboard", '[data-demo="create-btn"]');
-            }
+            await routeAfterDemo();
             resetDemoState();
         };
         void shutdown();
-    }, [cleanupDemoData, ensureRoute, isAuthenticated, resetDemoState]);
+    }, [cleanupDemoData, resetDemoState, routeAfterDemo]);
 
     useEffect(() => {
         if (!isRunning) return;
         if (status === "loading") return;
 
         const onAuthPage = pathname === "/login" || pathname === "/register";
-        if (!isAuthenticated || onAuthPage) {
+        if (onAuthPage) {
             const cleanup = async () => {
                 await cleanupDemoData();
+                await routeAfterDemo();
                 resetDemoState();
             };
             void cleanup();
         }
-    }, [cleanupDemoData, isAuthenticated, isRunning, pathname, resetDemoState, status]);
+    }, [cleanupDemoData, isRunning, pathname, resetDemoState, routeAfterDemo, status]);
+
+    useEffect(() => {
+        if (!isRunning) return;
+        if (!isDemoSession) return;
+
+        const handleBeforeUnload = () => {
+            endDemoSession();
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, [endDemoSession, isDemoSession, isRunning]);
 
     useDemoNavigationLock(isRunning, prev, next);
 
