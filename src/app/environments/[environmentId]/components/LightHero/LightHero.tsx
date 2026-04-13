@@ -54,7 +54,7 @@ export function LightStatusInfo({ schedule, snapshot, locationLabel }: LightInfo
         );
     }
 
-    const transitionLabel = snapshot.isLightOn ? "aus" : "an";
+    const transitionLabel = snapshot.isLightOn ? "Licht geht aus" : "Licht geht an";
 
     return (
         <div className={styles.statusInfo}>

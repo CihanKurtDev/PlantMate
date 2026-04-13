@@ -160,7 +160,7 @@ export function ClimateProfileInfo({ profiles, stageByProfile }: ClimateProfileI
                             ].join(" ")}
                         >
                             {rangesConflict
-                                ? "kein Overlap"
+                                ? "kein gemeinsamer Bereich"
                                 : `→ ${intersected.idealMin}–${intersected.idealMax} ${intersected.unit}`}
                         </span>
                     </div>

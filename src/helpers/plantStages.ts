@@ -306,3 +306,15 @@ export function getClimateMetricsForPlantStage(
 
     return getProfileMetrics(profile, "climate", stage);
 }
+
+export function getClimateMetricForPlantAtTimestamp(
+    plant: PlantData,
+    key: string,
+    timestamp: number,
+    environment?: EnvironmentData
+): MetricProfile | undefined {
+    const profile = getProfile(plant.profile);
+    const stage = getPlantStageAtTimestamp(plant, timestamp, environment);
+
+    return getProfileMetric(profile, "climate", key, stage);
+}

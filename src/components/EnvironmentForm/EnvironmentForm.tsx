@@ -126,15 +126,15 @@ export const EnvironmentForm = ({
                     value={formState.type}
                     onChange={(e) => setField("type", e.target.value as EnvironmentType)}
                 >
-                    <option value="ROOM">🏠 Room — offener Raum, natürliche Belüftung</option>
-                    <option value="TENT">⛺ Tent — geschlossenes Growzelt, kontrolliertes Klima</option>
-                    <option value="GREENHOUSE">🌱 Greenhouse — Gewächshaus mit Tageslicht</option>
+                    <option value="ROOM">🏠 Raum — offener Raum, natürliche Belüftung</option>
+                    <option value="TENT">⛺ Growzelt — geschlossenes Growzelt, kontrolliertes Klima</option>
+                    <option value="GREENHOUSE">🌱 Gewächshaus — Gewächshaus mit Tageslicht</option>
                 </Select>
             </FormField>
 
             <Input
                 data-demo="environment-location"
-                label="Location"
+                label="Standort"
                 value={formState.location ?? ""}
                 onChange={(e) => setField("location", e.target.value)}
                 error={validationErrors.location}

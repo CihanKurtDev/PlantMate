@@ -58,7 +58,15 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
     }, [plant]);
 
     if (!plant) {
-        return null;
+        return (
+            <PageLayout
+                title="Pflanze nicht gefunden"
+                subtitle="Die angeforderte Pflanze existiert nicht mehr oder wurde entfernt."
+                backLink={{ label: "Zurück zum Dashboard", href: "/dashboard" }}
+            >
+                <p>Bitte wähle eine vorhandene Pflanze aus der Übersicht.</p>
+            </PageLayout>
+        );
     }
 
     const waterMetrics = getWaterMetricsForPlantStage(plant, environment);
@@ -73,8 +81,8 @@ export default function PlantDetailView({ plantId }: { plantId: string }) {
             statusInfo={<PlantStatusInfo plant={plant} environment={environment} />}
             backLink={{
                 label: environment?.name
-                    ? `Zurück zum Environment: ${environment.name}`
-                    : "Zurück zum Environment",
+                    ? `Zurück zur Umgebung: ${environment.name}`
+                    : "Zurück zur Umgebung",
                 href: `/environments/${plant.environmentId}`,
             }}
             actions={(

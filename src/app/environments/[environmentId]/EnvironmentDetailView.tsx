@@ -19,6 +19,7 @@ import { getIntersectedClimateMetrics } from "./components/shared/DataTab/dataTa
 import { useEnvironment } from "@/context/EnvironmentContext";
 import { usePlant } from "@/context/PlantContext";
 import { getEnvironmentMetrics } from "@/helpers/getEnvironmentMetrics";
+import { getCurrentPlantStage } from "@/helpers/plantStages";
 import { useLightCycleSnapshot, getLightIconVariant, LIGHT_CYCLE_ICON, LightStatusInfo } from "./components/LightHero/LightHero";
 
 export function capitalize(word: string) {
@@ -43,8 +44,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     }, [environment]);
 
     const climateMetrics = useMemo(() => {
-        return getIntersectedClimateMetrics(plants);
-    }, [plants]);
+        return getIntersectedClimateMetrics(plants, {
+            getStageForPlant: (plant) => getCurrentPlantStage(plant, environment),
+        });
+    }, [plants, environment]);
 
     const chartData: EnvironmentTimeSeriesEntry[] = useMemo(() => {
         if (!environment) return [];
@@ -67,7 +70,17 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
     const closeModal = () => setModalType("none");
 
-    if (!environment) return null;
+    if (!environment) {
+        return (
+            <PageLayout
+                title="Umgebung nicht gefunden"
+                subtitle="Die angeforderte Umgebung existiert nicht mehr oder wurde entfernt."
+                backLink={{ label: "Zurück zum Dashboard", href: "/dashboard" }}
+            >
+                <p>Bitte wähle eine vorhandene Umgebung aus dem Dashboard.</p>
+            </PageLayout>
+        );
+    }
 
     return (
         <PageLayout

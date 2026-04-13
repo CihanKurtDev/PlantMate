@@ -54,10 +54,11 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
     const validationErrors = validate(formState, plantId ? undefined : plantCount);
     const selectedEnvironment = environments.find((environment) => environment.id === formState.environmentId);
     const selectedProfile = getProfile(formState.profile);
+    const fallbackStartedAt = existingPlant?.startedAt ?? 0;
     const startedAt = useMemo(() => {
         const parsed = new Date(startDate).getTime();
-        return Number.isFinite(parsed) ? parsed : Date.now();
-    }, [startDate]);
+        return Number.isFinite(parsed) ? parsed : fallbackStartedAt;
+    }, [startDate, fallbackStartedAt]);
     const previewStage = useMemo(() => {
         return resolvePlantPreviewStage(formState.profile, selectedEnvironment, startMode, startedAt);
     }, [formState.profile, selectedEnvironment, startMode, startedAt]);
@@ -137,7 +138,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
             <FormField>
                 <Select
                     data-demo="plant-environment"
-                    label="Environment"
+                    label="Umgebung"
                     value={formState.environmentId}
                     onChange={(e) => setField("environmentId", e.target.value)}
                     error={validationErrors.environmentId}
@@ -148,6 +149,7 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
                     ))}
                 </Select>
             </FormField>
+            <FormHint>Pflichtfeld für Schritt 2 (optional im Gesamtflow): Für das Anlegen werden mindestens Name und Umgebung benötigt.</FormHint>
 
             <FormField>
                 <Select

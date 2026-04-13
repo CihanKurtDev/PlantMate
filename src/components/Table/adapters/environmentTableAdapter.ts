@@ -4,6 +4,7 @@ import { PlantData } from "@/types/plant";
 import { buildHistory, getLastEvent } from "@/helpers/tableUtils";
 import { getProfile, getProfileMetric, ProfileKey, CultivationProfile } from "@/config/profiles";
 import type { IconMapKey } from "@/types/icons";
+import { getClimateMetricForPlantAtTimestamp } from "@/helpers/plantStages";
 
 export interface EnvironmentTableRow {
     key: string;
@@ -69,9 +70,24 @@ export const mapEnvironmentsToTableRows = (
 
         const isBadForProfiles = (value: number | null, key: string): boolean => {
             if (value === null) return false;
-            return profiles.some(profile => {
-                const metric = getProfileMetric(profile, "climate", key);
-                return metric && (value < metric.idealMin || value > metric.idealMax);
+
+            const measurementTimestamp = lastHistorical?.timestamp;
+
+            if (measurementTimestamp === undefined) {
+                return false;
+            }
+
+            if (envPlants.length === 0) {
+                const fallbackMetric = getProfileMetric(getProfile("generic"), "climate", key, "VEGETATIVE");
+                return Boolean(
+                    fallbackMetric &&
+                    (value < fallbackMetric.idealMin || value > fallbackMetric.idealMax)
+                );
+            }
+
+            return envPlants.some((plant) => {
+                const metric = getClimateMetricForPlantAtTimestamp(plant, key, measurementTimestamp, env);
+                return Boolean(metric && (value < metric.idealMin || value > metric.idealMax));
             });
         };
 

@@ -2,7 +2,8 @@ import { EnvironmentData } from "@/types/environment";
 import { PlantData } from "@/types/plant";
 import { MetricItem } from "@/components/MetricGrid/MetricGrid";
 import { formatTimestamp } from "./date";
-import { getProfile, getProfileMetric, ProfileKey } from "@/config/profiles";
+import { getProfile, getProfileMetric } from "@/config/profiles";
+import { getClimateMetricForPlantAtTimestamp, getWaterMetricForPlantAtTimestamp } from "./plantStages";
 
 export function getDashboardMetrics(
     environments: EnvironmentData[],
@@ -15,17 +16,20 @@ export function getDashboardMetrics(
         if (!latest) return false;
 
         const envPlants = plants.filter(p => p.environmentId === env.id);
-        const uniqueProfileKeys = [...new Set(envPlants.map(p => p.profile).filter(Boolean))] as ProfileKey[];
-        const profiles = uniqueProfileKeys.length > 0
-            ? uniqueProfileKeys.map(getProfile)
-            : [getProfile("generic")];
+        const measurementTimestamp = latest.timestamp;
 
         const { temp, humidity, co2 } = latest.climate;
 
         const isBadForProfiles = (value: number | null | undefined, key: "temp" | "humidity" | "co2"): boolean => {
             if (value === null || value === undefined) return false;
-            return profiles.some(profile => {
-                const metric = getProfileMetric(profile, "climate", key);
+
+            if (envPlants.length === 0) {
+                const metric = getProfileMetric(getProfile("generic"), "climate", key, "VEGETATIVE");
+                return metric !== undefined && (value < metric.idealMin || value > metric.idealMax);
+            }
+
+            return envPlants.some((plant) => {
+                const metric = getClimateMetricForPlantAtTimestamp(plant, key, measurementTimestamp, env);
                 return metric !== undefined && (value < metric.idealMin || value > metric.idealMax);
             });
         };
@@ -43,10 +47,10 @@ export function getDashboardMetrics(
             .sort((a, b) => b.timestamp - a.timestamp)[0];
         if (!latest?.water) return false;
 
-        const profile = getProfile(plant.profile);
+        const environment = environments.find((entry) => entry.id === plant.environmentId);
 
-        const phMetric = getProfileMetric(profile, 'water', 'ph');
-        const ecMetric = getProfileMetric(profile, 'water', 'ec');
+        const phMetric = getWaterMetricForPlantAtTimestamp(plant, "ph", latest.timestamp, environment);
+        const ecMetric = getWaterMetricForPlantAtTimestamp(plant, "ec", latest.timestamp, environment);
 
         return (
             (latest.water.ph && phMetric && (latest.water.ph.value < phMetric.idealMin || latest.water.ph.value > phMetric.idealMax)) ||
