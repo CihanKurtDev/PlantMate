@@ -7,6 +7,23 @@ export interface LoginFormData extends LoginCredentials {
     rememberMe?: boolean;
 }
 
+export interface RegisterFormData extends LoginCredentials {
+    name: string;
+    confirmPassword: string;
+}
+
+export interface AuthUser {
+    id: string;
+    email: string;
+    name: string;
+    createdAt: number;
+}
+
+export interface AuthSession {
+    userId: string;
+    createdAt: number;
+}
+
 export interface LoginResponse {
     success: boolean,
     token?: string,
@@ -21,6 +38,14 @@ export interface LoginResponse {
 export interface LoginFormErrors {
     email?: string,
     password?: string,
+    general?: string
+}
+
+export interface RegisterFormErrors {
+    name?: string,
+    email?: string,
+    password?: string,
+    confirmPassword?: string,
     general?: string
 }
 

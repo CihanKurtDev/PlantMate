@@ -1,6 +1,6 @@
 import { ClimateDataInput, EnvironmentFormData, TempUnit } from "@/types/environment";
 import { WaterDataInput } from "@/types/plant";
-import { LoginFormData, LoginFormErrors } from "@/types/auth";
+import { LoginFormData, LoginFormErrors, RegisterFormData, RegisterFormErrors } from "@/types/auth";
 import { EventFormData, EventTypeConfig, ExtraFieldConfig } from "@/types/events";
 import { LIMITS } from "@/config/thresholds";
 import { CultivationProfile, getProfile, getProfileMetric } from "@/config/profiles";
@@ -388,6 +388,23 @@ export const validateLogin = (form: LoginFormData): LoginFormErrors => {
 
     if (!form.password) errors.password = "Passwort erforderlich";
     else if (form.password.length < 4) errors.password = "Passwort muss mindestens 4 Zeichen lang sein";
+
+    return errors;
+};
+
+export const validateRegister = (form: RegisterFormData): RegisterFormErrors => {
+    const errors: RegisterFormErrors = {};
+
+    if (!form.name.trim()) errors.name = "Name erforderlich";
+
+    if (!form.email) errors.email = "Email erforderlich";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = "Ungültige Email-Adresse";
+
+    if (!form.password) errors.password = "Passwort erforderlich";
+    else if (form.password.length < 4) errors.password = "Passwort muss mindestens 4 Zeichen lang sein";
+
+    if (!form.confirmPassword) errors.confirmPassword = "Passwort bestätigen";
+    else if (form.password !== form.confirmPassword) errors.confirmPassword = "Passwörter stimmen nicht überein";
 
     return errors;
 };

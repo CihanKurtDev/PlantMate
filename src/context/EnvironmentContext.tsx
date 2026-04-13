@@ -7,6 +7,7 @@ import type {
     EnvironmentEvent,
 } from "@/types/environment";
 import { useLocalStorageState } from "@/hooks/useLocalStorage";
+import { useAuth } from "@/context/AuthContext";
 
 interface EnvironmentContextType {
     environments: EnvironmentData[];
@@ -23,35 +24,58 @@ interface EnvironmentContextType {
 const EnvironmentContext = createContext<EnvironmentContextType | undefined>(undefined);
 
 export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
-    const [environments, setEnvironments] =
+    const [storedEnvironments, setEnvironments] =
         useLocalStorageState<EnvironmentData[]>("environments", []);
+    const { user } = useAuth();
+    const currentUserId = user?.id;
+
+    const environments = useMemo(
+        () =>
+            currentUserId
+                ? storedEnvironments.filter((env) => env.ownerUserId === currentUserId)
+                : [],
+        [currentUserId, storedEnvironments]
+    );
 
     const addEnvironment = useCallback((env: EnvironmentData) => {
-        setEnvironments((prev) => [...prev, env]);
-    }, [setEnvironments]);
+        if (!currentUserId) return;
+        setEnvironments((prev) => [...prev, { ...env, ownerUserId: currentUserId }]);
+    }, [currentUserId, setEnvironments]);
 
     const updateEnvironment = useCallback((env: EnvironmentData) => {
-        setEnvironments((prev) => prev.map((e) => (e.id === env.id ? env : e)));
-    }, [setEnvironments]);
+        if (!currentUserId) return;
+        setEnvironments((prev) =>
+            prev.map((e) =>
+                e.id === env.id && e.ownerUserId === currentUserId
+                    ? { ...env, ownerUserId: currentUserId }
+                    : e
+            )
+        );
+    }, [currentUserId, setEnvironments]);
 
     const deleteEnvironments = useCallback((ids: string[]) => {
-        setEnvironments((prev) => prev.filter((env) => !ids.includes(env.id)));
-    }, [setEnvironments]);
+        if (!currentUserId) return;
+        setEnvironments((prev) =>
+            prev.filter((env) => !(env.ownerUserId === currentUserId && ids.includes(env.id)))
+        );
+    }, [currentUserId, setEnvironments]);
 
     const addEventToEnvironment = useCallback((environmentId: string, event: EnvironmentEvent) => {
+        if (!currentUserId) return;
         setEnvironments((prev) =>
             prev.map((env) =>
-                env.id === environmentId
+                env.id === environmentId && env.ownerUserId === currentUserId
                     ? { ...env, events: [...(env.events ?? []), event] }
                     : env
             )
         );
-    }, [setEnvironments]);
+    }, [currentUserId, setEnvironments]);
 
     const removeEventFromEnvironment = useCallback((environmentId: string, eventId: string) => {
+        if (!currentUserId) return;
         setEnvironments((prev) =>
             prev.map((env) =>
-                env.id === environmentId
+                env.id === environmentId && env.ownerUserId === currentUserId
                     ? {
                           ...env,
                           events: (env.events ?? []).filter((event) => event.id !== eventId),
@@ -59,22 +83,24 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
                     : env
             )
         );
-    }, [setEnvironments]);
+    }, [currentUserId, setEnvironments]);
 
     const addHistoryData = useCallback((environmentId: string, entry: EnvironmentData_Historical) => {
+        if (!currentUserId) return;
         setEnvironments((prev) =>
             prev.map((env) =>
-                env.id === environmentId
+                env.id === environmentId && env.ownerUserId === currentUserId
                     ? { ...env, historical: [...(env.historical ?? []), entry] }
                     : env
             )
         );
-    }, [setEnvironments]);
+    }, [currentUserId, setEnvironments]);
 
     const removeHistoryData = useCallback((environmentId: string, entryId: string) => {
+        if (!currentUserId) return;
         setEnvironments((prev) =>
             prev.map((env) =>
-                env.id === environmentId
+                env.id === environmentId && env.ownerUserId === currentUserId
                     ? {
                           ...env,
                           historical: (env.historical ?? []).filter((entry) => entry.id !== entryId),
@@ -82,12 +108,13 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
                     : env
             )
         );
-    }, [setEnvironments]);
+    }, [currentUserId, setEnvironments]);
 
     const updateHistoryData = useCallback((environmentId: string, entry: EnvironmentData_Historical) => {
+        if (!currentUserId) return;
         setEnvironments((prev) =>
             prev.map((env) =>
-                env.id === environmentId
+                env.id === environmentId && env.ownerUserId === currentUserId
                     ? {
                           ...env,
                           historical: (env.historical ?? []).map((h) =>
@@ -97,7 +124,7 @@ export const EnvironmentProvider = ({ children }: { children: ReactNode }) => {
                     : env
             )
         );
-    }, [setEnvironments]);
+    }, [currentUserId, setEnvironments]);
 
     const value = useMemo(
         () => ({

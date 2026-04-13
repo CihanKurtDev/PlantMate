@@ -79,15 +79,18 @@ export function useDemoData({
     const plantCtx = usePlant();
 
     const ensureRoute = useCallback(
-        async (href: string, readySelector?: string) => {
+        async (href: string, readySelector?: string): Promise<boolean> => {
             if (window.location.pathname !== href) {
                 router.push(href);
             }
-            await waitFor(() => window.location.pathname === href, 1200, 20);
+            const routeReached = await waitFor(() => window.location.pathname === href, 1200, 20);
+            if (!routeReached) return false;
             if (readySelector) {
-                await waitForSelector(readySelector, 1200);
+                const ready = await waitForSelector(readySelector, 1200);
+                if (!ready) return false;
             }
             await nextFrame();
+            return true;
         },
         [router, waitForSelector]
     );
@@ -208,7 +211,13 @@ export function useDemoData({
 
                 const href = ROUTE_MAP[state.route];
                 const readySelector = READY_SELECTOR_MAP[state.route];
-                await ensureRoute(href, readySelector);
+                const routeReady = await ensureRoute(href, readySelector);
+                if (!routeReady) {
+                    stepIndexRef.current = -1;
+                    setStepIndex(-1);
+                    setIsRunning(false);
+                    return;
+                }
                 await openModalForState(state.modal);
 
                 stepIndexRef.current = targetIndex;

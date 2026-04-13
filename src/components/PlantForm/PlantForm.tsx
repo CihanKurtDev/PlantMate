@@ -24,7 +24,8 @@ interface PlantFormProps {
 }
 
 function toDateInputValue(timestamp?: number): string {
-    const date = new Date(timestamp ?? Date.now());
+    if (!timestamp) return "";
+    const date = new Date(timestamp);
     const year = date.getFullYear();
     const month = `${date.getMonth() + 1}`.padStart(2, "0");
     const day = `${date.getDate()}`.padStart(2, "0");
@@ -87,10 +88,14 @@ export const PlantForm = ({ environmentId, plantId, onBack }: PlantFormProps) =>
             return;
         }
 
+        const submittedStartedAt = Number.isFinite(new Date(startDate).getTime())
+            ? new Date(startDate).getTime()
+            : Date.now();
+
         const payload = {
             ...formState,
             startMode,
-            startedAt,
+            startedAt: submittedStartedAt,
         };
 
         if (existingPlant) {

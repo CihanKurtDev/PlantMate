@@ -72,3 +72,22 @@
         outline-offset: 2px;
     }
 }
+
+.themeIconLight,
+.themeIconDark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.themeIconDark {
+    display: none;
+}
+
+:global(html[data-theme="dark"]) .themeIconLight {
+    display: none;
+}
+
+:global(html[data-theme="dark"]) .themeIconDark {
+    display: inline-flex;
+}

@@ -44,6 +44,7 @@ export interface EnvironmentFormData {
 
 export interface EnvironmentData {
     id: string;
+    ownerUserId?: string;
     name: string;
     type: EnvironmentType;
     location?: string;

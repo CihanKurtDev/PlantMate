@@ -8,6 +8,8 @@ import { ThemeProvider } from "next-themes";
 import { ToastProvider } from "@/context/ToastContext";
 import { DemoProvider } from "@/context/DemoContext";
 import { DemoOverlay } from "@/demo/DemoOverlay";
+import { AuthProvider } from "@/context/AuthContext";
+import { AuthGate } from "@/components/Auth/AuthGate";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,19 +35,23 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem storageKey="plantmate-theme">
           <div className="appWrapper">
-            <EnvironmentProvider>
-              <PlantProvider>
-                <ToastProvider>
-                    <main className="pageContainer" data-demo="main-container">
-                      <DemoProvider>
-                      <Header />
-                      {children}
-                        <DemoOverlay />
-                      </DemoProvider>
-                    </main>
-                </ToastProvider>
-              </PlantProvider>
-            </EnvironmentProvider>
+            <AuthProvider>
+              <EnvironmentProvider>
+                <PlantProvider>
+                  <ToastProvider>
+                      <main className="pageContainer" data-demo="main-container">
+                        <DemoProvider>
+                          <AuthGate>
+                            <Header />
+                            {children}
+                            <DemoOverlay />
+                          </AuthGate>
+                        </DemoProvider>
+                      </main>
+                  </ToastProvider>
+                </PlantProvider>
+              </EnvironmentProvider>
+            </AuthProvider>
           </div>
         </ThemeProvider>
       </body>

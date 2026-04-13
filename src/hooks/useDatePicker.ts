@@ -11,14 +11,27 @@ interface UseDatePickerProps {
 export function useDatePicker({ value, onChange, monthsBack = 1, monthsForward = 1 }: UseDatePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [viewDate, setViewDate] = useState(new Date(value));
+    const [today, setToday] = useState(() => {
+        const initial = new Date(value);
+        initial.setHours(0, 0, 0, 0);
+        return initial;
+    });
     const pickerRef = useRef<HTMLDivElement>(null);
 
     const selectedDate = new Date(value);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
     const { minDate, maxDate } = getDateRange(today, monthsBack, monthsForward);
     const days = getDaysInMonth(viewDate);
+
+    useEffect(() => {
+        const timeoutId = window.setTimeout(() => {
+            const currentDay = new Date();
+            currentDay.setHours(0, 0, 0, 0);
+            setToday(currentDay);
+        }, 0);
+
+        return () => window.clearTimeout(timeoutId);
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {

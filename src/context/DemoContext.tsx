@@ -15,12 +15,14 @@ import { useDemoData } from "@/hooks/useDemoData";
 import { useDemoNavigationLock } from "@/hooks/useDemoNavigationLock";
 import { nextFrame, sleep } from "@/demo/demoAsync";
 import { DemoContextType, DemoProviderProps } from "@/types/demo";
+import { useAuth } from "@/context/AuthContext";
 
 const DemoContext = createContext<DemoContextType | undefined>(undefined);
 
 export function DemoProvider({ children }: DemoProviderProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const { isAuthenticated, status } = useAuth();
 
     const [isRunning, setIsRunning] = useState(false);
     const [stepIndex, setStepIndex] = useState(-1);
@@ -33,6 +35,13 @@ export function DemoProvider({ children }: DemoProviderProps) {
         isTransitioningRef.current = val;
         setIsTransitioning(val);
     }, []);
+
+    const resetDemoState = useCallback(() => {
+        setIsRunning(false);
+        setStepIndex(-1);
+        stepIndexRef.current = -1;
+        setTransitioning(false);
+    }, [setTransitioning]);
 
     const {
         clickElement,
@@ -71,21 +80,37 @@ export function DemoProvider({ children }: DemoProviderProps) {
         };
     }, [isRunning]);
 
-    ctxRef.current = {
-        router,
-        addEnvironment: envCtx.addEnvironment,
-        deleteEnvironments: envCtx.deleteEnvironments,
-        addHistoryData: envCtx.addHistoryData,
-        addEventToEnvironment: envCtx.addEventToEnvironment,
-        addPlant: plantCtx.addPlant,
-        deletePlants: plantCtx.deletePlants,
-        addPlantHistoryData: plantCtx.addPlantHistoryData,
-        addEventToPlant: plantCtx.addEventToPlant,
+    useEffect(() => {
+        ctxRef.current = {
+            router,
+            addEnvironment: envCtx.addEnvironment,
+            deleteEnvironments: envCtx.deleteEnvironments,
+            addHistoryData: envCtx.addHistoryData,
+            addEventToEnvironment: envCtx.addEventToEnvironment,
+            addPlant: plantCtx.addPlant,
+            deletePlants: plantCtx.deletePlants,
+            addPlantHistoryData: plantCtx.addPlantHistoryData,
+            addEventToPlant: plantCtx.addEventToPlant,
+            clickElement,
+            closeTopModal,
+            waitForSelector,
+            typeIntoField,
+        };
+    }, [
         clickElement,
         closeTopModal,
-        waitForSelector,
+        envCtx.addEnvironment,
+        envCtx.addEventToEnvironment,
+        envCtx.addHistoryData,
+        envCtx.deleteEnvironments,
+        plantCtx.addEventToPlant,
+        plantCtx.addPlant,
+        plantCtx.addPlantHistoryData,
+        plantCtx.deletePlants,
+        router,
         typeIntoField,
-    };
+        waitForSelector,
+    ]);
 
     const executeForwardStep = useCallback(
         async (index: number) => {
@@ -110,11 +135,10 @@ export function DemoProvider({ children }: DemoProviderProps) {
         async (index: number) => {
             if (index >= DEMO_STEPS.length) {
                 await cleanupDemoData();
-                await ensureRoute("/dashboard", '[data-demo="create-btn"]');
-                setIsRunning(false);
-                setStepIndex(-1);
-                stepIndexRef.current = -1;
-                setTransitioning(false);
+                if (isAuthenticated) {
+                    await ensureRoute("/dashboard", '[data-demo="create-btn"]');
+                }
+                resetDemoState();
                 return;
             }
 
@@ -127,24 +151,32 @@ export function DemoProvider({ children }: DemoProviderProps) {
 
             setTransitioning(false);
         },
-        [cleanupDemoData, ensureRoute, executeForwardStep, setTransitioning]
+        [cleanupDemoData, ensureRoute, executeForwardStep, isAuthenticated, resetDemoState, setTransitioning]
     );
 
     const start = useCallback(() => {
         if (isTransitioningRef.current) return;
+        if (status !== "authenticated" || !isAuthenticated) {
+            void router.push("/login");
+            return;
+        }
         isTransitioningRef.current = true;
         setIsTransitioning(true);
 
         const boot = async () => {
             await cleanupDemoData();
-            await ensureRoute("/dashboard", '[data-demo="create-btn"]');
+            const routeReady = await ensureRoute("/dashboard", '[data-demo="create-btn"]');
+            if (!routeReady) {
+                resetDemoState();
+                return;
+            }
             setIsRunning(true);
             stepIndexRef.current = 0;
             setStepIndex(0);
             setTransitioning(false);
         };
         void boot();
-    }, [cleanupDemoData, ensureRoute, setTransitioning]);
+    }, [cleanupDemoData, ensureRoute, isAuthenticated, resetDemoState, router, setTransitioning, status]);
 
     const next = useCallback(() => {
         if (isTransitioningRef.current) return;
@@ -169,14 +201,27 @@ export function DemoProvider({ children }: DemoProviderProps) {
 
         const shutdown = async () => {
             await cleanupDemoData();
-            await ensureRoute("/dashboard", '[data-demo="create-btn"]');
-            setIsRunning(false);
-            setStepIndex(-1);
-            stepIndexRef.current = -1;
-            setTransitioning(false);
+            if (isAuthenticated) {
+                await ensureRoute("/dashboard", '[data-demo="create-btn"]');
+            }
+            resetDemoState();
         };
         void shutdown();
-    }, [cleanupDemoData, ensureRoute, setTransitioning]);
+    }, [cleanupDemoData, ensureRoute, isAuthenticated, resetDemoState]);
+
+    useEffect(() => {
+        if (!isRunning) return;
+        if (status === "loading") return;
+
+        const onAuthPage = pathname === "/login" || pathname === "/register";
+        if (!isAuthenticated || onAuthPage) {
+            const cleanup = async () => {
+                await cleanupDemoData();
+                resetDemoState();
+            };
+            void cleanup();
+        }
+    }, [cleanupDemoData, isAuthenticated, isRunning, pathname, resetDemoState, status]);
 
     useDemoNavigationLock(isRunning, prev, next);
 

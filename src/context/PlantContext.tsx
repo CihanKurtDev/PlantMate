@@ -3,6 +3,7 @@
 import { createContext, useContext, ReactNode, useCallback, useMemo } from "react";
 import type { PlantData, PlantData_Historical, PlantEvent } from "@/types/plant";
 import { useLocalStorageState } from "@/hooks/useLocalStorage";
+import { useEnvironment } from "@/context/EnvironmentContext";
 
 interface PlantContextType {
     plants: PlantData[];
@@ -19,21 +20,47 @@ interface PlantContextType {
 const PlantContext = createContext<PlantContextType | undefined>(undefined);
 
 export const PlantProvider = ({ children }: { children: ReactNode }) => {
-    const [plants, setPlants] = useLocalStorageState<PlantData[]>("plants", []);
+    const [storedPlants, setPlants] = useLocalStorageState<PlantData[]>("plants", []);
+    const { environments } = useEnvironment();
+    const allowedEnvironmentIds = useMemo(
+        () => new Set(environments.map((environment) => environment.id)),
+        [environments]
+    );
+    const plants = useMemo(
+        () => storedPlants.filter((plant) => allowedEnvironmentIds.has(plant.environmentId)),
+        [allowedEnvironmentIds, storedPlants]
+    );
+    const visiblePlantIds = useMemo(
+        () => new Set(plants.map((plant) => plant.id)),
+        [plants]
+    );
 
     const addPlant = useCallback((plant: PlantData) => {
+        if (!allowedEnvironmentIds.has(plant.environmentId)) return;
         setPlants((prev) => [...prev, plant]);
-    }, [setPlants]);
+    }, [allowedEnvironmentIds, setPlants]);
 
     const updatePlant = useCallback((plant: PlantData) => {
-        setPlants((prev) => prev.map((p) => (p.id === plant.id ? plant : p)));
-    }, [setPlants]);
+        if (!plant.id) return;
+        if (!allowedEnvironmentIds.has(plant.environmentId)) return;
+        if (!visiblePlantIds.has(plant.id)) return;
+        setPlants((prev) =>
+            prev.map((p) =>
+                p.id === plant.id
+                    ? plant
+                    : p
+            )
+        );
+    }, [allowedEnvironmentIds, setPlants, visiblePlantIds]);
 
     const deletePlants = useCallback((ids: string[]) => {
-        setPlants((prev) => prev.filter((p) => !ids.includes(p.id!)));
-    }, [setPlants]);
+        setPlants((prev) =>
+            prev.filter((p) => !(ids.includes(p.id!) && allowedEnvironmentIds.has(p.environmentId)))
+        );
+    }, [allowedEnvironmentIds, setPlants]);
 
     const addEventToPlant = useCallback((plantId: string, event: PlantEvent) => {
+        if (!visiblePlantIds.has(plantId)) return;
         setPlants((prev) =>
             prev.map((plant) =>
                 plant.id === plantId
@@ -41,9 +68,10 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
                     : plant
             )
         );
-    }, [setPlants]);
+    }, [setPlants, visiblePlantIds]);
 
     const removeEventFromPlant = useCallback((plantId: string, eventId: string) => {
+        if (!visiblePlantIds.has(plantId)) return;
         setPlants((prev) =>
             prev.map((plant) =>
                 plant.id === plantId
@@ -54,9 +82,10 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
                     : plant
             )
         );
-    }, [setPlants]);
+    }, [setPlants, visiblePlantIds]);
 
     const addPlantHistoryData = useCallback((plantId: string, entry: PlantData_Historical) => {
+        if (!visiblePlantIds.has(plantId)) return;
         setPlants((prev) =>
             prev.map((plant) =>
                 plant.id === plantId
@@ -64,9 +93,10 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
                     : plant
             )
         );
-    }, [setPlants]);
+    }, [setPlants, visiblePlantIds]);
 
     const removePlantHistoryData = useCallback((plantId: string, entryId: string) => {
+        if (!visiblePlantIds.has(plantId)) return;
         setPlants((prev) =>
             prev.map((plant) =>
                 plant.id === plantId
@@ -77,7 +107,7 @@ export const PlantProvider = ({ children }: { children: ReactNode }) => {
                     : plant
             )
         );
-    }, [setPlants]);
+    }, [setPlants, visiblePlantIds]);
 
     const getPlantsByEnvironment = useCallback(
         (envId: string) => plants.filter((p) => p.environmentId === envId),

@@ -10,13 +10,8 @@ import Form from "@/components/Form/Form"
 import { Input } from "@/components/Form/Input"
 import Checkbox from "@/components/Checkbox/Checkbox"
 import { Button } from "@/components/Button/Button"
-
-async function fakeLoginRequest(data: LoginFormData) {
-    await new Promise(r => setTimeout(r, 800))
-    return data.email === "test@test.de" && data.password === "1234"
-        ? { success: true }
-        : { success: false, error: "Ungültige Zugangsdaten" }
-}
+import { useAuth } from "@/context/AuthContext"
+import Link from "next/link"
 
 const LoginForm = () => {
     const [form, setForm] = useState<LoginFormData>({
@@ -29,6 +24,7 @@ const LoginForm = () => {
 
     const { validate } = useLoginValidation()
     const router = useRouter()
+    const { login } = useAuth()
 
     const validationErrors = validate(form)
     const isDisabled = status === "loading" || hasValidationErrors(validationErrors)
@@ -43,7 +39,7 @@ const LoginForm = () => {
         if (hasValidationErrors(validationErrors)) return
 
         setStatus("loading")
-        const res = await fakeLoginRequest(form)
+        const res = await login(form)
 
         if (!res.success) {
             setStatus("error")
@@ -93,7 +89,9 @@ const LoginForm = () => {
                 </Button>
             </div>
 
-            <p>test@test.de, 1234</p>
+            <p>
+                Noch kein Konto? <Link href="/register">Jetzt registrieren</Link>
+            </p>
         </Form>
     )
 }
