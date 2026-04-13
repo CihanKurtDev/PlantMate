@@ -1,27 +1,37 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useHasMounted } from "@/hooks/useHasMounted";
+import { Minus, TrendingDown, TrendingUp } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import {
-    AreaChart,
     Area,
+    AreaChart,
+    ResponsiveContainer,
+    Tooltip,
     XAxis,
     YAxis,
-    Tooltip,
-    ResponsiveContainer,
 } from "recharts";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-import styles from "./DataTab.module.scss";
 import { Card } from "@/components/Card/Card";
-import { formatDate, formatDateShort } from "@/helpers/date";
-import { TimeSeriesEntry } from "@/types/events";
-import { DEVIATION_STYLES, DeviationLevel } from "@/config/icons";
-import { UnitToggle } from "./UnitToggle";
 import TabContent from "@/components/TabContent/TabContent";
-import { GhostState } from "../GhostState/GhostState";
-import { GhostCard } from "../GhostState/GhostCard";
 import { Tooltip as BadgeTooltip } from "@/components/Tooltip/Tooltip";
+import { useHasMounted } from "@/hooks/useHasMounted";
+import { DEVIATION_STYLES } from "@/config/icons";
+import { formatDate, formatDateShort } from "@/helpers/date";
+import type { TimeSeriesEntry } from "@/types/events";
+import { GhostCard } from "../GhostState/GhostCard";
+import { GhostState } from "../GhostState/GhostState";
+import { UnitToggle } from "./UnitToggle";
+import {
+    type ChartDatum,
+    generateGhostData,
+    getDeviationLevel,
+    getDisplayMetric,
+    getMetricValue,
+    getTrend,
+    toFahrenheit,
+    toRangePercent,
+} from "./dataTabUtils";
+import styles from "./DataTab.module.scss";
 
 export interface MetricConfig {
     key: string;
@@ -36,23 +46,14 @@ export interface MetricConfig {
     format: (v: number) => string;
 }
 
-interface ChartDatum {
-    t: number;
-    v: number;
-}
-
-interface Trend {
-    diff: number;
-    pct: string;
-}
-
 interface MetricRowProps {
     metric: MetricConfig;
     data: TimeSeriesEntry[];
     hasHistory: boolean;
     chartsMounted: boolean;
     useFahrenheit?: boolean;
-    onToggleFahrenheit?: (v: boolean) => void;
+    onToggleFahrenheit?: (value: boolean) => void;
+    resolveMetricForTimestamp?: (metricKey: string, timestamp: number) => MetricConfig | undefined;
 }
 
 interface GhostMetricRowProps {
@@ -65,6 +66,7 @@ interface AreaTooltipProps {
     payload?: readonly { value: number; name: string; color: string }[];
     label?: string | number;
     metric: MetricConfig;
+    resolveMetricForTimestamp?: (metricKey: string, timestamp: number) => MetricConfig | undefined;
 }
 
 interface DataTabProps {
@@ -76,69 +78,30 @@ interface DataTabProps {
     ctaLabel: string;
     onAddMeasurement?: () => void;
     id?: string;
+    resolveMetricForTimestamp?: (metricKey: string, timestamp: number) => MetricConfig | undefined;
 }
 
-const GHOST_BASE_TIMESTAMP = Date.UTC(2024, 0, 1, 12, 0, 0, 0);
 const GHOST_OK_TEXT = "var(--color-text-success)";
 const GHOST_OK_BG = "var(--color-flag-success)";
 
-function toRangePercent(value: number, min: number, max: number): number {
-    return Math.min(100, Math.max(0, ((value - min) / (max - min)) * 100));
-}
+function AreaTooltipContent({
+    active,
+    payload,
+    label,
+    metric,
+    resolveMetricForTimestamp,
+}: AreaTooltipProps) {
+    if (!active || !payload?.length || label === undefined) {
+        return null;
+    }
 
-function getMetricValue(entry: TimeSeriesEntry, key: string): number | undefined {
-    return entry?.metrics?.[key];
-}
-
-function getTrend(data: TimeSeriesEntry[], key: string): Trend | null {
-    if (data.length < 2) return null;
-    const first = getMetricValue(data[0], key);
-    const last = getMetricValue(data[data.length - 1], key);
-    if (first === undefined || last === undefined || first === 0) return null;
-    const diff = last - first;
-    const pct = ((diff / first) * 100).toFixed(1);
-    return { diff, pct };
-}
-
-function getDeviationLevel(value: number, metric: MetricConfig): DeviationLevel {
-    const { idealMin, idealMax } = metric;
-    const warnBuffer = (idealMax - idealMin) * 0.2;
-    if (value >= idealMin && value <= idealMax) return "ok";
-    if (value >= idealMin - warnBuffer && value <= idealMax + warnBuffer) return "warn";
-    return "critical";
-}
-
-export function toF(c: number): number {
-    return (c * 9) / 5 + 32;
-}
-
-function getDisplayMetric(metric: MetricConfig, useFahrenheit: boolean): MetricConfig {
-    if (metric.key !== "temp" || !useFahrenheit) return metric;
-    return {
-        ...metric,
-        unit: "°F",
-        min: toF(metric.min),
-        max: toF(metric.max),
-        idealMin: toF(metric.idealMin),
-        idealMax: toF(metric.idealMax),
-        format: (v) => `${v.toFixed(1)} °F`,
-    };
-}
-
-function generateGhostData(idealMin: number, idealMax: number): ChartDatum[] {
-    const mid = (idealMin + idealMax) / 2;
-    const range = (idealMax - idealMin) * 0.4;
-    const offsets = [0.2, -0.1, 0.4, 0.1, -0.2, 0.5, 0.3, -0.15, 0.35, 0.2, -0.05, 0.25];
-    return offsets.map((o, i) => ({
-        t: GHOST_BASE_TIMESTAMP - (offsets.length - 1 - i) * 3600000,
-        v: mid + o * range,
-    }));
-}
-
-function AreaTooltip({ active, payload, label, metric }: AreaTooltipProps) {
-    if (!active || !payload?.length || label === undefined) return null;
     const value = payload[0]?.value;
-    if (typeof value !== "number") return null;
+
+    if (typeof value !== "number") {
+        return null;
+    }
+
+    const effectiveMetric = resolveMetricForTimestamp?.(metric.key, Number(label)) ?? metric;
 
     return (
         <div className={styles.customTooltip}>
@@ -146,16 +109,16 @@ function AreaTooltip({ active, payload, label, metric }: AreaTooltipProps) {
             <p className={styles.tooltipItem} style={{ color: metric.color }}>
                 {metric.label}: {metric.format(value)}
             </p>
+            <p className={styles.tooltipLabel}>
+                Ziel: {effectiveMetric.idealMin}–{effectiveMetric.idealMax} {effectiveMetric.unit}
+            </p>
         </div>
     );
 }
 
 function GhostMetricRow({ metric, chartsMounted }: GhostMetricRowProps) {
     const mid = (metric.idealMin + metric.idealMax) / 2;
-    const ghostData = useMemo(
-        () => generateGhostData(metric.idealMin, metric.idealMax),
-        [metric.idealMin, metric.idealMax]
-    );
+    const ghostData = useMemo(() => generateGhostData(metric.idealMin, metric.idealMax), [metric.idealMax, metric.idealMin]);
     const valuePct = toRangePercent(mid, metric.min, metric.max);
     const idealStartPct = toRangePercent(metric.idealMin, metric.min, metric.max);
     const idealWidthPct = toRangePercent(metric.idealMax, metric.min, metric.max) - idealStartPct;
@@ -208,7 +171,15 @@ function GhostMetricRow({ metric, chartsMounted }: GhostMetricRowProps) {
                                     <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
                                 </linearGradient>
                             </defs>
-                            <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#ghost-grad-${metric.key})`} dot={false} isAnimationActive={false} />
+                            <Area
+                                type="monotone"
+                                dataKey="v"
+                                stroke={metric.color}
+                                strokeWidth={2}
+                                fill={`url(#ghost-grad-${metric.key})`}
+                                dot={false}
+                                isAnimationActive={false}
+                            />
                             <YAxis domain={["auto", "auto"]} hide />
                             <XAxis dataKey="t" hide />
                         </AreaChart>
@@ -221,13 +192,26 @@ function GhostMetricRow({ metric, chartsMounted }: GhostMetricRowProps) {
     );
 }
 
-function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = false, onToggleFahrenheit }: MetricRowProps) {
-    const rawLatest = getMetricValue(data[data.length - 1], metric.key);
-    if (rawLatest === undefined) return null;
+function MetricRow({
+    metric,
+    data,
+    hasHistory,
+    chartsMounted,
+    useFahrenheit = false,
+    onToggleFahrenheit,
+    resolveMetricForTimestamp,
+}: MetricRowProps) {
+    const latestEntry = data[data.length - 1];
+    const rawLatest = getMetricValue(latestEntry, metric.key);
 
-    const displayMetric = getDisplayMetric(metric, useFahrenheit);
-    const displayLatest = metric.key === "temp" && useFahrenheit ? toF(rawLatest) : rawLatest;
-    const deviation = getDeviationLevel(rawLatest, metric);
+    if (rawLatest === undefined) {
+        return null;
+    }
+
+    const effectiveMetric = resolveMetricForTimestamp?.(metric.key, latestEntry.timestamp) ?? metric;
+    const displayMetric = getDisplayMetric(effectiveMetric, useFahrenheit);
+    const displayLatest = metric.key === "temp" && useFahrenheit ? toFahrenheit(rawLatest) : rawLatest;
+    const deviation = getDeviationLevel(rawLatest, effectiveMetric);
     const deviationStyle = DEVIATION_STYLES[deviation];
     const trend = getTrend(data, metric.key);
     const valuePct = toRangePercent(displayLatest, displayMetric.min, displayMetric.max);
@@ -235,13 +219,40 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
     const idealWidthPct = toRangePercent(displayMetric.idealMax, displayMetric.min, displayMetric.max) - idealStartPct;
 
     const chartData: ChartDatum[] = data
-        .map(entry => {
-            const v = getMetricValue(entry, metric.key);
-            if (v === undefined) return undefined;
-            const displayed = metric.key === "temp" && useFahrenheit ? toF(v) : v;
-            return { t: entry.timestamp, v: displayed };
+        .map((entry) => {
+            const value = getMetricValue(entry, metric.key);
+
+            if (value === undefined) {
+                return undefined;
+            }
+
+            const displayedValue = metric.key === "temp" && useFahrenheit ? toFahrenheit(value) : value;
+
+            return {
+                t: entry.timestamp,
+                v: displayedValue,
+            };
         })
         .filter(Boolean) as ChartDatum[];
+
+    const healthSummary = data.reduce(
+        (summary, entry) => {
+            const value = getMetricValue(entry, metric.key);
+
+            if (value === undefined) {
+                return summary;
+            }
+
+            const entryMetric = resolveMetricForTimestamp?.(metric.key, entry.timestamp) ?? metric;
+            const level = getDeviationLevel(value, entryMetric);
+
+            summary.total += 1;
+            summary[level] += 1;
+
+            return summary;
+        },
+        { total: 0, ok: 0, warn: 0, critical: 0 }
+    );
 
     const TrendIcon = !trend ? Minus : trend.diff > 0 ? TrendingUp : TrendingDown;
     const trendColor = !trend ? undefined : deviationStyle.color;
@@ -259,7 +270,7 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
                         <UnitToggle
                             options={[{ label: "°C", value: "c" }, { label: "°F", value: "f" }]}
                             value={useFahrenheit ? "f" : "c"}
-                            onChange={(v) => onToggleFahrenheit(v === "f")}
+                            onChange={(value) => onToggleFahrenheit(value === "f")}
                         />
                     )}
                     <BadgeTooltip content={deviationStyle.description}>
@@ -284,9 +295,29 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
                     )}
                 </div>
 
+                {healthSummary.total > 1 && (
+                    <div style={{ marginTop: 8, fontSize: "0.875rem", opacity: 0.8 }}>
+                        Verlauf: {healthSummary.ok} ok · {healthSummary.warn} warn · {healthSummary.critical} kritisch
+                    </div>
+                )}
+
                 <div className={styles.rangeBar}>
-                    <div className={styles.rangeIdeal} style={{ left: `${idealStartPct}%`, width: `${idealWidthPct}%`, background: `${metric.color}30` }} />
-                    <div className={styles.rangeMarker} style={{ left: `calc(${valuePct}% - 6px)`, background: metric.color, boxShadow: `0 0 6px ${metric.color}88` }} />
+                    <div
+                        className={styles.rangeIdeal}
+                        style={{
+                            left: `${idealStartPct}%`,
+                            width: `${idealWidthPct}%`,
+                            background: `${metric.color}30`,
+                        }}
+                    />
+                    <div
+                        className={styles.rangeMarker}
+                        style={{
+                            left: `calc(${valuePct}% - 6px)`,
+                            background: metric.color,
+                            boxShadow: `0 0 6px ${metric.color}88`,
+                        }}
+                    />
                 </div>
 
                 <div className={styles.rangeLabels}>
@@ -306,7 +337,15 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
                                             <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
                                         </linearGradient>
                                     </defs>
-                                    <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={1.5} fill={`url(#spark-${metric.key})`} dot={false} isAnimationActive={false} />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="v"
+                                        stroke={metric.color}
+                                        strokeWidth={1.5}
+                                        fill={`url(#spark-${metric.key})`}
+                                        dot={false}
+                                        isAnimationActive={false}
+                                    />
                                     <YAxis domain={["auto", "auto"]} hide />
                                 </AreaChart>
                             </ResponsiveContainer>
@@ -328,10 +367,26 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
                                         <stop offset="100%" stopColor={metric.color} stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <Area type="monotone" dataKey="v" stroke={metric.color} strokeWidth={2} fill={`url(#grad-${metric.key})`} dot={false} isAnimationActive={false} />
+                                <Area
+                                    type="monotone"
+                                    dataKey="v"
+                                    stroke={metric.color}
+                                    strokeWidth={2}
+                                    fill={`url(#grad-${metric.key})`}
+                                    dot={false}
+                                    isAnimationActive={false}
+                                />
                                 <YAxis domain={["auto", "auto"]} hide />
-                                <XAxis dataKey="t" hide={false} tickFormatter={value => formatDate(value)} />
-                                <Tooltip content={props => <AreaTooltip {...props} metric={displayMetric} />} />
+                                <XAxis dataKey="t" tickFormatter={(value) => formatDate(value)} />
+                                <Tooltip
+                                    content={(props) => (
+                                        <AreaTooltipContent
+                                            {...props}
+                                            metric={displayMetric}
+                                            resolveMetricForTimestamp={resolveMetricForTimestamp}
+                                        />
+                                    )}
+                                />
                             </AreaChart>
                         </ResponsiveContainer>
                     ) : (
@@ -343,7 +398,16 @@ function MetricRow({ metric, data, hasHistory, chartsMounted, useFahrenheit = fa
     );
 }
 
-export default function DataTab({ data, metrics, onAddMeasurement, title, emptyTitle, emptyText, ctaLabel }: DataTabProps) {
+export default function DataTab({
+    data,
+    metrics,
+    onAddMeasurement,
+    title,
+    emptyTitle,
+    emptyText,
+    ctaLabel,
+    resolveMetricForTimestamp,
+}: DataTabProps) {
     const hasHistory = data.length > 1;
     const isEmpty = data.length < 2;
     const [useFahrenheit, setUseFahrenheit] = useState(false);
@@ -351,24 +415,24 @@ export default function DataTab({ data, metrics, onAddMeasurement, title, emptyT
 
     return (
         <TabContent>
-            <Card title={title} collapsible={true}>
+            <Card title={title} collapsible>
                 <GhostState
                     isEmpty={isEmpty}
-                    overlay={
+                    overlay={(
                         <GhostCard
                             title={emptyTitle}
                             text={emptyText}
                             cta={ctaLabel}
                             onClick={onAddMeasurement}
                         />
-                    }
+                    )}
                 >
                     <div className={styles.metricList}>
                         {isEmpty
-                            ? metrics.map(metric => (
+                            ? metrics.map((metric) => (
                                 <GhostMetricRow key={metric.key} metric={metric} chartsMounted={chartsMounted} />
                             ))
-                            : metrics.map(metric => (
+                            : metrics.map((metric) => (
                                 <MetricRow
                                     key={metric.key}
                                     metric={metric}
@@ -377,9 +441,9 @@ export default function DataTab({ data, metrics, onAddMeasurement, title, emptyT
                                     chartsMounted={chartsMounted}
                                     useFahrenheit={useFahrenheit}
                                     onToggleFahrenheit={metric.key === "temp" ? setUseFahrenheit : undefined}
+                                    resolveMetricForTimestamp={resolveMetricForTimestamp}
                                 />
-                            ))
-                        }
+                            ))}
                     </div>
                 </GhostState>
             </Card>

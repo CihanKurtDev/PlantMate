@@ -11,10 +11,11 @@ interface PageLayoutProps {
     icon?: LucideIcon;
     iconVariant?: string;
     backLink?: { label: string; href: string };
+    statusInfo?: ReactNode;
     actions?: ReactNode;
 }
 
-export const PageLayout = ({ title, subtitle, icon, iconVariant, backLink, actions, children }: PageLayoutProps) => {
+export const PageLayout = ({ title, subtitle, icon, iconVariant, backLink, statusInfo, actions, children }: PageLayoutProps) => {
     return (
         <>
             {title && (
@@ -30,6 +31,7 @@ export const PageLayout = ({ title, subtitle, icon, iconVariant, backLink, actio
                                 </Link>
                             )}
                             {subtitle && <p>{subtitle}</p>}
+                            {statusInfo && <div className={styles.statusInfo}>{statusInfo}</div>}
                         </div>
                     </div>
                     {actions && <div className={styles.actions}>{actions}</div>}

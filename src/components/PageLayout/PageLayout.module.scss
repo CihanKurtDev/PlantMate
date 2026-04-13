@@ -28,6 +28,10 @@
     flex-direction: column;
 }
 
+.statusInfo {
+    margin-top: var(--spacing-xs);
+}
+
 .actions {
     display: flex;
     flex-direction: column;

@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import PlantsTab from "./components/PlantsTab";
 import DataTab from "./components/shared/DataTab/DataTab";
-import { ENVIRONMENT_ICONS } from "@/config/environment";
 import MetricGrid from "@/components/MetricGrid/MetricGrid";
 import EnvironmentEventTab from "./components/EnvironmentEventTab";
 import Modal from "@/components/Modal/Modal";
@@ -20,6 +19,8 @@ import { getIntersectedClimateMetrics } from "./components/shared/DataTab/dataTa
 import { useEnvironment } from "@/context/EnvironmentContext";
 import { usePlant } from "@/context/PlantContext";
 import { getEnvironmentMetrics } from "@/helpers/getEnvironmentMetrics";
+import { getCurrentPlantStage } from "@/helpers/plantStages";
+import { useLightCycleSnapshot, getLightIconVariant, LIGHT_CYCLE_ICON, LightStatusInfo } from "./components/LightHero/LightHero";
 
 export function capitalize(word: string) {
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -33,6 +34,9 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     const [modalType, setModalType] = useState<ModalType>("none");
     const environment = environments.find(e => e.id === environmentId);
     const plants = getPlantsByEnvironment(environmentId);
+    const lightSnapshot = useLightCycleSnapshot(environment?.currentLightSchedule);
+    const lightVariant = getLightIconVariant(lightSnapshot);
+    const lightIcon = LIGHT_CYCLE_ICON[lightVariant];
 
     const items = useMemo(() => {
         if (!environment) return [];
@@ -40,8 +44,10 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
     }, [environment]);
 
     const climateMetrics = useMemo(() => {
-        return getIntersectedClimateMetrics(plants);
-    }, [plants]);
+        return getIntersectedClimateMetrics(plants, {
+            getStageForPlant: (plant) => getCurrentPlantStage(plant, environment),
+        });
+    }, [plants, environment]);
 
     const chartData: EnvironmentTimeSeriesEntry[] = useMemo(() => {
         if (!environment) return [];
@@ -64,14 +70,30 @@ export default function EnvironmentDetailView({ environmentId }: { environmentId
 
     const closeModal = () => setModalType("none");
 
-    if (!environment) return null;
+    if (!environment) {
+        return (
+            <PageLayout
+                title="Umgebung nicht gefunden"
+                subtitle="Die angeforderte Umgebung existiert nicht mehr oder wurde entfernt."
+                backLink={{ label: "Zurück zum Dashboard", href: "/dashboard" }}
+            >
+                <p>Bitte wähle eine vorhandene Umgebung aus dem Dashboard.</p>
+            </PageLayout>
+        );
+    }
 
     return (
         <PageLayout
             title={environment.name}
-            subtitle={`${environment.location} - ${capitalize(environment.type)}`}
-            icon={ENVIRONMENT_ICONS[environment.type]}
-            iconVariant={environment.type.toLowerCase()}
+            icon={lightIcon.icon}
+            iconVariant={lightIcon.variant}
+            statusInfo={
+                <LightStatusInfo
+                    schedule={environment.currentLightSchedule}
+                    snapshot={lightSnapshot}
+                    locationLabel={`${environment.location} - ${capitalize(environment.type)}`}
+                />
+            }
             actions={
                 <>
                     <Button variant="secondary" onClick={() => setModalType("edit")}>

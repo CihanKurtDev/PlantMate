@@ -16,7 +16,7 @@ const STEP_INFO = {
     plant: {
         number: 2,
         label: "Pflanze hinzufügen",
-        description: "Optional — du kannst Pflanzen auch später anlegen.",
+        description: "Optional — du kannst Pflanzen auch später anlegen. Für das Anlegen reichen Name und Umgebung.",
     },
 };
 
@@ -58,7 +58,7 @@ export const MultiStepForm = () => {
 
             {step === "environment" ? (
                 <>
-                    {isEditMode && <h2 className={styles.stepTitle}>Environment bearbeiten</h2>}
+                    {isEditMode && <h2 className={styles.stepTitle}>Umgebung bearbeiten</h2>}
                     <EnvironmentForm
                         existingId={createdEnvironmentId}
                         onSaved={handleEnvironmentSaved}

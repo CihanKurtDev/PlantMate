@@ -1,8 +1,10 @@
 import { EnvironmentData } from "@/types/environment";
 import { MetricItem } from "@/components/MetricGrid/MetricGrid";
 
+const CLIMATE_KEYS = ["temp", "humidity", "vpd", "co2"] as const;
+
 function getLatestClimateValues(historical: EnvironmentData["historical"] = []) {
-    const result: Record<string, any> = {};
+    const result: Record<string, { value: number; unit: string }> = {};
 
     for (const entry of [...historical].reverse()) {
         for (const [key, value] of Object.entries(entry.climate)) {
@@ -20,21 +22,13 @@ export function getEnvironmentMetrics(
 ): MetricItem[] {
     const latestValues = getLatestClimateValues(environment.historical);
 
-    const defaults = {
-        temp: 0,
-        humidity: 0,
-        vpd: 0,
-        co2: 0,
-    };
-
-    return Object.entries(defaults).map(([key, fallback]) => {
-        const value = latestValues[key];
-
-        return {
-            key,
-            value: value
-                ? `${value.value}${value.unit}`
-                : `${fallback}${key === "temp" ? "°C" : key === "humidity" ? "%" : key === "vpd" ? "kPa" : "ppm"}`,
-        };
-    });
+    return CLIMATE_KEYS
+        .filter((key) => key in latestValues)
+        .map((key) => {
+            const { value, unit } = latestValues[key];
+            return {
+                key,
+                value: `${value}${unit}`,
+            };
+        });
 }
